@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.cesium_ion_token
+data/cesium_cache/
+data/contour_cache/
+tile_cache/
+*.log
+.DS_Store

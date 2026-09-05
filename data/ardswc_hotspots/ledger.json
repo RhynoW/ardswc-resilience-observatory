@@ -1,0 +1,79 @@
+[
+ {
+  "rank": 44, "site": "ardswc_top44_deephist", "name": "臺中市和平區（松鶴）",
+  "date_a": "20121017", "date_b": "20250101", "score": 0.756,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "ok", "verdict_label": "可信",
+  "note": "河岸/坡地訊號集中，與長年坡地侵蝕問題吻合。深度驗證 11 個熱點中，唯一同時對位成功且目視確認乾淨無疑。"
+ },
+ {
+  "rank": 20, "site": "ardswc_top20_deephist", "name": "新北市汐止區（林肯大郡）",
+  "date_a": "20150726", "date_b": "20250324", "score": 0.905,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "建物輪廓十年間穩定；高分為全畫面瀰漫式雜訊灌水，非集中訊號。"
+ },
+ {
+  "rank": 28, "site": "ardswc_top28_deephist", "name": "高雄市六龜區",
+  "date_a": "20131123", "date_b": "20250101", "score": 0.273,
+  "alignment_applied": false, "alignment_uncertain": true,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "快篩尖峰 0.947 應來自中間某日期對，非頭尾這組；對位失敗使頭尾直接比對分數不可直接採信。"
+ },
+ {
+  "rank": 48, "site": "ardswc_top48_deephist", "name": "宜蘭縣蘇澳鎮",
+  "date_a": "20180327", "date_b": "20250228", "score": 0.906,
+  "alignment_applied": false, "alignment_uncertain": true,
+  "verdict": "bad", "verdict_label": "偽陽性",
+  "note": "老漁港不可能 7 年城市化；位移極大（242/135px）判定為構圖/框取範圍不一致造成的偽陽性，非真實變化。"
+ },
+ {
+  "rank": 41, "site": "ardswc_top41_deephist", "name": "臺南市南化區",
+  "date_a": "20100129", "date_b": "20250107", "score": 0.855,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "bad", "verdict_label": "基準不可用",
+  "note": "2010 基準影像嚴重模糊（已知舊渲染陷阱），基準本身不具代表性，需換日期重測。"
+ },
+ {
+  "rank": 14, "site": "ardswc_top14_deephist", "name": "屏東縣滿州鄉",
+  "date_a": "20070218", "date_b": "20250101", "score": 0.940,
+  "alignment_applied": false, "alignment_uncertain": true,
+  "verdict": "bad", "verdict_label": "不可信",
+  "note": "對位失敗＋畫面中大片深色區域無法排除是雲影，兩個問題疊加，不可採信。"
+ },
+ {
+  "rank": 97, "site": "ardswc_top97_deephist", "name": "宜蘭縣蘇澳鎮（新掃描）",
+  "date_a": "20161226", "date_b": "20250101", "score": 0.917,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "林地轉大片裸露開挖地，位置具體可辨；但熱區仍瀰漫全畫面，分數非單靠此區塊撐起。"
+ },
+ {
+  "rank": 71, "site": "ardswc_top71_deephist", "name": "臺東縣太麻里鄉",
+  "date_a": "20170625", "date_b": "20250615", "score": 0.938,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "河床裸露礫石灘明顯萎縮、坡地復綠，真實但熱區瀰漫，分數恐被一般林地紋理差異墊高。"
+ },
+ {
+  "rank": 80, "site": "ardswc_top80_deephist", "name": "高雄市甲仙區",
+  "date_a": "20120323", "date_b": "20250107", "score": 0.978,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "100 熱點中最高分；裸露河床/坡地復綠明顯（與莫拉克風災後時序吻合），但熱區近乎滿版，可信度存疑。"
+ },
+ {
+  "rank": 86, "site": "ardswc_top86_deephist", "name": "高雄市甲仙區",
+  "date_a": "20111020", "date_b": "20250107", "score": 0.797,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "舊期影像為去飽和灰階渲染、新期為全彩——跨世代色調差異已知會灌水，須排除後才能信分數。"
+ },
+ {
+  "rank": 90, "site": "ardswc_top90_deephist", "name": "高雄市甲仙區",
+  "date_a": "20130914", "date_b": "20250107", "score": 0.755,
+  "alignment_applied": true, "alignment_uncertain": false,
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "同 #86，舊期灰階/新期全彩色調落差；河床礫石灘一帶訊號較集中，是 5 筆新增中相對最可信者。"
+ }
+]

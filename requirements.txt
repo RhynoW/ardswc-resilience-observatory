@@ -1,0 +1,7 @@
+flask
+werkzeug
+opencv-python-headless
+numpy
+scipy
+scikit-image
+pillow

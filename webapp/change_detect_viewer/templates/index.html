@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>地景複發熱點觀測站</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap">
+<link rel="stylesheet" href="/static/leaflet.css">
+<script src="/static/leaflet.js"></script>
+<style>
+  :root{
+    --ink:#1F2420; --paper:#EDEAE0; --paper-raised:#F5F3EB;
+    --accent:#B85C1E; --accent-2:#2F5D50;
+    --line:#C9C3B3; --line-soft:#DAD5C6; --muted:#6B6759;
+    --sem-ok:#3E7A5C; --sem-warn:#9C7A1E; --sem-bad:#7A3A38;
+    --chip-bg:#E3DECD;
+    --font-mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --font-serif:'Source Serif 4', Georgia, 'Noto Serif TC', serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E8E4D8; --paper:#171A16; --paper-raised:#1E221C;
+      --accent:#E08A3E; --accent-2:#5FA890;
+      --line:#33372E; --line-soft:#2A2E25; --muted:#9B9686;
+      --sem-ok:#6FBF98; --sem-warn:#D9AE4E; --sem-bad:#D98F8A;
+      --chip-bg:#232620;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E8E4D8; --paper:#171A16; --paper-raised:#1E221C;
+    --accent:#E08A3E; --accent-2:#5FA890;
+    --line:#33372E; --line-soft:#2A2E25; --muted:#9B9686;
+    --sem-ok:#6FBF98; --sem-warn:#D9AE4E; --sem-bad:#D98F8A;
+    --chip-bg:#232620;
+  }
+  *{box-sizing:border-box;}
+  html,body{ height:100%; }
+  body{
+    background:var(--paper); color:var(--ink); margin:0;
+    font-family:var(--font-serif); font-size:15.5px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--accent); }
+  code{ font-family:var(--font-mono); }
+  button{ font-family:var(--font-serif); }
+
+  header{
+    border-bottom:1px solid var(--line); background:var(--paper-raised);
+    padding:16px 26px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  .brand{ display:flex; align-items:baseline; gap:12px; }
+  .brand-mark{ font-family:var(--font-mono); font-size:11px; color:var(--accent); border:1px solid var(--accent); padding:2px 7px; letter-spacing:.06em; }
+  h1.brand-title{ font-family:var(--font-serif); font-size:21px; font-weight:700; margin:0; }
+  nav.tabs{ display:flex; gap:2px; }
+  nav.tabs button{
+    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.02em; text-transform:uppercase;
+    background:none; border:1px solid transparent; color:var(--muted); padding:8px 14px; cursor:pointer;
+  }
+  nav.tabs button:hover{ color:var(--ink); }
+  nav.tabs button.active{ color:var(--ink); border-color:var(--line); background:var(--paper); border-bottom-color:var(--paper); }
+
+  main{ max-width:1180px; margin:0 auto; padding:28px 24px 100px; }
+  .tabpanel{ display:none; }
+  .tabpanel.active{ display:block; }
+
+  h2{ font-family:var(--font-serif); font-size:23px; font-weight:700; margin:0 0 6px; }
+  h3{ font-size:16px; margin:0 0 10px; }
+  .sec-sub{ color:var(--muted); margin:0 0 22px; max-width:70ch; }
+
+  .statgrid{ display:grid; grid-template-columns:repeat(5,1fr); border:1px solid var(--line); margin-bottom:20px; }
+  @media (max-width:780px){ .statgrid{ grid-template-columns:repeat(2,1fr); } }
+  .statgrid div{ padding:18px 18px; border-left:1px solid var(--line); background:var(--paper-raised); }
+  .statgrid div:first-child{ border-left:none; }
+  .stat-num{ font-family:var(--font-mono); font-weight:700; font-size:26px; color:var(--accent); font-variant-numeric:tabular-nums; line-height:1; }
+  .stat-label{ font-size:12.5px; color:var(--muted); margin-top:8px; line-height:1.4; }
+
+  /* ── 事件統計/分類 ───────────────────────────── */
+  .eventstats{ border:1px solid var(--line); background:var(--paper-raised); padding:18px 20px; margin-bottom:28px; }
+  .eventstats-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+  .eventstats-head .note{ font-size:12px; color:var(--muted); max-width:60ch; }
+  .data-status{ font-family:var(--font-mono); font-size:10.5px; color:var(--muted); margin:8px 0 4px;
+    display:flex; gap:16px; flex-wrap:wrap; }
+  .data-status span b{ color:var(--ink); font-weight:600; }
+  .disclaimer-line{ font-size:12.5px; color:var(--sem-warn); margin:0 0 20px; max-width:74ch; line-height:1.5;
+    padding:8px 12px; border-left:2px solid var(--sem-warn); background:var(--paper-raised); }
+  .auto-score-tag{ font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--muted); }
+  .no-verdict{ font-size:11.5px; color:var(--muted); font-style:italic; }
+  .governance-note{ font-size:11.5px; color:var(--sem-warn); max-width:70ch; line-height:1.5; margin-top:6px; }
+
+  /* ── 巡查優先級 A–D ─────────────────────────────────────── */
+  .tier-badge{ display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono);
+    font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:2px;
+    white-space:nowrap; }
+  .tier-A{ background:var(--accent); color:#fff; }
+  .tier-B{ background:color-mix(in srgb, var(--sem-warn) 20%, transparent); color:var(--sem-warn); border:1px solid var(--sem-warn); }
+  .tier-C{ background:color-mix(in srgb, var(--sem-ok) 16%, transparent); color:var(--sem-ok); border:1px solid var(--sem-ok); }
+  .tier-D{ background:var(--paper-raised); color:var(--muted); border:1px solid var(--line); }
+  .tier-filter{ display:flex; gap:8px; margin:0 0 14px; flex-wrap:wrap; align-items:center; }
+  .tier-filter button{ font-family:var(--font-mono); font-size:11.5px; padding:5px 12px; border:1px solid var(--line);
+    background:var(--paper-raised); color:var(--ink); cursor:pointer; }
+  .tier-filter button.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .evidence-card{ border:1px solid var(--line); background:var(--paper-raised); padding:14px 18px; margin:0 0 16px; }
+  .evidence-card .ec-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .evidence-card .ec-action{ font-weight:600; font-size:14px; }
+  .evidence-card .ec-factors{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; font-size:12px; }
+  @media (max-width:780px){ .evidence-card .ec-factors{ grid-template-columns:repeat(2,1fr); } }
+  .evidence-card .ec-factor .ec-flabel{ color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; }
+  .evidence-card .ec-factor .ec-fvalue{ font-family:var(--font-mono); font-size:15px; margin-top:2px; }
+  .evidence-card .ec-factor .ec-fband{ font-size:11px; margin-top:1px; }
+  .stat-bars{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:780px){ .stat-bars{ grid-template-columns:1fr; } }
+  .bar-row{ display:grid; grid-template-columns:90px 1fr 46px; align-items:center; gap:8px; font-size:12.5px; margin:5px 0; }
+  .bar-row .lbl{ color:var(--muted); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-row .track{ height:10px; background:var(--line-soft); position:relative; }
+  .bar-row .fill{ position:absolute; inset:0; background:var(--accent); }
+  .bar-row .fill.alt{ background:var(--accent-2); }
+  .bar-row .n{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; text-align:right; }
+
+  /* ── 地圖 + 底圖切換 ───────────────────────────── */
+  .map-toolbar{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
+  .map-filters{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12.5px; }
+  .map-filters select{
+    font-family:var(--font-mono); font-size:12px; background:var(--paper-raised); color:var(--ink);
+    border:1px solid var(--line); padding:5px 8px;
+  }
+  #btn-toggle-events, #btn-fullscreen{
+    font-family:var(--font-mono); font-size:11.5px; background:var(--paper-raised); border:1px solid var(--line);
+    color:var(--muted); padding:6px 11px; cursor:pointer;
+  }
+  #btn-toggle-events.active{ color:var(--paper); background:var(--accent); border-color:var(--accent); }
+  #map-wrap{ position:relative; border:1px solid var(--line); margin-bottom:10px; }
+  #hotspot-map{ height:460px; background:var(--paper-raised); }
+  #map-wrap:fullscreen{ border:none; }
+  #map-wrap:fullscreen #hotspot-map{ height:100vh; }
+  .leaflet-popup-content-wrapper{ background:var(--paper-raised); color:var(--ink); font-family:var(--font-serif); border-radius:0; }
+  .leaflet-popup-content{ font-size:13px; margin:10px 12px; }
+  .leaflet-popup-tip{ background:var(--paper-raised); }
+
+  .baselayer-panel{
+    position:absolute; top:10px; right:10px; z-index:1000; background:var(--paper-raised);
+    border:1px solid var(--line); padding:10px 12px; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  .baselayer-panel .title{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px; }
+  .baselayer-panel label{ display:flex; align-items:center; gap:6px; padding:2px 0; cursor:pointer; white-space:nowrap; }
+
+  .coord-readout{
+    position:absolute; bottom:10px; left:10px; z-index:1000; background:var(--paper-raised);
+    border:1px solid var(--line); padding:5px 9px; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; align-items:center; gap:8px; cursor:pointer;
+  }
+  .coord-readout:hover{ color:var(--accent); }
+
+  .map-legend{ display:flex; gap:16px; align-items:center; margin:0 0 26px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
+  .map-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .pattern-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin:20px 0 32px; }
+  @media (max-width:780px){ .pattern-grid{ grid-template-columns:1fr; } }
+  .pattern{ background:var(--paper-raised); padding:20px 18px; }
+  .pattern .pt-eg{ font-family:var(--font-mono); font-size:10.5px; color:var(--accent); text-transform:uppercase; letter-spacing:.05em; }
+  .pattern h4{ font-size:15px; margin:9px 0 7px; }
+  .pattern p{ font-size:13.5px; color:var(--muted); margin:0; }
+
+  .rec-cols{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:20px; }
+  @media (max-width:900px){ .rec-cols{ grid-template-columns:1fr; } }
+  .rec-col h3{ font-size:16px; margin:0 0 4px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.03em; color:var(--accent-2); }
+  .rec-item{ padding:13px 0; border-top:1px solid var(--line-soft); }
+  .rec-item h4{ margin:0 0 4px; font-size:14px; }
+  .rec-item p{ margin:0; font-size:13px; color:var(--muted); }
+
+  .tablewrap{ overflow-x:auto; border:1px solid var(--line); }
+  table{ width:100%; border-collapse:collapse; font-size:14px; min-width:640px; }
+  thead th{
+    text-align:left; font-family:var(--font-mono); font-size:11px; text-transform:uppercase;
+    letter-spacing:.03em; color:var(--muted); padding:10px 13px; border-bottom:1px solid var(--line);
+    background:var(--paper-raised); white-space:nowrap; cursor:pointer; user-select:none;
+  }
+  thead th:hover{ color:var(--ink); }
+  thead th.sorted::after{ content:" ▾"; color:var(--accent); }
+  thead th.sorted.asc::after{ content:" ▴"; }
+  tbody td{ padding:10px 13px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+  tbody tr{ cursor:pointer; }
+  tbody tr:hover{ background:var(--paper-raised); }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.num, th.num{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; text-align:right; }
+  td.rank{ font-family:var(--font-mono); color:var(--muted); }
+  .score-cell{ display:flex; align-items:center; gap:8px; justify-content:flex-end; }
+  .score-track{ width:52px; height:5px; background:var(--line-soft); position:relative; }
+  .score-fill{ position:absolute; inset:0; background:var(--accent); }
+
+  .verdict{ display:inline-block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.02em; padding:2px 7px; border:1px solid currentColor; white-space:nowrap; }
+  .v-ok{ color:var(--sem-ok); }
+  .v-warn{ color:var(--sem-warn); }
+  .v-bad{ color:var(--sem-bad); }
+
+  .ledger-list{ display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:20px; }
+  .ledger-row{ background:var(--paper-raised); padding:16px 18px; cursor:pointer; display:grid; grid-template-columns:170px 130px 100px 1fr; gap:16px; align-items:start; }
+  @media (max-width:780px){ .ledger-row{ grid-template-columns:1fr; } }
+  .ledger-row:hover{ background:var(--chip-bg); }
+  .ledger-row .site{ font-weight:600; font-size:14px; }
+  .ledger-row .dates{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); margin-top:3px; }
+  .ledger-row .score{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; text-align:right; font-size:16px; }
+  .ledger-row .note{ font-size:13px; color:var(--muted); }
+
+  #detail{ display:none; margin-top:34px; border:1px solid var(--line); background:var(--paper-raised); }
+  #detail.open{ display:block; }
+  .detail-head{ display:flex; justify-content:space-between; align-items:flex-start; padding:16px 20px; border-bottom:1px solid var(--line); gap:14px; flex-wrap:wrap; }
+  .detail-head h3{ margin:0 0 4px; font-size:17px; }
+  .detail-meta{ font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+  .detail-close{ background:none; border:1px solid var(--line); color:var(--muted); font-family:var(--font-mono); font-size:12px; padding:5px 10px; cursor:pointer; flex:none; }
+  .detail-close:hover{ color:var(--ink); border-color:var(--ink); }
+  .pair-picker{ display:flex; gap:8px; flex-wrap:wrap; padding:12px 20px; border-bottom:1px solid var(--line-soft); }
+  .pair-picker button{
+    font-family:var(--font-mono); font-size:11.5px; background:var(--paper); border:1px solid var(--line);
+    color:var(--muted); padding:5px 10px; cursor:pointer; position:relative;
+  }
+  .pair-picker button.active{ color:var(--ink); border-color:var(--accent); }
+  .pair-picker button.dramatic::before{ content:"🔥 "; }
+  .panel-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); }
+  @media (max-width:900px){ .panel-grid{ grid-template-columns:repeat(2,1fr); } }
+  .panel-cell{ background:var(--paper); position:relative; }
+  .panel-cell img{ width:100%; display:block; cursor:zoom-in; }
+  .panel-cell .cap{ font-family:var(--font-mono); font-size:10.5px; color:var(--muted); padding:6px 10px; text-transform:uppercase; letter-spacing:.03em; }
+  .report-pin{
+    position:absolute; width:18px; height:18px; margin:-16px 0 0 -9px; pointer-events:none;
+    border:2px solid #ff3b30; border-radius:50% 50% 50% 0; transform:rotate(-45deg);
+    box-shadow:0 0 0 2px rgba(255,255,255,.85); z-index:5;
+  }
+
+  /* ── 變遷候選格：拖曳捲簾比對（前期 vs 變遷候選疊圖） ───────────────────── */
+  .swipe-wrap{ position:relative; overflow:hidden; touch-action:none; cursor:ew-resize; user-select:none; }
+  .swipe-wrap .swipe-base{ width:100%; display:block; cursor:ew-resize; }
+  .swipe-top{ position:absolute; inset:0 auto 0 0; width:50%; overflow:hidden; }
+  .swipe-top .swipe-top-img{ position:absolute; inset:0; max-width:none; display:block; cursor:ew-resize; }
+  .swipe-handle{
+    position:absolute; top:0; bottom:0; left:50%; width:0; margin-left:-1px;
+    border-left:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.35); pointer-events:none; z-index:4;
+  }
+  .swipe-grip{
+    position:absolute; top:50%; left:50%; width:30px; height:30px; margin:-15px 0 0 -15px;
+    background:#fff; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.4);
+    display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink);
+  }
+  .swipe-zoom-btn{
+    position:absolute; top:8px; right:8px; z-index:6; width:30px; height:30px; border-radius:50%;
+    background:rgba(20,20,16,.55); color:#fff; border:1px solid rgba(255,255,255,.6);
+    font-size:14px; cursor:zoom-in; display:flex; align-items:center; justify-content:center;
+  }
+  .swipe-zoom-btn:hover{ background:rgba(184,92,30,.85); }
+  /* 燈箱內放大版拖曳比對：不強制滿版，讓 wrap 依內容（base img 的縮放後尺寸）自然收縮，
+     同時受 max-width/max-height 限制不超出視窗——img 用 max-width/height + width:auto 讓
+     瀏覽器保比例縮放，swipe-wrap 本身用 inline-block 讓寬度跟著 img 走，供 initSwipe() 用
+     wrap.clientWidth 量出正確寬度。 */
+  .lightbox-swipe-wrap{ display:inline-block; max-width:94vw; max-height:88vh; cursor:ew-resize; }
+  .lightbox-swipe-wrap .swipe-base{ width:auto; max-width:94vw; max-height:88vh; display:block; }
+  /* .lightbox-swipe-wrap 上面那條 display:inline-block 規則若不特別處理，會蓋掉瀏覽器對
+     [hidden] 屬性的預設 display:none（author 規則一律贏過 user-agent 規則，與選擇器優先度
+     無關）——這裡用 #id[hidden] 明確加回，否則 JS 設 hidden 屬性會靜默失效、圖仍然顯示。 */
+  #lightbox-swipe[hidden]{ display:none; }
+  .detail-foot{ padding:14px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); }
+  .gnote{ max-width:60ch; }
+  .detail-loading{ padding:40px; text-align:center; color:var(--muted); font-family:var(--font-mono); font-size:13px; }
+
+  /* ── 燈箱（多期歷史影像放大） ───────────────────────────── */
+  #lightbox{
+    display:none; position:fixed; inset:0; background:rgba(10,10,8,.92); z-index:5000;
+    align-items:center; justify-content:center; cursor:zoom-out; flex-direction:column; gap:12px;
+  }
+  #lightbox.open{ display:flex; }
+  #lightbox img{ max-width:94vw; max-height:88vh; box-shadow:0 4px 30px rgba(0,0,0,.5); }
+  #lightbox .lb-cap{ font-family:var(--font-mono); font-size:12px; color:#E8E4D8; }
+
+  footer{
+    max-width:1180px; margin:60px auto 0; padding:20px 24px; border-top:1px solid var(--line);
+    font-family:var(--font-mono); font-size:11.5px; color:var(--muted);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-mark">🛰️ OBSERVATORY</span>
+    <h1 class="brand-title">地景複發熱點觀測站</h1>
+  </div>
+  <nav class="tabs">
+    <button data-tab="dashboard" class="active">觀測站首頁</button>
+    <button data-tab="hotspots">熱點總覽</button>
+    <button data-tab="ledger">深度驗證台帳</button>
+    <button data-tab="findings">發現與建言</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ── 首頁 ───────────────────────────── -->
+  <section id="tab-dashboard" class="tabpanel active">
+    <h2>從 7 萬 6 千筆通報到 100 個真正複發的地點</h2>
+    <p class="sec-sub">依「不同年份出現次數」而非照片總數，從水保署全台災害影像通報中篩出長期地質不穩定熱點，再用十年以上衛星歷史影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
+
+    <div class="statgrid">
+      <div><div class="stat-num">76,773</div><div class="stat-label">全台去重災害事件紀錄（自建網格掃描突破 API 500 筆上限）</div></div>
+      <div><div class="stat-num">100</div><div class="stat-label">依複發年數重新排序後的長期不穩定熱點</div></div>
+      <div><div class="stat-num" id="stat-ledger-n">—</div><div class="stat-label">已完成完整人工目視覆核的熱點（深度驗證台帳）</div></div>
+      <div><div class="stat-num" id="stat-ok-n">—</div><div class="stat-label">同時「對位成功＋熱區集中」乾淨通過的熱點</div></div>
+      <div><div class="stat-num" id="stat-tier-a-n" style="color:var(--accent);">—</div><div class="stat-label">巡查優先級 <strong>A 級（優先現勘）</strong>——依複發性／近期變遷／地形起伏／資料信心自動分級</div></div>
+    </div>
+    <div class="data-status" id="data-status"></div>
+    <p class="disclaimer-line">此站所有自動化分數皆為<strong>影像變遷候選排序</strong>用途，不代表災害已確定發生或其嚴重程度——僅
+      11 個熱點經過完整人工目視覆核（見「深度驗證台帳」），其餘 89 個熱點僅有自動篩選分數，尚待覆核。</p>
+
+    <div class="eventstats">
+      <div class="eventstats-head">
+        <h3 style="margin:0;">76,773 筆事件統計與分類</h3>
+        <span class="note" id="events-note"></span>
+      </div>
+      <div class="stat-bars">
+        <div><div style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">依事件分類（PhotoType）</div><div id="bars-phototype"></div></div>
+        <div><div style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">依資料建檔年份</div><div id="bars-year"></div></div>
+      </div>
+    </div>
+
+    <div class="map-toolbar">
+      <div class="map-filters">
+        <label style="font-family:var(--font-mono); font-size:11px; color:var(--muted);">篩選：</label>
+        <select id="filter-phototype"><option value="">全部分類</option></select>
+        <select id="filter-year"><option value="">全部年份</option></select>
+        <button id="btn-toggle-events">🗺️ 顯示原始通報點（≤3000筆）</button>
+      </div>
+      <button id="btn-fullscreen">⛶ 全螢幕地圖</button>
+    </div>
+
+    <div id="map-wrap">
+      <div id="hotspot-map"></div>
+      <div class="baselayer-panel" id="baselayer-panel"></div>
+      <div class="coord-readout" id="coord-readout" title="點一下複製座標">
+        <span id="coord-text">移動滑鼠查看座標</span> <span>📋</span>
+      </div>
+    </div>
+    <div class="map-legend">
+      <span><span class="dot" style="background:#3E7A5C;"></span>已深度驗證・可信</span>
+      <span><span class="dot" style="background:#9C7A1E;"></span>已深度驗證・需複查</span>
+      <span><span class="dot" style="background:#7A3A38;"></span>已深度驗證・偽陽性/不可信</span>
+      <span><span class="dot" style="background:#B85C1E;"></span>僅完成快篩，尚未深度驗證</span>
+      <span id="events-truncate-note" style="margin-left:auto;"></span>
+    </div>
+
+    <h2 style="margin-top:44px;">三種地貌演變型態</h2>
+    <p class="sec-sub">把政府通報紀錄與衛星影像實際變化交叉比對後，同一個「高複發」標籤下，背後的真實狀態可能完全不同：</p>
+    <div class="pattern-grid">
+      <div class="pattern">
+        <div class="pt-eg">TYPE A</div>
+        <h4>漸進累積型</h4>
+        <p>地貌隨年份緩慢擴大變化，裸露地逐年擴張，代表持續惡化中、尚未穩定。需要持續監控，優先排入定期複核名單。</p>
+      </div>
+      <div class="pattern">
+        <div class="pt-eg">TYPE B</div>
+        <h4>事後介入型</h4>
+        <p>事件年之後出現新生工程特徵（擋土結構、整地、植生復育）。案例：六龜、松鶴——代表已有工程處置且可能已見效，可用衛星影像追蹤成效。</p>
+      </div>
+      <div class="pattern">
+        <div class="pt-eg">TYPE C</div>
+        <h4>通報密集但地貌穩定型</h4>
+        <p>通報紀錄多，但建物/地形輪廓十年間大致不變。案例：林肯大郡——通常代表風險關注度高而非持續惡化，可能是早期整治已成功穩定化。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 熱點總覽 ───────────────────────────── -->
+  <section id="tab-hotspots" class="tabpanel">
+    <h2>Top 100 熱點總覽</h2>
+    <p class="sec-sub">點欄名可排序，點一列載入該熱點目前已有的變遷比對面板（優先深度 25 期資料，沒有才用快篩 8 期資料）。「巡查優先級」由複發年數、近期變遷分數、地形起伏與資料信心四項透明規則算出，點一列可看完整拆解（詳見詳情面板頂端的證據卡）。</p>
+    <div class="tier-filter" id="tier-filter">
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase;">依優先級篩選</span>
+      <button data-tier="" class="active">全部</button>
+      <button data-tier="A">A 優先現勘</button>
+      <button data-tier="B">B 建議複核</button>
+      <button data-tier="C">C 持續監測</button>
+      <button data-tier="D">D 資料待確認</button>
+    </div>
+    <div class="tablewrap">
+      <table id="hotspots-table">
+        <thead>
+          <tr>
+            <th class="num" data-key="rank">名次</th>
+            <th data-key="location">地點</th>
+            <th class="num" data-key="n_distinct_years">複發年數</th>
+            <th data-key="method">比對方法</th>
+            <th class="num" data-key="change_score" title="自動篩選/排序用分數，非人工驗證結果——僅供排序，不代表災害確定性或嚴重度">自動篩選分數</th>
+            <th data-key="tier">巡查優先級</th>
+            <th>台帳</th>
+          </tr>
+        </thead>
+        <tbody id="hotspots-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 深度驗證台帳 ───────────────────────────── -->
+  <section id="tab-ledger" class="tabpanel">
+    <h2>深度驗證台帳——為什麼不能只信一個分數</h2>
+    <p class="sec-sub">11 個熱點做完整目視覆核，結果只有 1 個同時「對位成功」且「視覺確認為乾淨集中訊號」。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
+    <div class="ledger-list" id="ledger-list"></div>
+    <p style="margin-top:20px; font-size:13px; color:var(--muted); max-width:70ch;">已知系統性陷阱清單：<strong>瀰漫式雜訊灌水</strong>（季節/紋理差異拉高分數卻無集中訊號）、<strong>對位失敗偽陽性</strong>（兩期框取範圍不一致被誤讀成地貌劇變）、<strong>劣質模糊基準影像</strong>（GE 早期渲染在特定日期會退化成無法使用的模糊佔位圖）、<strong>雲影誤判</strong>、<strong>跨世代影像色調差異灌水</strong>（航照 vs 現代衛星色調不同）。每一項都是在真實資料上發現並記錄下來的，可作為未來任何政府單位導入類似比對工具時的現成 QC 檢查清單。</p>
+  </section>
+
+  <!-- ── 發現與建言 ───────────────────────────── -->
+  <section id="tab-findings" class="tabpanel">
+    <h2>對政府單位的建言</h2>
+    <div class="rec-cols">
+      <div class="rec-col">
+        <h3>政府</h3>
+        <div class="rec-item"><h4>先篩後查</h4><p>對六龜、和平、信義這類人力難以頻繁到達的山區熱點，用歷史影像變化偵測把有限的地面稽查資源導向真正在變化中的地點。</p></div>
+        <div class="rec-item"><h4>依複發年數分級監控</h4><p>複發 ≥5 年的熱點列為高優先，搭配每半年至一年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據。</p></div>
+        <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站的深度驗證台帳就是現成範本——純自動化分數近半數在目視覆核後被判定不可信，任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
+        <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜、松鶴案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
+      </div>
+      <div class="rec-col">
+        <h3>民眾</h3>
+        <div class="rec-item"><h4>可查詢的複發熱點地圖</h4><p>登山、露營、自駕行程規劃時，查詢路線是否經過長期複發地質不穩定地點，強降雨或颱風警報期間據此決定是否延後或改道。</p></div>
+        <div class="rec-item"><h4>更有感的社區溝通素材</h4><p>「這裡是近 6 年內 5 個不同年份都有事件通報的熱點」比「這裡曾經發生過一次土石流」更能促成長期警覺，也可作為申請防災補助的具體依據。</p></div>
+        <div class="rec-item"><h4>結合雨量的區域性提醒</h4><p>已知複發熱點清單在特定降雨強度/延時門檻觸發時，可做比全境廣播式警報更精準的定點提醒。</p></div>
+      </div>
+      <div class="rec-col">
+        <h3>公共政策</h3>
+        <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；衛星歷史影像可回溯十年以上、任意選比對時間窗，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
+        <div class="rec-item"><h4>均質覆蓋</h4><p>現場照片的分佈天生受人力可達性影響；衛星視角是全境等密度覆蓋，能補足偏遠、通報稀少但實際地貌可能已在變化的資料缺口。</p></div>
+        <div class="rec-item"><h4>可量化、可比較</h4><p>SSIM 差異分數＋對位品質指標，提供跨地點、跨年份的統一量化基礎，取代仰賴文字敘述的人工主觀判斷。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 共用詳情面板 ───────────────────────────── -->
+  <div id="detail">
+    <div class="detail-head">
+      <div>
+        <h3 id="detail-title">—</h3>
+        <div class="detail-meta" id="detail-meta"></div>
+      </div>
+      <button class="detail-close" id="detail-close">✕ 關閉</button>
+    </div>
+    <div id="evidence-card-slot"></div>
+    <div class="pair-picker" id="pair-picker"></div>
+    <div id="detail-body"><div class="detail-loading">選擇左側熱點或地圖上的點以載入影像…</div></div>
+    <div class="detail-foot" id="detail-foot" style="display:none;">
+      <span class="gnote">候選區塊為自動化建議、非已驗證事實；紅色標記為該熱點通報座標，非精確災害範圍。</span>
+      <a id="ge-trace-link" href="#" target="_blank" rel="noopener">🌐 回溯 Google Earth Web →</a>
+    </div>
+  </div>
+
+</main>
+
+<div id="lightbox">
+  <img id="lightbox-img" src="" alt="">
+  <div class="swipe-wrap lightbox-swipe-wrap" id="lightbox-swipe" hidden>
+    <img class="swipe-base" src="" draggable="false" alt="變遷候選疊圖">
+    <div class="swipe-top">
+      <img class="swipe-top-img" src="" draggable="false" alt="前期影像">
+    </div>
+    <div class="swipe-handle"><div class="swipe-grip">⇄</div></div>
+  </div>
+  <div class="lb-cap" id="lightbox-cap"></div>
+</div>
+
+<footer>
+  <span>地景複發熱點觀測站 · 台灣專用</span>
+  <span>資料截至 2026-09-04 · 公開展示版：11 個熱點含完整比對面板，其餘 89 個熱點提供中繼資料與巡查優先級</span>
+</footer>
+
+<script>
+const APPLE_ENABLED = {{ 'true' if apple_enabled else 'false' }};
+const VERDICT_COLOR = { ok: "#3E7A5C", warn: "#9C7A1E", bad: "#7A3A38" };
+const VERDICT_LABEL_CLASS = { ok: "v-ok", warn: "v-warn", bad: "v-bad" };
+
+let HOTSPOTS = [];
+let LEDGER = [];
+let LEDGER_BY_RANK = {};
+let PRIORITY_BY_RANK = {};
+let sortKey = "rank", sortAsc = true;
+let tierFilter = "";
+
+const TIER_ACTION = { A: "優先現勘", B: "建議複核", C: "持續監測", D: "資料待確認" };
+const TIER_EXPLAIN = {
+  A: "歷史複發次數高、近期有明顯且可信的變遷證據——建議優先派工現勘或無人機複核。",
+  B: "有變遷候選，但資料信心不足以直接判定（尚未人工覆核、或自動對位不確定）——建議先補人工判讀再決定是否派工。",
+  C: "歷史複發次數高，但近期影像未見可靠的變遷證據——建議維持定期監測，暫不需優先派工。",
+  D: "自動篩選分數或對位資訊不足，無法支持任何判斷——不代表風險較低，只代表目前資料不足以判讀。",
+};
+function tierBadgeHtml(rank){
+  const p = PRIORITY_BY_RANK[rank];
+  if(!p) return "";
+  return `<span class="tier-badge tier-${p.tier}" title="${TIER_EXPLAIN[p.tier]}">${p.tier}｜${p.tier_label}</span>`;
+}
+
+// 高=值得注意（三個風險類因子：複發/變遷/地形起伏，高→紅）；資料信心的極性相反（高信心=好→綠）。
+const RISK_BAND_CLASS = { "高": "v-bad", "中": "v-warn", "低": "v-ok", "未知": "" };
+const CONF_BAND_CLASS = { "高": "v-ok", "中": "v-warn", "低": "v-bad", "未知": "" };
+function renderEvidenceCard(rank){
+  const slot = document.getElementById("evidence-card-slot");
+  const p = PRIORITY_BY_RANK[rank];
+  if(!p){ slot.innerHTML = ""; return; }
+  const f = p.factors;
+  const relief = f.terrain_relief_m.value != null ? `${f.terrain_relief_m.value} m` : "尚未計算";
+  const score = f.recent_change.value != null ? f.recent_change.value.toFixed(3) : "—（無可用配對資料）";
+  const confSourceLabel = { human: "人工覆核", auto_aligned: "自動對位良好", auto_uncertain: "自動對位不確定", no_data: "無可用配對資料" }[f.confidence.source] || "";
+  slot.innerHTML = `
+    <div class="evidence-card">
+      <div class="ec-head">
+        <span class="tier-badge tier-${p.tier}">${p.tier}｜${p.tier_label}</span>
+        <span class="ec-action">${TIER_EXPLAIN[p.tier]}</span>
+      </div>
+      <div class="ec-factors">
+        <div class="ec-factor"><div class="ec-flabel">複發年數</div><div class="ec-fvalue">${f.recurrence.value ?? "—"}</div><div class="ec-fband ${RISK_BAND_CLASS[f.recurrence.band]}">${f.recurrence.band}</div></div>
+        <div class="ec-factor"><div class="ec-flabel">近期變遷分數</div><div class="ec-fvalue">${score}</div><div class="ec-fband ${RISK_BAND_CLASS[f.recent_change.band]}">${f.recent_change.band}</div></div>
+        <div class="ec-factor"><div class="ec-flabel">地形起伏（0.3km 內）</div><div class="ec-fvalue">${relief}</div><div class="ec-fband ${RISK_BAND_CLASS[f.terrain_relief_m.band]}">${f.terrain_relief_m.band}</div></div>
+        <div class="ec-factor"><div class="ec-flabel">資料信心</div><div class="ec-fvalue" style="font-size:12px;">${confSourceLabel}</div><div class="ec-fband ${CONF_BAND_CLASS[f.confidence.band]}">${f.confidence.band}</div></div>
+      </div>
+    </div>`;
+}
+
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+// ── 分頁切換 ──────────────────────────────────────────
+document.querySelectorAll("nav.tabs button").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
+    if(btn.dataset.tab === "dashboard") setTimeout(()=> map && map.invalidateSize(), 50);
+  };
+});
+
+// ── 底圖（Google/Apple/Bing/ESRI/NLSC 地形圖/NLSC 正射影像，不含百度/騰訊）──────
+function toQuadKey(x, y, z){
+  let q = "";
+  for(let i = z; i > 0; i--){
+    let digit = 0; const mask = 1 << (i - 1);
+    if((x & mask) !== 0) digit++;
+    if((y & mask) !== 0) digit += 2;
+    q += digit;
+  }
+  return q;
+}
+const BingLayer = L.TileLayer.extend({
+  getTileUrl: function(c){
+    return "https://ecn.t" + ((c.x + c.y) % 4) + ".tiles.virtualearth.net/tiles/a" + toQuadKey(c.x, c.y, c.z) + ".jpeg?g=1";
+  }
+});
+
+const BASE_LAYER_DEFS = [
+  { key:"nlsc_topo", label:"國土測繪中心 1/50000 地形圖", make: ()=> L.tileLayer("/api/tile/nlsc_topo/{z}/{x}/{y}", { maxZoom:19, maxNativeZoom:17, attribution:"內政部國土測繪中心" }) },
+  { key:"nlsc_photo", label:"台灣航照正射影像", make: ()=> L.tileLayer("/api/tile/nlsc_photo/{z}/{x}/{y}", { maxZoom:20, maxNativeZoom:20, attribution:"內政部國土測繪中心" }) },
+  { key:"osm", label:"OpenStreetMap", make: ()=> L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { subdomains:["a","b","c"], maxZoom:19, attribution:"© OpenStreetMap contributors" }) },
+  { key:"google", label:"Google 衛星", make: ()=> L.tileLayer("https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", { subdomains:["mt0","mt1","mt2","mt3"], maxZoom:21, attribution:"Imagery © Google" }) },
+  { key:"esri", label:"ESRI World Imagery", make: ()=> L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom:21, maxNativeZoom:19, attribution:"Imagery © Esri, Maxar" }) },
+  { key:"bing", label:"Bing 衛星", make: ()=> new BingLayer("", { maxZoom:21, maxNativeZoom:20, attribution:"Imagery © Microsoft Bing Maps" }) },
+  { key:"apple", label:"Apple 衛星", make: ()=> L.tileLayer("/api/tile/apple/{z}/{x}/{y}", { maxZoom:21, maxNativeZoom:20, attribution:"Imagery © Apple" }), needsApple:true },
+];
+
+let map, baseLayerObjs = {}, activeBaseKey = "nlsc_topo";
+let contourLayer = null, contourVisible = false;
+
+function initMap(){
+  // preferCanvas：雙圈標記讓事件疊點數量翻倍（上限 3000 筆 → 最多 6000 個圓形物件），
+  // Canvas renderer 在這個量級比預設 SVG renderer 流暢很多。
+  map = L.map("hotspot-map", { zoomControl:true, scrollWheelZoom:false, preferCanvas:true }).setView([23.6,120.9], 8);
+  L.control.scale({ metric:true, imperial:false, position:"bottomright" }).addTo(map);
+
+  const panel = document.getElementById("baselayer-panel");
+  panel.innerHTML = '<div class="title">底圖</div>';
+  BASE_LAYER_DEFS.forEach(def=>{
+    if(def.needsApple && !APPLE_ENABLED) return;
+    baseLayerObjs[def.key] = def.make();
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.dataset.key = def.key; cb.className = "baselayer-radio";
+    cb.checked = (def.key === activeBaseKey);
+    cb.onchange = () => switchBaseLayer(def.key);
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(def.label));
+    panel.appendChild(label);
+  });
+  baseLayerObjs[activeBaseKey].addTo(map);
+
+  initContourToggle(panel);
+
+  document.getElementById("btn-fullscreen").onclick = () => {
+    const el = document.getElementById("map-wrap");
+    if(!document.fullscreenElement) el.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  };
+  document.addEventListener("fullscreenchange", () => setTimeout(()=> map.invalidateSize(), 80));
+
+  initMouseCoordReadout();
+}
+
+function switchBaseLayer(key){
+  if(key === activeBaseKey) return;
+  map.removeLayer(baseLayerObjs[activeBaseKey]);
+  activeBaseKey = key;
+  baseLayerObjs[key].addTo(map);
+  // 只同步「底圖」單選群組的 checkbox（class=baselayer-radio）——原本用
+  // `#baselayer-panel input[type=checkbox]` 選到面板內所有 checkbox，
+  // 連「疊圖」區塊的等高線 checkbox 也一併掃到，因其無 dataset.key
+  // 導致每次切底圖都被誤設成 unchecked（等高線圖層其實仍在地圖上，
+  // 只是勾選框顯示跟實際狀態不同步，使用者會被誤導成「已關閉」）。
+  document.querySelectorAll("#baselayer-panel input.baselayer-radio").forEach(cb=>{
+    cb.checked = (cb.dataset.key === key);
+  });
+}
+
+// ── 等高線疊圖（Cesium World Terrain，可開關）──────────────────────────
+// 非同步查可用性，不卡頁面首次渲染（同 Apple 底圖走後端代理不同，這裡另外走一次
+// 專屬 /api/contours_status，因為 Cesium ion 的驗證往返可能比 Apple bootstrap 慢）。
+// 找不到 token／API 打不通時直接不顯示開關（fail-closed：沒有能力就不假裝有）。
+async function initContourToggle(panel){
+  let status;
+  try{ status = await api("/api/contours_status"); } catch(e){ return; }
+  if(!status.available) return;
+
+  const divider = document.createElement("div");
+  divider.className = "title";
+  divider.style.marginTop = "8px";
+  divider.textContent = "疊圖";
+  panel.appendChild(divider);
+
+  const label = document.createElement("label");
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.onchange = () => {
+    contourVisible = cb.checked;
+    if(contourVisible){
+      // zIndex 明定：同一 tilePane 內若不設，Leaflet 純靠 DOM 插入順序疊圖——
+      // 開啟等高線當下雖疊在當時的底圖之上，但之後切換底圖會把新底圖的
+      // tile container 重新 append 到 pane 尾端、蓋過等高線（checkbox 仍勾著、
+      // 圖層仍在地圖上，只是被不透明的底圖蓋住，肉眼看起來像「消失」）。
+      // 給正值 zIndex 讓等高線在 CSS 疊圖順序上恆高於未設 zIndex（auto）的底圖，
+      // 不受切換底圖的 DOM 順序影響。
+      // opacity 拉到 1：線條本身的可見度已改由 PNG 的 per-pixel alpha 通道控制
+      // （見 app.py _render_contour_tile 的白色暈邊+提高 alpha），圖層再乘一層
+      // 0.85 只會讓好不容易調粗調亮的線又整體變淡，沒有必要。
+      contourLayer = contourLayer || L.tileLayer("/api/contours/{z}/{x}/{y}", {
+        minZoom: 11, maxZoom: 21, maxNativeZoom: 15, opacity: 1, zIndex: 650,
+        attribution: "Terrain © Cesium World Terrain（非商用）"
+      });
+      contourLayer.addTo(map);
+    } else if(contourLayer){
+      map.removeLayer(contourLayer);
+    }
+  };
+  label.appendChild(cb);
+  label.appendChild(document.createTextNode("🏔️ 等高線（z11–15）"));
+  panel.appendChild(label);
+
+  if(!status.commercial_ok){
+    const note = document.createElement("div");
+    note.style.cssText = "font-size:10px; color:var(--muted); max-width:170px; margin-top:2px; line-height:1.4;";
+    note.textContent = "免費層級地形資料，非商用";
+    panel.appendChild(note);
+  }
+}
+
+// ── 滑鼠座標顯示 + 點一下複製 ────────────────────────────
+function initMouseCoordReadout(){
+  const box = document.getElementById("coord-readout");
+  const text = document.getElementById("coord-text");
+  let last = null;
+  map.on("mousemove", (e)=>{
+    last = e.latlng;
+    text.textContent = `${e.latlng.lat.toFixed(6)}, ${e.latlng.lng.toFixed(6)}`;
+  });
+  map.on("mouseout", ()=>{ text.textContent = "移動滑鼠查看座標"; });
+  box.onclick = async ()=>{
+    if(!last) return;
+    const s = `${last.lat.toFixed(6)}, ${last.lng.toFixed(6)}`;
+    try{ await navigator.clipboard.writeText(s); text.textContent = "已複製：" + s; }
+    catch(e){ window.prompt("複製座標：", s); }
+  };
+}
+
+// ── 76,773 事件統計/分類 + 篩選/疊點 ─────────────────────
+let eventsLayer = null, eventsVisible = false;
+
+async function loadEventStats(){
+  const stats = await api("/api/events/stats");
+  document.getElementById("events-note").textContent = stats.note;
+
+  const maxPt = Math.max(...stats.by_photo_type.map(x=>x.count));
+  document.getElementById("bars-phototype").innerHTML = stats.by_photo_type.map(x=>`
+    <div class="bar-row"><div class="lbl">${x.label}</div><div class="track"><div class="fill" style="width:${x.count/maxPt*100}%"></div></div><div class="n">${x.count.toLocaleString()}</div></div>
+  `).join("");
+  const maxYr = Math.max(...stats.by_year.map(x=>x.count));
+  document.getElementById("bars-year").innerHTML = stats.by_year.map(x=>`
+    <div class="bar-row"><div class="lbl">${x.year||"未知"}</div><div class="track"><div class="fill alt" style="width:${x.count/maxYr*100}%"></div></div><div class="n">${x.count.toLocaleString()}</div></div>
+  `).join("");
+
+  const ptSel = document.getElementById("filter-phototype");
+  stats.by_photo_type.forEach(x=>{
+    const o = document.createElement("option"); o.value = x.code; o.textContent = `${x.label} (${x.count.toLocaleString()})`;
+    ptSel.appendChild(o);
+  });
+  const yrSel = document.getElementById("filter-year");
+  stats.by_year.forEach(x=>{
+    const o = document.createElement("option"); o.value = x.year; o.textContent = `${x.year} (${x.count.toLocaleString()})`;
+    yrSel.appendChild(o);
+  });
+}
+
+async function refreshEventsLayer(){
+  if(eventsLayer){ map.removeLayer(eventsLayer); eventsLayer = null; }
+  if(!eventsVisible) { document.getElementById("events-truncate-note").textContent = ""; return; }
+  const pt = document.getElementById("filter-phototype").value;
+  const yr = document.getElementById("filter-year").value;
+  const params = new URLSearchParams({ limit: 3000 });
+  if(pt) params.set("photo_type", pt);
+  if(yr) params.set("year", yr);
+  const data = await api("/api/events?" + params.toString());
+  // 雙圈標記：外圈白色暈邊（無論疊在深色森林或淺色地形圖底圖上都保持高對比、不會被背景吃掉）
+  // ＋內圈實心色點精準定位，比單一小圓點在任何底圖上都更醒目。外圈設 interactive:false，
+  // 避免疊在內圈點擊熱區上互相干擾。
+  const markers = [];
+  data.points.filter(p=>p.lat!=null && p.lon!=null).forEach(p=>{
+    markers.push(L.circleMarker([p.lat, p.lon], {
+      radius:7, color:"#ffffff", weight:2, opacity:.95, fillColor:"#ffffff", fillOpacity:.25, interactive:false
+    }));
+    markers.push(L.circleMarker([p.lat, p.lon], {
+      radius:3, color:"#7A3212", weight:1, fillColor:"#B85C1E", fillOpacity:.95
+    }));
+  });
+  eventsLayer = L.layerGroup(markers).addTo(map);
+  document.getElementById("events-truncate-note").textContent =
+    `顯示 ${data.returned.toLocaleString()} / 符合條件共 ${data.total_matched.toLocaleString()} 筆` +
+    (data.truncated ? "（已裁切，請縮小篩選範圍查看完整分佈）" : "");
+}
+
+document.getElementById("btn-toggle-events").onclick = (e)=>{
+  eventsVisible = !eventsVisible;
+  e.target.classList.toggle("active", eventsVisible);
+  refreshEventsLayer();
+};
+document.getElementById("filter-phototype").onchange = refreshEventsLayer;
+document.getElementById("filter-year").onchange = refreshEventsLayer;
+
+// ── 首頁熱點地圖標記 ──────────────────────────────────
+function markerColor(h){
+  const l = LEDGER_BY_RANK[h.rank];
+  if(l) return VERDICT_COLOR[l.verdict] || "#666";
+  return "#B85C1E";
+}
+function renderMap(){
+  HOTSPOTS.forEach(h=>{
+    if(h.lat == null || h.lon == null) return;
+    const color = markerColor(h);
+    const m = L.circleMarker([h.lat, h.lon], {
+      radius: 5, color: color, fillColor: color, fillOpacity: 0.75, weight: 1.5
+    }).addTo(map);
+    m.bindPopup(`<strong>#${h.rank} ${h.county||""}${h.district||""}</strong><br>複發 ${h.n_distinct_years||"?"} 年 · 自動篩選分數 ${h.change_score ?? "—"}`);
+    m.on("click", ()=> openDetail(h.rank));
+  });
+}
+
+function renderStats(){
+  document.getElementById("stat-ledger-n").textContent = LEDGER.length;
+  document.getElementById("stat-ok-n").textContent = LEDGER.filter(l=>l.verdict==="ok").length + "/" + LEDGER.length;
+  const nA = Object.values(PRIORITY_BY_RANK).filter(p=>p.tier==="A").length;
+  document.getElementById("stat-tier-a-n").textContent = nA;
+}
+
+// ── 熱點總覽表格 ──────────────────────────────────────
+function methodLabel(m){ return m === "deephist25" ? "深度 25 期" : m === "quickscan8" ? "快篩 8 期" : (m||"—"); }
+
+function sortedHotspots(){
+  let arr = [...HOTSPOTS];
+  if(tierFilter) arr = arr.filter(h => (PRIORITY_BY_RANK[h.rank]||{}).tier === tierFilter);
+  arr.sort((a,b)=>{
+    let va, vb;
+    if(sortKey === "location"){ va = (a.county||"")+(a.district||""); vb = (b.county||"")+(b.district||""); }
+    else if(sortKey === "tier"){ va = (PRIORITY_BY_RANK[a.rank]||{}).tier || "Z"; vb = (PRIORITY_BY_RANK[b.rank]||{}).tier || "Z"; }
+    else { va = a[sortKey]; vb = b[sortKey]; }
+    if(va == null) va = -Infinity; if(vb == null) vb = -Infinity;
+    if(typeof va === "string") return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return sortAsc ? va - vb : vb - va;
+  });
+  return arr;
+}
+
+function renderHotspotsTable(){
+  const tbody = document.getElementById("hotspots-tbody");
+  tbody.innerHTML = "";
+  for(const h of sortedHotspots()){
+    const tr = document.createElement("tr");
+    const l = LEDGER_BY_RANK[h.rank];
+    const scorePct = h.change_score != null ? Math.round(h.change_score*100) : 0;
+    tr.innerHTML = `
+      <td class="rank num">${h.rank}</td>
+      <td>${h.county||""}${h.district||""}</td>
+      <td class="num">${h.n_distinct_years ?? "—"}</td>
+      <td>${methodLabel(h.method)}</td>
+      <td class="num"><span class="score-cell"><span class="score-track"><span class="score-fill" style="width:${scorePct}%"></span></span>${h.change_score != null ? h.change_score.toFixed(3) : "—"}</span></td>
+      <td>${tierBadgeHtml(h.rank)}</td>
+      <td>${l ? `<span class="verdict ${VERDICT_LABEL_CLASS[l.verdict]}">${l.verdict_label}</span>` : '<span class="no-verdict">尚未人工覆核</span>'}</td>
+    `;
+    tr.onclick = () => openDetail(h.rank);
+    tbody.appendChild(tr);
+  }
+}
+
+document.querySelectorAll("#hotspots-table thead th[data-key]").forEach(th=>{
+  th.onclick = () => {
+    const key = th.dataset.key;
+    if(sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = (key === "rank"); }
+    document.querySelectorAll("#hotspots-table thead th").forEach(x=>x.classList.remove("sorted","asc"));
+    th.classList.add("sorted"); if(sortAsc) th.classList.add("asc");
+    renderHotspotsTable();
+  };
+});
+
+document.querySelectorAll("#tier-filter button").forEach(btn=>{
+  btn.onclick = () => {
+    tierFilter = btn.dataset.tier;
+    document.querySelectorAll("#tier-filter button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderHotspotsTable();
+  };
+});
+
+// ── 深度驗證台帳 ──────────────────────────────────────
+function renderLedger(){
+  const list = document.getElementById("ledger-list");
+  list.innerHTML = "";
+  for(const l of LEDGER){
+    const row = document.createElement("div");
+    row.className = "ledger-row";
+    row.innerHTML = `
+      <div><div class="site">#${l.rank} ${l.name}</div><div class="dates">${l.date_a} → ${l.date_b}</div></div>
+      <div><span class="verdict ${VERDICT_LABEL_CLASS[l.verdict]}">${l.verdict_label}</span></div>
+      <div class="score"><span class="auto-score-tag">自動分數</span> ${l.score.toFixed(3)}</div>
+      <div class="note">${l.note}</div>
+    `;
+    row.onclick = () => openDetail(l.rank, l.site, l.date_a, l.date_b);
+    list.appendChild(row);
+  }
+}
+
+// ── 詳情面板 ──────────────────────────────────────────
+let currentRank = null;
+
+async function openDetail(rank, preferSite, preferA, preferB){
+  document.getElementById("detail").classList.add("open");
+  document.getElementById("detail-body").innerHTML = '<div class="detail-loading">載入中…</div>';
+  document.getElementById("pair-picker").innerHTML = "";
+  document.getElementById("detail-foot").style.display = "none";
+  currentRank = rank;
+
+  const h = HOTSPOTS.find(x=>x.rank===rank) || {};
+  document.getElementById("detail-title").textContent = `#${rank} ${h.county||""}${h.district||""}`;
+  document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"nearest"});
+  renderEvidenceCard(rank);
+
+  let sites;
+  try{ sites = await api(`/api/hotspot_sites/${rank}`); }
+  catch(e){ document.getElementById("detail-body").innerHTML = `<div class="detail-loading">載入失敗：${e.message}</div>`; return; }
+
+  const site = preferSite && sites[preferSite] ? preferSite
+    : (sites[`ardswc_top${String(rank).padStart(2,"0")}_deephist`] ? `ardswc_top${String(rank).padStart(2,"0")}_deephist`
+    : Object.keys(sites)[0]);
+  if(!site){ document.getElementById("detail-body").innerHTML = `<div class="detail-loading">此熱點尚無擷取資料</div>`; return; }
+
+  document.getElementById("detail-meta").textContent = `${site} · ${sites[site].length} 期歷史影像`;
+
+  let timeline;
+  try{ timeline = await api(`/api/timeline/${site}`); } catch(e){ timeline = {pairs:[]}; }
+  const dates = sites[site];
+  const pairs = timeline.pairs && timeline.pairs.length ? timeline.pairs
+    : [{date_a: dates[0], date_b: dates[dates.length-1]}];
+
+  // 找出最明顯（overall_change_fraction 最高）的配對，供 UI 標示與預設選取
+  let dramaticIdx = 0;
+  pairs.forEach((p,i)=>{
+    if((p.overall_change_fraction ?? -1) > (pairs[dramaticIdx].overall_change_fraction ?? -1)) dramaticIdx = i;
+  });
+
+  const picker = document.getElementById("pair-picker");
+  picker.innerHTML = "";
+  pairs.forEach((p,i)=>{
+    const b = document.createElement("button");
+    b.textContent = `${p.date_a} → ${p.date_b}`;
+    if(pairs.length > 1 && i === dramaticIdx) b.classList.add("dramatic");
+    b.title = p.overall_change_fraction != null ? `overall_change=${p.overall_change_fraction}` : "";
+    b.onclick = () => { picker.querySelectorAll("button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); loadPair(site, p.date_a, p.date_b, h); };
+    picker.appendChild(b);
+  });
+
+  let initIdx;
+  if(preferA && preferB){
+    const idx = pairs.findIndex(p => (p.date_a===preferA && p.date_b===preferB) || (p.date_a===preferB && p.date_b===preferA));
+    initIdx = idx >= 0 ? idx : dramaticIdx;
+  } else {
+    initIdx = pairs.length > 1 ? dramaticIdx : pairs.length - 1;
+  }
+  picker.children[initIdx]?.classList.add("active");
+  const initPair = pairs[initIdx];
+  loadPair(site, initPair.date_a, initPair.date_b, h);
+}
+
+async function loadPair(site, dateA, dateB, h){
+  document.getElementById("detail-body").innerHTML = '<div class="detail-loading">計算/載入比對面板中…</div>';
+  let result;
+  try{ result = await api(`/api/pair/${site}/${dateA}/${dateB}`); }
+  catch(e){ document.getElementById("detail-body").innerHTML = `<div class="detail-loading">載入失敗：${e.message}</div>`; return; }
+  if(result.error){ document.getElementById("detail-body").innerHTML = `<div class="detail-loading">${result.error}</div>`; return; }
+
+  const base = `/image/${site}/_change_detect/`;
+  const panels = result.panels || {};
+  const marker = result.report_marker;
+  const pinHtml = marker ? `<div class="report-pin" style="left:${marker.frac_x*100}%; top:${marker.frac_y*100}%;"></div>` : "";
+
+  const staticCells = [
+    { cap: dateA, src: panels.before, alt: `${site} ${dateA}` },
+    { cap: dateB, src: panels.after, alt: `${site} ${dateB}` },
+    { cap: "SSIM 差異熱區", src: panels.heat, alt: "SSIM 差異熱區" },
+  ];
+  // 變遷候選格改成拖曳捲簾比對：預設右半顯示變遷候選疊圖、左半可拖曳露出前期影像
+  // （向右拖曳＝擴大左側「前期」露出範圍，符合捲簾直覺）。
+  const swipeCell = `
+    <div class="panel-cell">
+      <div class="cap">變遷候選 ×${result.n_regions ?? "?"} ⇄ 前期（拖曳比對）</div>
+      <div class="swipe-wrap" id="swipe-main"
+           data-overlay="${base}${panels.overlay}" data-before="${base}${panels.before}"
+           data-cap="變遷候選 ×${result.n_regions ?? "?"} ⇄ 前期（${site} ${dateA} → ${dateB}）">
+        <img class="swipe-base" src="${base}${panels.overlay}" draggable="false" alt="變遷候選疊圖">
+        <div class="swipe-top">
+          <img class="swipe-top-img" src="${base}${panels.before}" draggable="false" alt="前期影像">
+        </div>
+        <div class="swipe-handle"><div class="swipe-grip">⇄</div></div>
+        <button class="swipe-zoom-btn" id="swipe-zoom-btn" title="放大檢視（可拖曳比對）">🔍</button>
+        ${pinHtml}
+      </div>
+    </div>`;
+
+  document.getElementById("detail-body").innerHTML = `
+    <div class="panel-grid">
+      <div class="panel-cell">
+        <div class="cap">${staticCells[0].cap}</div>
+        <img src="${base}${staticCells[0].src}" loading="lazy" data-full="${base}${staticCells[0].src}" data-cap="${staticCells[0].alt}">
+        ${pinHtml}
+      </div>
+      <div class="panel-cell">
+        <div class="cap">${staticCells[1].cap}</div>
+        <img src="${base}${staticCells[1].src}" loading="lazy" data-full="${base}${staticCells[1].src}" data-cap="${staticCells[1].alt}">
+        ${pinHtml}
+      </div>
+      ${swipeCell}
+      <div class="panel-cell">
+        <div class="cap">${staticCells[2].cap}</div>
+        <img src="${base}${staticCells[2].src}" loading="lazy" data-full="${base}${staticCells[2].src}" data-cap="${staticCells[2].alt}">
+        ${pinHtml}
+      </div>
+    </div>
+    <div style="padding:14px 20px 4px;">
+      <div style="font-family:var(--font-mono); font-size:12.5px; color:var(--muted); display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+        <span class="auto-score-tag">自動篩選分數</span>
+        <span>overall_change = <strong style="color:var(--ink);">${result.overall_change_fraction}</strong></span>
+        <span>mean_ssim = ${result.mean_ssim}</span>
+        <span>對位 = ${result.alignment && result.alignment.applied ? "✓ 套用" : "✗ 未套用"}${result.alignment && result.alignment.uncertain ? "（不確定）" : ""}</span>
+        ${marker ? "" : '<span style="color:var(--sem-warn);">（此組影像無法定位通報座標標記，見上方註記）</span>'}
+      </div>
+      ${result.governance_note ? `<p class="governance-note">⚠ ${result.governance_note}</p>` : ""}
+    </div>
+  `;
+  document.querySelectorAll("#detail-body .panel-cell > img").forEach(img=>{
+    img.onclick = () => openLightbox(img.dataset.full, img.dataset.cap);
+  });
+  initSwipe(document.getElementById("detail-body"));
+  const swipeMain = document.getElementById("swipe-main");
+  document.getElementById("swipe-zoom-btn").onclick = (e)=>{
+    e.stopPropagation();
+    openSwipeLightbox(swipeMain.dataset.overlay, swipeMain.dataset.before, swipeMain.dataset.cap);
+  };
+
+  document.getElementById("detail-foot").style.display = "flex";
+  const lonlat = (h && h.lon != null) ? [h.lon, h.lat] : null;
+  const geUrl = lonlat ? `/api/ge_trace?lon=${lonlat[0]}&lat=${lonlat[1]}&date=${dateB}` : null;
+  if(geUrl){
+    try{ const g = await api(geUrl); document.getElementById("ge-trace-link").href = g.url; }
+    catch(e){ document.getElementById("ge-trace-link").href = "#"; }
+  }
+}
+
+// ── 拖曳捲簾比對（變遷候選 vs 前期）──────────────────────
+// 底層：變遷候選疊圖（滿版）。上層：前期影像，寬度隨拖曳位置變化並用 overflow:hidden 裁切
+// （不是縮放）——上層 img 本身要固定成「跟底圖同樣的像素寬」才不會被壓扁，故用 JS 量測
+// wrap 的實際寬度、換算成 px 寫回 style.width，而非交給 CSS 百分比（父層 .swipe-top 本身
+// 寬度就是拖曳位置，img 若也用 % 會跟著父層縮放而不是被裁切）。
+let _swipeResizeObs = null;
+function initSwipe(scope){
+  const wrap = scope.querySelector(".swipe-wrap");
+  if(!wrap) return;
+  const base = wrap.querySelector(".swipe-base");
+  const top = wrap.querySelector(".swipe-top");
+  const topImg = wrap.querySelector(".swipe-top-img");
+  const handle = wrap.querySelector(".swipe-handle");
+
+  function syncWidth(){ topImg.style.width = wrap.clientWidth + "px"; }
+  function setPos(pct){
+    pct = Math.max(0, Math.min(100, pct));
+    top.style.width = pct + "%";
+    handle.style.left = pct + "%";
+  }
+  if(base.complete) syncWidth(); else base.addEventListener("load", syncWidth, { once:true });
+  setPos(50);
+
+  if(_swipeResizeObs) _swipeResizeObs.disconnect();
+  _swipeResizeObs = new ResizeObserver(syncWidth);
+  _swipeResizeObs.observe(wrap);
+
+  function posFromEvent(e){
+    const rect = wrap.getBoundingClientRect();
+    return (e.clientX - rect.left) / rect.width * 100;
+  }
+  function onMove(e){ setPos(posFromEvent(e)); }
+  function onUp(){
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+  }
+  wrap.addEventListener("pointerdown", (e)=>{
+    if(e.target.closest(".swipe-zoom-btn")) return;   // 放大鈕點擊不觸發拖曳
+    setPos(posFromEvent(e));
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    e.preventDefault();
+  });
+}
+
+document.getElementById("detail-close").onclick = () => {
+  document.getElementById("detail").classList.remove("open");
+};
+
+// ── 燈箱（放大檢視：一般靜態圖 / 拖曳比對放大版）─────────────
+function openLightbox(src, cap){
+  document.getElementById("lightbox-swipe").hidden = true;
+  const img = document.getElementById("lightbox-img");
+  img.hidden = false;
+  img.src = src;
+  document.getElementById("lightbox-cap").textContent = cap || "";
+  document.getElementById("lightbox").classList.add("open");
+}
+function openSwipeLightbox(overlaySrc, beforeSrc, cap){
+  document.getElementById("lightbox-img").hidden = true;
+  const sw = document.getElementById("lightbox-swipe");
+  sw.hidden = false;
+  sw.querySelector(".swipe-base").src = overlaySrc;
+  sw.querySelector(".swipe-top-img").src = beforeSrc;
+  document.getElementById("lightbox-cap").textContent = (cap || "") + "　·　拖曳中線可比對前/後期";
+  document.getElementById("lightbox").classList.add("open");
+  initSwipe(document.getElementById("lightbox"));
+}
+function closeLightbox(){
+  document.getElementById("lightbox").classList.remove("open");
+  document.getElementById("lightbox-img").src = "";
+  const sw = document.getElementById("lightbox-swipe");
+  sw.querySelector(".swipe-base").src = "";
+  sw.querySelector(".swipe-top-img").src = "";
+}
+document.getElementById("lightbox").addEventListener("click", (e)=>{
+  if(e.target.id === "lightbox") closeLightbox();   // 只有點背景空白處才關閉，避免拖曳放開時誤觸關閉
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape") closeLightbox();
+});
+
+// ── 資料可追溯性（審查建議 #1 的輕量版：即時算雜湊/筆數/修改時間，非離線 manifest）──
+async function renderDataStatus(){
+  const box = document.getElementById("data-status");
+  let s;
+  try{ s = await api("/api/data_status"); } catch(e){ return; }
+  const row = (label, info) => {
+    if(!info || !info.exists) return `<span>${label}：<b>缺檔</b></span>`;
+    return `<span>${label}：<b>${info.count ?? "?"}</b> 筆 · ${info.sha256_12} · ${info.modified}</span>`;
+  };
+  box.innerHTML = [
+    row("100 熱點清單", s.top100_consolidated),
+    row("深度驗證台帳", s.ledger),
+    row("原始事件", s.events_trimmed),
+  ].join("");
+}
+
+// ── 初始化 ──────────────────────────────────────────
+async function init(){
+  initMap();
+  let priority;
+  [HOTSPOTS, LEDGER, priority] = await Promise.all([api("/api/hotspots"), api("/api/ledger"), api("/api/priority")]);
+  LEDGER_BY_RANK = Object.fromEntries(LEDGER.map(l=>[l.rank, l]));
+  PRIORITY_BY_RANK = Object.fromEntries(priority.items.map(p=>[p.rank, p]));
+  renderStats();
+  renderMap();
+  renderHotspotsTable();
+  renderLedger();
+  loadEventStats();
+  renderDataStatus();
+}
+init();
+</script>
+</body>
+</html>
