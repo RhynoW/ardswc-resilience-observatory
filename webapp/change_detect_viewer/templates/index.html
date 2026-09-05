@@ -751,6 +751,11 @@ async function refreshEventsLayer(){
     inner.on("contextmenu", (e) => {
       L.DomEvent.preventDefault(e);
       L.DomEvent.stopPropagation(e);
+      // L.DomEvent.stopPropagation() 只擋 Leaflet 自己內部要不要繼續派給其他圖層，
+      // 不會真的呼叫原生 Event.stopPropagation()——原生 contextmenu 事件仍會一路冒泡到
+      // document，正好撞上下面那個「在選單外右鍵即關閉選單」的全域監聽器，導致選單一開
+      // 就被同一次點擊自己關掉。要真的擋住冒泡必須手動呼叫原生事件的 stopPropagation()。
+      if(e.originalEvent) e.originalEvent.stopPropagation();
       showEventContextMenu(e.originalEvent, p);
     });
     markers.push(inner);
