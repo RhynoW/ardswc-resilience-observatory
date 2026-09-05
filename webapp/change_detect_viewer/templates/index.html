@@ -132,7 +132,11 @@
   .ws-collapse{ font-family:var(--font-mono); font-size:11px; padding:3px 10px; border:1px solid var(--line);
     background:var(--paper); color:var(--ink); cursor:pointer; }
   .ws-body{ padding:14px 16px; }
-  .ws-img{ width:100%; max-width:640px; display:block; margin:0 auto 10px; border:1px solid var(--line); }
+  .ws-panels{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:10px; }
+  .ws-panel{ flex:1 1 280px; min-width:240px; }
+  .ws-panel-title{ font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.03em; margin-bottom:6px; text-align:center; }
+  .ws-img{ width:100%; display:block; margin:0 auto 8px; border:1px solid var(--line); }
   .ws-legend{ display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:8px; }
   .ws-legend div{ display:flex; align-items:center; gap:6px; }
   .ws-swatch{ display:inline-block; width:12px; height:12px; border-radius:2px; flex:none; }
@@ -567,30 +571,39 @@ function renderWatershedButton(rank){
 }
 async function loadWatershed(rank){
   const slot = document.getElementById("watershed-slot");
-  slot.innerHTML = `<div class="ws-loading">分析中…（首次約需 3–5 秒擷取地形資料，之後會快取）</div>`;
+  slot.innerHTML = `<div class="ws-loading">分析中…（首次約需數秒擷取地形資料，之後會快取；同時計算 3×3km 與 1×1km 兩種尺度）</div>`;
   let d;
   try{ d = await api(`/api/watershed/${rank}`); }
   catch(e){ slot.innerHTML = `<div class="ws-loading">分析失敗：${e.message}</div>`; return; }
   if(d.error){ slot.innerHTML = `<div class="ws-loading">${d.error}</div>`; return; }
-  const s = d.stats;
-  slot.innerHTML = `
-    <div class="ws-card">
-      <div class="ws-head">
-        <span class="ws-title">🌊 坡度與流域分析（${s.span_km}×${s.span_km}km，格距約 ${s.cellsize_m_actual}m）</span>
-        <button class="ws-collapse" id="ws-collapse">收合 ▲</button>
-      </div>
-      <div class="ws-body" id="ws-body">
-        <img class="ws-img" src="${d.image_url}?t=${Date.now()}" alt="坡度與流域分析">
-        <div class="ws-legend">
-          <div><span class="ws-swatch" style="background:#eb5a28;"></span>積水候選（局部窪地或平緩高匯流區）</div>
-          <div><span class="ws-swatch" style="background:#1e78c8;"></span>推估排水/匯流路徑</div>
-          <div><span class="ws-swatch" style="background:#fff; border:2px solid #c82828;"></span>該熱點通報座標</div>
-        </div>
+  const panelHtml = (scale) => {
+    const s = scale.stats;
+    return `
+      <div class="ws-panel">
+        <div class="ws-panel-title">${s.span_km}×${s.span_km}km（格距約 ${s.cellsize_m_actual}m）</div>
+        <img class="ws-img" src="${scale.image_url}?t=${Date.now()}" alt="坡度與流域分析 ${s.span_km}km">
         <div class="ws-stats">
           高程 ${s.elev_min_m}–${s.elev_max_m} m ・ 積水候選面積佔比 ${(s.risk_area_fraction*100).toFixed(2)}%
           （局部窪地 ${s.n_sink_cells} 格、平緩高匯流 ${s.n_flat_highflow_cells} 格）
-          ・ 判定門檻：坡度 &lt;${s.slope_flat_threshold_deg}° 且流量累積前 ${(100-s.accum_percentile_threshold).toFixed(0)}%
         </div>
+      </div>`;
+  };
+  slot.innerHTML = `
+    <div class="ws-card">
+      <div class="ws-head">
+        <span class="ws-title">🌊 坡度與流域分析（並列 3×3km／1×1km 兩種尺度）</span>
+        <button class="ws-collapse" id="ws-collapse">收合 ▲</button>
+      </div>
+      <div class="ws-body" id="ws-body">
+        <div class="ws-panels">
+          ${d.scales.map(panelHtml).join("")}
+        </div>
+        <div class="ws-legend">
+          <div><span class="ws-swatch" style="background:#eb5a28;"></span>積水候選（局部窪地或平緩高匯流區）</div>
+          <div><span class="ws-swatch" style="background:#1e78c8;"></span>推估排水/匯流路徑</div>
+          <div><span class="ws-swatch" style="border:2px solid #c82828; background:transparent;"></span>通報座標同心圓（外→內 500/300/100m）</div>
+        </div>
+        <div class="ws-stats">判定門檻：坡度 &lt;${d.scales[0].stats.slope_flat_threshold_deg}° 且流量累積前 ${(100-d.scales[0].stats.accum_percentile_threshold).toFixed(0)}%（兩種尺度共用同一組門檻）</div>
         <p class="governance-note">⚠ ${d.governance_note}</p>
       </div>
     </div>`;

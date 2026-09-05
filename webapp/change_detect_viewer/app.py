@@ -617,9 +617,16 @@ def api_contours_status():
 
 
 # ── 小範圍坡度/流域分析（2026-09-05 追加，scripts/watershed_analysis.py）───────────
-# 每個熱點的 3×3km 鄰域坡度+D8流向+流量累積分析，提示「可能積水/淹水」候選區——
-# 純地形幾何篩選，非水文水利模型（見 watershed_analysis.py 開頭治理說明）。跟等高線一樣
-# 依賴 Cesium World Terrain，同一份 token；磁碟快取（依 rank，同一熱點不重算）。
+# 每個熱點的坡度+D8流向+流量累積分析，提示「可能積水/淹水」候選區——純地形幾何篩選，
+# 非水文水利模型（見 watershed_analysis.py 開頭治理說明）。跟等高線一樣依賴 Cesium World
+# Terrain，同一份 token；磁碟快取（依 rank，同一熱點不重算）。
+#
+# 並列顯示 3×3km（粗略地形脈絡）與 1×1km（更細節，res_m 也對應收窄到 10m）兩種尺度——
+# 兩者用同一個 governance_note（同一套方法論、只差取樣範圍），故整個端點回一份結果，
+# 前端一次拿到兩張圖並排顯示，不必發兩次請求。
+_WATERSHED_SCALES = [("3km", 3.0, 20.0), ("1km", 1.0, 10.0)]
+
+
 @app.route("/api/watershed/<int:rank>")
 def api_watershed(rank):
     h = _hotspots_by_rank().get(rank)
@@ -627,20 +634,26 @@ def api_watershed(rank):
         return jsonify({"error": "此熱點無座標資料"}), 404
 
     stats_fp = WATERSHED_CACHE / f"rank{rank}_stats.json"
-    png_fp = WATERSHED_CACHE / f"rank{rank}.png"
     cached = _load_json(stats_fp, None)
-    if cached is not None and png_fp.exists():
+    if cached is not None and all(
+            (WATERSHED_CACHE / f"rank{rank}_{tag}.png").exists() for tag, _, _ in _WATERSHED_SCALES):
         return jsonify(cached)
 
-    try:
-        result = WA.analyze(h["lat"], h["lon"], source=_get_contour_source())
-    except Exception as e:  # noqa: BLE001
-        return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
-
+    src = _get_contour_source()
+    scales_out = []
+    governance_note = None
     WATERSHED_CACHE.mkdir(parents=True, exist_ok=True)
-    png_fp.write_bytes(result["png_bytes"])
-    payload = {"stats": result["stats"], "governance_note": result["governance_note"],
-               "image_url": f"/image/watershed/rank{rank}.png"}
+    for tag, span_km, res_m in _WATERSHED_SCALES:
+        try:
+            result = WA.analyze(h["lat"], h["lon"], span_km=span_km, res_m=res_m, source=src)
+        except Exception as e:  # noqa: BLE001
+            return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
+        png_fp = WATERSHED_CACHE / f"rank{rank}_{tag}.png"
+        png_fp.write_bytes(result["png_bytes"])
+        governance_note = result["governance_note"]
+        scales_out.append({"tag": tag, "stats": result["stats"], "image_url": f"/image/watershed/rank{rank}_{tag}.png"})
+
+    payload = {"scales": scales_out, "governance_note": governance_note}
     stats_fp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return jsonify(payload)
 

@@ -160,9 +160,19 @@ def analyze(lat, lon, span_km=3.0, res_m=20.0, slope_flat_deg=5.0, accum_percent
     scale = max(1, upscale_px // max(ny, nx))
     disp = cv2.resize(base, (nx * scale, ny * scale), interpolation=cv2.INTER_NEAREST)
     cx, cy = px * scale + scale // 2, py * scale + scale // 2
+    # 通報座標標記：改成由外到內 500/300/100m 三層同心圓，只畫圈不畫實心點——
+    # 原本的白底紅框實心圓會直接蓋住分析結果最關鍵的「中心點本身」那塊像素，
+    # 同心圓只框出距離範圍，中心保持透明可見分析結果。半徑用實際地面距離換算
+    # 成像素（px_per_m），故 3km 與 1km 兩張圖上的 500/300/100m 圈大小才會一致
+    # 可比（1km 圖裡 500m 圈會頂到邊緣，這是預期的——本來就只差 500m 就出圖了）。
     if 0 <= cx < disp.shape[1] and 0 <= cy < disp.shape[0]:
-        cv2.circle(disp, (cx, cy), max(6, scale), (255, 255, 255), -1, lineType=cv2.LINE_AA)
-        cv2.circle(disp, (cx, cy), max(6, scale), (40, 40, 200), 2, lineType=cv2.LINE_AA)
+        px_per_m = scale / cellsize_m
+        for radius_m in (500, 300, 100):
+            r_px = int(round(radius_m * px_per_m))
+            if r_px < 2:
+                continue
+            cv2.circle(disp, (cx, cy), r_px, (255, 255, 255), 3, lineType=cv2.LINE_AA)
+            cv2.circle(disp, (cx, cy), r_px, (40, 40, 200), 1, lineType=cv2.LINE_AA)
 
     ok, buf = cv2.imencode(".png", disp)
     if not ok:
