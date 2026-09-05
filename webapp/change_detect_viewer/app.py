@@ -38,6 +38,7 @@
 預期完全吻合）。無 `.jgw`、或反解結果落在影像範圍外時回傳 `None`（fail-closed，不畫錯的點）。
 """
 import hashlib
+import html
 import io
 import json
 import math
@@ -58,10 +59,12 @@ import ge_change_detect as CD          # noqa: E402
 import gmaps_tiles as GT               # noqa: E402  — 僅用 apple/nlsc_topo/nlsc_photo 三個來源
 import cesium_terrain as CT            # noqa: E402  — 可開關等高線圖用（Cesium World Terrain）
 import watershed_analysis as WA        # noqa: E402  — 小範圍坡度/流域分析（積水候選提示）
+import ardswc_photo_search as APS      # noqa: E402  — 水保署官方歷史影像庫真實查詢
 
 REPO = HERE.parent.parent
 CAPTURES_ROOT = REPO / "data" / "ge_captures"
 DATA_ROOT = REPO / "data" / "ardswc_hotspots"
+ARDSWC_META_CACHE = REPO / "data" / "ardswc_meta_cache"
 CONTOUR_CACHE = REPO / "data" / "contour_cache"
 WATERSHED_CACHE = REPO / "data" / "watershed_cache"
 
@@ -440,6 +443,103 @@ def api_ge_trace():
     except Exception:
         url = template
     return jsonify({"url": url})
+
+
+# ── 水保署歷史影像庫真實查詢（2026-09-05 追加，取代連到無法帶查詢條件的官方搜尋首頁）──────
+# 依「事件分類＋西元年份＋中心經緯度」直接呼叫水保署公開資料 API 找候選照片，見
+# scripts/ardswc_photo_search.py 開頭的完整說明（含 API 來源誠實記錄）。獨立成一個完整
+# HTML 頁面（非 SPA 內的 fragment）——右鍵選單原本就是開新分頁，這裡維持同樣的互動方式。
+@app.route("/ardswc_search")
+def ardswc_search_view():
+    try:
+        lat = float(request.args.get("lat"))
+        lon = float(request.args.get("lon"))
+        year = int(request.args.get("year"))
+    except (TypeError, ValueError):
+        return "缺少或格式錯誤的 lat/lon/year 參數", 400
+    photo_type = request.args.get("photo_type", "0")
+    own_event_id = request.args.get("event_id", "")
+    radius_km = float(request.args.get("radius_km", 10.0))
+
+    error = None
+    matches, meta = [], {}
+    try:
+        matches, meta = APS.search(lat, lon, year, photo_type=photo_type, radius_km=radius_km,
+                                    cache_dir=str(ARDSWC_META_CACHE))
+    except Exception as e:  # noqa: BLE001
+        error = f"{type(e).__name__}: {e}"
+
+    def esc(s):
+        return html.escape(str(s)) if s is not None else ""
+
+    own_photo_html = ""
+    if own_event_id:
+        own_url = f"https://photo.ardswc.gov.tw/api/Media/{esc(own_event_id)}"
+        own_photo_html = f"""
+        <div class="own-photo">
+          <div class="section-label">本筆通報的原始照片</div>
+          <a href="{own_url}" target="_blank" rel="noopener">
+            <img src="{own_url}" alt="原始照片" loading="lazy">
+          </a>
+        </div>"""
+
+    partial_note = ""
+    if meta.get("partial"):
+        why = f"（{esc(meta['fetch_error'])}）" if meta.get("fetch_error") else "（已達單次查詢頁數上限）"
+        partial_note = f'<p class="err">⚠ 本次查詢可能不完整 {why}——已掃描 {meta.get("pages_fetched","?")} 頁官方資料。</p>'
+
+    if error:
+        body = f'<p class="err">查詢失敗：{esc(error)}</p>'
+    elif not matches:
+        body = (partial_note +
+                f'<p class="empty">在 {esc(meta.get("photo_type_label",""))} 分類、{year} 年（共 '
+                f'{meta.get("total_exact_year_records","?")} 筆官方紀錄）中，半徑 {radius_km:.0f}km 內'
+                f'找不到符合的紀錄——本查詢條件較嚴格，不會自動放寬年份或範圍湊出結果。</p>')
+    else:
+        cards = []
+        for m in matches:
+            loc = f"{esc(m['county'])}{esc(m['town'])}{esc(m['vill'])}"
+            cards.append(f"""
+            <a class="card" href="{esc(m['media_url'])}" target="_blank" rel="noopener">
+              <img src="{esc(m['media_url'])}" alt="{loc}" loading="lazy">
+              <div class="card-body">
+                <div class="card-title">{loc}</div>
+                <div class="card-meta">{esc(m['disaster_name'] or '')} · {esc((m['photo_date'] or '')[:10])} · 距中心 {m['distance_km']} km</div>
+                <div class="card-desc">{esc(m['description'] or '')}</div>
+              </div>
+            </a>""")
+        body = (partial_note +
+                f'<p class="count">找到 {len(matches)} 筆候選（{esc(meta.get("photo_type_label",""))}／{year} 年'
+                f'（該年份官方紀錄共 {meta.get("total_exact_year_records","?")} 筆）／半徑 {radius_km:.0f}km 內，'
+                f'依距離排序）</p><div class="grid">{"".join(cards)}</div>')
+
+    page = f"""<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<title>水保署歷史影像庫查詢 — {esc(year)} 年 {lat:.5f}, {lon:.5f}</title>
+<style>
+  body{{background:#F4F1E8; color:#2B2A26; font-family:"Source Serif 4",serif; margin:0; padding:24px 28px 60px;}}
+  h1{{font-size:18px; margin:0 0 4px;}}
+  .sub{{color:#6B6759; font-size:12.5px; margin-bottom:18px;}}
+  .section-label{{font-family:monospace; font-size:11px; color:#6B6759; text-transform:uppercase; margin-bottom:6px;}}
+  .own-photo{{margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid #DAD5C6;}}
+  .own-photo img{{max-width:420px; width:100%; display:block; border:1px solid #C9C3B3;}}
+  .count, .empty, .err{{font-size:13px; color:#6B6759; margin-bottom:16px;}}
+  .err{{color:#7A3A38;}}
+  .grid{{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}}
+  .card{{display:block; border:1px solid #C9C3B3; background:#FBF9F3; text-decoration:none; color:inherit; overflow:hidden;}}
+  .card img{{width:100%; height:140px; object-fit:cover; display:block; background:#DAD5C6;}}
+  .card-body{{padding:8px 10px;}}
+  .card-title{{font-weight:600; font-size:13px; margin-bottom:2px;}}
+  .card-meta{{font-family:monospace; font-size:10.5px; color:#6B6759; margin-bottom:4px;}}
+  .card-desc{{font-size:11.5px; color:#4A4740; line-height:1.4; max-height:3.6em; overflow:hidden;}}
+</style></head>
+<body>
+  <h1>水保署歷史影像庫查詢</h1>
+  <div class="sub">分類：{esc(meta.get("photo_type_label", APS.PHOTO_TYPE_LABELS.get(str(photo_type), photo_type)))}　·　年份：{esc(year)}　·　中心座標：{lat:.5f}, {lon:.5f}　·　資料來源：農業部農村發展及水土保持署公開資料 API</div>
+  {own_photo_html}
+  {body}
+</body></html>"""
+    return page
 
 
 # ── 底圖圖磚代理（僅 apple / 國土測繪中心兩層，不含百度/騰訊——本觀測站不服務中國大陸座標）──

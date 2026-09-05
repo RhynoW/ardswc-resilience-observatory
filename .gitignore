@@ -4,6 +4,7 @@ __pycache__/
 data/cesium_cache/
 data/contour_cache/
 data/watershed_cache/
+data/ardswc_meta_cache/
 tile_cache/
 *.log
 .DS_Store

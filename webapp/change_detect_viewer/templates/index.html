@@ -866,12 +866,13 @@ async function refreshEventsLayer(){
 }
 
 // ── 通報點右鍵選單：搜尋相關報導／連結水保署歷史影像庫 ──────────────────────
-// 「水保署歷史影像庫」連到 https://photo.ardswc.gov.tw/Repository/Database——這是
-// 實際存在、已核實的官方歷史災害影像查詢平台（97,500+ 張影像的來源系統）。**刻意不做成
-// 精確到單筆事件的深度連結**：該平台的地理範圍查詢（Query.LeftX/LeftY/RightX/RightY 等）
-// 是帶 ASP.NET CSRF token 的 POST 表單，不支援用純 URL 查詢字串預帶座標——硬做一個查詢
-// 字串只會被該站悄悄忽略，等於是假裝有深度連結卻其實無效，比單純連到搜尋首頁更誤導。
-// 使用者可在開啟的搜尋頁自行用通報點座標/年份查詢。
+// 「水保署歷史影像庫」原本連到官方搜尋首頁 https://photo.ardswc.gov.tw/Repository/Database
+// ——該站的地理範圍搜尋是帶 ASP.NET CSRF token 的 POST 表單，query string 無法預帶座標，
+// 連過去只能落在搜尋首頁自己重新輸入。改法（2026-09-05，使用者要求真的用查詢條件查）：
+// 直接連到本站自己的 /ardswc_search（見 app.py），該路由用水保署自己公開的資料 API
+// （非該站的搜尋表單）依「事件分類＋西元年份＋中心經緯度」現查，同時附上這一筆通報自己的
+// EventID 直接連結原始照片——兩者並存：既保留「這一筆的原始照片」，也提供「同年份/同地點
+// 附近還有哪些官方紀錄」的查詢結果，比單純連到搜尋首頁有用得多。
 let _ctxMenuPoint = null;
 function showEventContextMenu(evt, p){
   const menu = document.getElementById("event-ctxmenu");
@@ -897,7 +898,12 @@ document.getElementById("ec-search").onclick = () => {
   hideEventContextMenu();
 };
 document.getElementById("ec-archive").onclick = () => {
-  window.open("https://photo.ardswc.gov.tw/Repository/Database", "_blank", "noopener");
+  if(!_ctxMenuPoint) return;
+  const p = _ctxMenuPoint;
+  const params = new URLSearchParams({
+    lat: p.lat, lon: p.lon, year: p.year || "", photo_type: p.photo_type || "0", event_id: p.id || "",
+  });
+  window.open("/ardswc_search?" + params.toString(), "_blank", "noopener");
   hideEventContextMenu();
 };
 document.addEventListener("click", (e)=>{ if(!e.target.closest("#event-ctxmenu")) hideEventContextMenu(); });
