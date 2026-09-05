@@ -1,0 +1,26 @@
+{
+  "site": "custom_23p66789_120p87670",
+  "pairs": [
+    {
+      "date_a": "20140128",
+      "date_b": "20141009",
+      "overall_change_fraction": 0.4614,
+      "mean_ssim": 0.6099,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20151202",
+      "date_b": "20170419",
+      "overall_change_fraction": 0.5886,
+      "mean_ssim": 0.497,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20140128",
+      "date_b": "20250822",
+      "overall_change_fraction": 0.8298,
+      "mean_ssim": 0.2724,
+      "n_regions": 30
+    }
+  ]
+}

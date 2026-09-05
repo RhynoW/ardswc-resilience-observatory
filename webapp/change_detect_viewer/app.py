@@ -40,11 +40,15 @@
 import hashlib
 import html
 import io
+import itertools
 import json
 import math
 import os
 import re
+import subprocess
 import sys
+import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -77,13 +81,15 @@ def _load_json(path, default):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-_SITE_RE = re.compile(r"ardswc_top\d{2,3}(_deephist)?")
+_SITE_RE = re.compile(r"ardswc_top\d{2,3}(_deephist)?|custom_[a-zA-Z0-9_]{1,80}")
 
 
 def _is_ardswc_site(site):
-    """本觀測站只服務 ardswc_top<NN|NNN>[_deephist] 命名的站點——拒絕路徑穿越與非本專案資料。
-    rank 可達 100（3 位數，如 ardswc_top100），故位數為 2-3 碼，不可寫死 2 碼（曾是真實 bug：
-    rank100 的站名固定寫死 \\d{2} 會被 fullmatch 拒絕，回 403，見對話紀錄的使用者回報）。"""
+    """本觀測站服務兩類站點：(1) ardswc_top<NN|NNN>[_deephist]（100 個既有熱點，rank 可達
+    100/3 位數，如 ardswc_top100，故位數為 2-3 碼，不可寫死 2 碼——曾是真實 bug：rank100 的
+    站名固定寫死 \\d{2} 會被 fullmatch 拒絕，回 403，見對話紀錄的使用者回報）；(2) 2026-09-05
+    追加：custom_<slug>（「線上分析」自訂座標即時擷取產生，見 `_coord_slug()`／
+    `/api/capture_custom`）。任何非此兩類命名的站點一律拒絕，並擋路徑穿越。"""
     if not site or "/" in site or "\\" in site or ".." in site:
         return False
     return bool(_SITE_RE.fullmatch(site))
@@ -236,6 +242,18 @@ def api_timeline(site):
         abort(403)
     p = CAPTURES_ROOT / site / "_change_detect" / f"{site}_change_timeline.json"
     return jsonify(_load_json(p, {"pairs": []}))
+
+
+@app.route("/api/site_dates/<site>")
+def api_site_dates(site):
+    """通用版 `/api/hotspot_sites/<rank>`（那支只認 ardswc_top<NN> 命名）——給
+    `openCustomDetail()` 用來在該站點沒有 `_change_timeline.json`（例如公開部署版只保留
+    頭尾一組，比照既有 deephist 站點的慣例）時，仍能算出「最舊 vs 最新」的合成配對。"""
+    if not _is_ardswc_site(site):
+        abort(403)
+    d = CAPTURES_ROOT / site
+    dated = _list_dated_dates(d) if d.exists() else []
+    return jsonify({"dates": dated})
 
 
 # ── 巡查優先級 A–D（2026-09-04 追加）───────────────────────────────────────
@@ -732,12 +750,21 @@ def api_watershed(rank):
     h = _hotspots_by_rank().get(rank)
     if not h or h.get("lat") is None or h.get("lon") is None:
         return jsonify({"error": "此熱點無座標資料"}), 404
+    payload, err = _run_watershed(f"rank{rank}", h["lat"], h["lon"])
+    if err:
+        return jsonify({"error": err}), 500
+    return jsonify(payload)
 
-    stats_fp = WATERSHED_CACHE / f"rank{rank}_stats.json"
+
+def _run_watershed(cache_key, lat, lon):
+    """核心坡度/流域分析（見 §17 系列），依 cache_key 存取磁碟快取——`rank<N>` 用於既有
+    100 個熱點，`custom_<slug>` 用於「線上分析」自訂座標（2026-09-05 追加，見
+    `api_watershed_custom`），兩者共用同一份分析引擎與快取慣例，僅鍵名前綴不同。"""
+    stats_fp = WATERSHED_CACHE / f"{cache_key}_stats.json"
     cached = _load_json(stats_fp, None)
     if cached is not None and all(
-            (WATERSHED_CACHE / f"rank{rank}_{tag}.png").exists() for tag, _, _ in _WATERSHED_SCALES):
-        return jsonify(cached)
+            (WATERSHED_CACHE / f"{cache_key}_{tag}.png").exists() for tag, _, _ in _WATERSHED_SCALES):
+        return cached, None
 
     src = _get_contour_source()
     scales_out = []
@@ -745,16 +772,32 @@ def api_watershed(rank):
     WATERSHED_CACHE.mkdir(parents=True, exist_ok=True)
     for tag, span_km, res_m in _WATERSHED_SCALES:
         try:
-            result = WA.analyze(h["lat"], h["lon"], span_km=span_km, res_m=res_m, source=src)
+            result = WA.analyze(lat, lon, span_km=span_km, res_m=res_m, source=src)
         except Exception as e:  # noqa: BLE001
-            return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
-        png_fp = WATERSHED_CACHE / f"rank{rank}_{tag}.png"
+            return None, f"{type(e).__name__}: {e}"
+        png_fp = WATERSHED_CACHE / f"{cache_key}_{tag}.png"
         png_fp.write_bytes(result["png_bytes"])
         governance_note = result["governance_note"]
-        scales_out.append({"tag": tag, "stats": result["stats"], "image_url": f"/image/watershed/rank{rank}_{tag}.png"})
+        scales_out.append({"tag": tag, "stats": result["stats"], "image_url": f"/image/watershed/{cache_key}_{tag}.png"})
 
     payload = {"scales": scales_out, "governance_note": governance_note}
     stats_fp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return payload, None
+
+
+@app.route("/api/watershed_custom")
+def api_watershed_custom():
+    """同上，供「線上分析」自訂座標使用（見 `_coord_slug`）——不受限於既有 100 熱點。"""
+    try:
+        lat = float(request.args.get("lat"))
+        lon = float(request.args.get("lon"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "缺少或格式錯誤的 lat/lon 參數"}), 400
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return jsonify({"error": "座標超出範圍"}), 400
+    payload, err = _run_watershed(_coord_slug(lat, lon), lat, lon)
+    if err:
+        return jsonify({"error": err}), 500
     return jsonify(payload)
 
 
@@ -833,6 +876,151 @@ def api_events():
     )
     return jsonify({"points": matched, "returned": len(matched), "total_matched": total_matched,
                      "truncated": total_matched > len(matched)})
+
+
+# ── 線上分析（自訂座標，2026-09-05 追加）─────────────────────────────────────
+# 把 imagery_change_toolkit（8074）的「自訂座標」機制搬進本觀測站——使用者輸入/點選任意
+# 座標，即時跑 GE Web 歷史影像擷取＋全部相鄰日期變遷偵測，不必侷限在既有 100 個熱點。
+# 範例／預設座標：豐丘觀測站（南投縣信義鄉，土石流潛勢溪流「投縣DF190」），見前端敘事卡片。
+#
+# 公開 HF Space 無法跑這個功能——需要真實瀏覽器自動化（Playwright + Chromium）操作
+# earth.google.com/web，該容器只有 python:3.11-slim（無瀏覽器），且已知連外部網站的
+# 出站連線在該容器裡經常逾時（見 Dockerfile 對 Apple token 換發的既有記錄）。故用環境變數
+# 開關（同 GMAPS_DEMO_APPLE_AUTO 的既有取捨模式）：本機預設開啟，公開部署版 Dockerfile
+# 明確關閉，前端據此隱藏「送出擷取」按鈕、改顯示已預先擷取好的豐丘案例（fail-closed，
+# 不會讓使用者按下一個保證失敗的按鈕）。
+ENABLE_LIVE_CAPTURE = os.environ.get("ENABLE_LIVE_CAPTURE", "1") != "0"
+
+_jobs_lock = threading.Lock()
+_jobs = {}
+_jid_seq = itertools.count(1)
+
+
+def _new_job(kind):
+    with _jobs_lock:
+        jid = f"{kind}-{next(_jid_seq)}-{int(time.time())}"
+        _jobs[jid] = {"status": "running", "log": [], "result": None, "error": None, "created": time.time()}
+    return jid
+
+
+def _job_log(jid, line):
+    with _jobs_lock:
+        if jid in _jobs:
+            _jobs[jid]["log"].append(line)
+
+
+def _job_finish(jid, result=None, error=None):
+    with _jobs_lock:
+        if jid in _jobs:
+            _jobs[jid]["status"] = "error" if error else "done"
+            _jobs[jid]["result"] = result
+            _jobs[jid]["error"] = error
+
+
+def _job_get(jid):
+    with _jobs_lock:
+        return dict(_jobs[jid]) if jid in _jobs else None
+
+
+@app.route("/api/job/<jid>")
+def api_job(jid):
+    j = _job_get(jid)
+    if j is None:
+        abort(404)
+    return jsonify(j)
+
+
+_capture_lock = threading.Lock()
+
+
+@app.route("/api/capture_status")
+def api_capture_status():
+    """供前端頁面載入時檢查是否已有擷取任務在跑，並回報本部署是否啟用線上擷取——
+    避免公開展示版顯示一個保證失敗的按鈕（見上方 ENABLE_LIVE_CAPTURE 說明），也避免使用者
+    以為按鈕沒反應而重複送出卻不知背景其實正在跑一個不同座標的舊任務（CLAUDE.md §17.4）。"""
+    return jsonify({"busy": _capture_lock.locked(), "enabled": ENABLE_LIVE_CAPTURE})
+
+
+def _coord_slug(lat, lon):
+    def fmt(v):
+        return f"{v:.5f}".replace("-", "m").replace(".", "p")
+    return f"custom_{fmt(lat)}_{fmt(lon)}"
+
+
+@app.route("/api/capture_custom", methods=["POST"])
+def api_capture_custom():
+    if not ENABLE_LIVE_CAPTURE:
+        return jsonify({"error": "此部署未啟用線上即時擷取（需要本機瀏覽器自動化，公開展示版"
+                                  "無法執行）。請改用下方「豐丘觀測站範例」查看已完成的分析結果。"}), 403
+    body = request.get_json(force=True)
+    try:
+        lat = float(body.get("lat"))
+        lon = float(body.get("lon"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "lat/lon 需為數字"}), 400
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return jsonify({"error": "座標超出範圍"}), 400
+    gsd = float(body.get("gsd", 0.2))
+    n_dates = max(2, min(30, int(body.get("n_dates", 10))))
+    slug = _coord_slug(lat, lon)
+
+    if _capture_lock.locked():
+        return jsonify({"error": "目前已有擷取任務在執行，GE Web 瀏覽器自動化一次只能跑一個，請稍候再試"}), 409
+
+    jid = _new_job("capture_custom")
+
+    def _run():
+        if not _capture_lock.acquire(blocking=False):
+            _job_log(jid, "已有擷取任務執行中，本次取消")
+            _job_finish(jid, error="lock busy")
+            return
+        try:
+            _job_log(jid, f"擷取 {slug}（{lat},{lon}）gsd={gsd}m/px n_dates={n_dates} …（GE Web 瀏覽器自動化，數分鐘）")
+            cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2_8k.py"),
+                   "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
+                   "--n-dates", str(n_dates)]
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                     text=True, encoding="utf-8", errors="replace", cwd=str(REPO))
+            for line in proc.stdout:
+                _job_log(jid, line.rstrip())
+            rc = proc.wait()
+            if rc != 0:
+                _job_finish(jid, error=f"擷取失敗（exit code {rc}），詳見上方 log")
+                return
+
+            capture_dir = CAPTURES_ROOT / slug
+            dated = CD._list_dated(capture_dir)
+            if len(dated) < 2:
+                _job_finish(jid, error=f"只擷取到 {len(dated)} 個歷史日期，不足以比對變遷（需 ≥2）")
+                return
+
+            _job_log(jid, f"擷取完成（{len(dated)} 期），開始變遷偵測（全部相鄰日期）…")
+            out_dir = capture_dir / "_change_detect"
+            summary = []
+            for i in range(len(dated) - 1):
+                (da, pa), (db, pb) = dated[i], dated[i + 1]
+                _job_log(jid, f"{da} -> {db} 計算中…")
+                r = CD.detect_change(
+                    pa, pb, da, db, out_dir, slug,
+                    ssim_thresh=float(body.get("ssim_thresh", CD.DEFAULT_SSIM_THRESH)),
+                    water_suppress=bool(body.get("water_suppress", True)),
+                )
+                summary.append({"date_a": da, "date_b": db,
+                                 "overall_change_fraction": r["overall_change_fraction"],
+                                 "mean_ssim": r["mean_ssim"], "n_regions": r["n_regions"]})
+                _job_log(jid, f"{da} -> {db} 完成：overall_change={r['overall_change_fraction']}")
+            (out_dir / f"{slug}_change_timeline.json").write_text(
+                json.dumps({"site": slug, "pairs": summary}, ensure_ascii=False, indent=2), encoding="utf-8")
+            _job_log(jid, "✔ 全部完成")
+            _job_finish(jid, result={"site": slug, "lat": lat, "lon": lon, "n_dates": len(dated), "pairs": summary})
+        except Exception as e:  # noqa: BLE001
+            _job_log(jid, f"失敗：{type(e).__name__}: {e}")
+            _job_finish(jid, error=str(e))
+        finally:
+            _capture_lock.release()
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": jid, "site": slug})
 
 
 if __name__ == "__main__":

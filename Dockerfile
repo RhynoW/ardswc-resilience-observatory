@@ -30,10 +30,17 @@ USER appuser
 # 在 `/api/apple_status` 回報未設定時自動隱藏 Apple 底圖選項（fail-closed，不影響其他 6 種
 # 底圖／等高線／100 熱點清單／11 熱點完整比對面板）。同樣的取捨 gmaps_bbox_demo 早已採用，
 # 這裡只是把這份複製過來卻忘記同步調整預設值的地方補上。
+# ENABLE_LIVE_CAPTURE=0：「線上分析（自訂座標）」的即時 GE Web 擷取需要真實瀏覽器自動化
+# （Playwright + Chromium）操作 earth.google.com/web，這個容器只有 python:3.11-slim（無
+# 瀏覽器），且已知連外部網站的出站連線在這裡經常逾時（見上方 Apple token 換發的既有記錄）。
+# 關閉後 `/api/capture_custom` 直接回 403、前端隱藏送出擷取按鈕（fail-closed，不會讓使用者
+# 按下一個保證失敗的按鈕），改顯示已預先擷取好的豐丘觀測站範例分析結果——這部分資料隨站
+# 一起發布，不需要本容器有瀏覽器就能瀏覽。
 ENV PORT=7860 \
     PYTHONUNBUFFERED=1 \
     HOME=/home/appuser \
-    GMAPS_DEMO_APPLE_AUTO=0
+    GMAPS_DEMO_APPLE_AUTO=0 \
+    ENABLE_LIVE_CAPTURE=0
 
 EXPOSE 7860
 CMD ["python", "webapp/change_detect_viewer/app.py"]

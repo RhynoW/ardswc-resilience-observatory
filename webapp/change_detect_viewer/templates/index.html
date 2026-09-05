@@ -192,6 +192,71 @@
   }
   .coord-readout:hover{ color:var(--accent); }
 
+  /* ── 線上分析（自訂座標）＋ 3D 立體檢視 開關鈕，樣式比照既有 #btn-toggle-events ── */
+  #btn-toggle-custom, #btn-toggle-tilt3d{
+    font-family:var(--font-mono); font-size:11.5px; background:var(--paper-raised); border:1px solid var(--line);
+    color:var(--muted); padding:6px 11px; cursor:pointer;
+  }
+  #btn-toggle-custom.active{ color:var(--paper); background:var(--accent); border-color:var(--accent); }
+  #btn-toggle-tilt3d.active{ color:var(--paper); background:var(--accent-2); border-color:var(--accent-2); }
+
+  /* ── 3D 立體檢視：CSS perspective 傾斜，純視覺、非真實 3D 相機（見 ARCHITECTURE.md） ──
+     只轉 #hotspot-map 本體（含 Leaflet 內部 canvas/圖磚），基準面板/座標讀出等 HUD
+     維持水平不轉——傾斜期間點選精度不可靠，故互動由 JS 端 guard（tilt3dActive）暫停，
+     不是靠 CSS pointer-events 關掉（那樣連平移/縮放瀏覽都會失效，違背「動態視角」訴求）。 */
+  #map-wrap.tilt-3d{ perspective:1400px; }
+  #hotspot-map{ transition:transform .5s ease, box-shadow .5s ease; transform-origin:50% 100%; }
+  #map-wrap.tilt-3d #hotspot-map{
+    transform:rotateX(42deg) scale(1.22);
+    box-shadow:0 46px 70px -24px rgba(0,0,0,.4);
+  }
+  .tilt3d-hint{
+    position:absolute; top:10px; left:10px; z-index:1000; background:var(--accent-2); color:var(--paper);
+    border:1px solid var(--accent-2); padding:6px 10px; font-family:var(--font-mono); font-size:11px;
+    max-width:280px; line-height:1.5; display:none;
+  }
+  #map-wrap.tilt-3d .tilt3d-hint{ display:block; }
+
+  /* ── 線上分析面板（自訂座標，2026-09-05）────────────────────────────────── */
+  .custom-panel{ display:none; background:var(--paper-raised); border:1px solid var(--line); padding:16px 18px; margin:0 0 14px; }
+  .custom-panel.open{ display:block; }
+  .custom-panel h3{ margin:0 0 4px; font-size:14px; }
+  .custom-panel .sub{ font-size:12px; color:var(--muted); margin:0 0 12px; line-height:1.6; }
+  .custom-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:10px; }
+  .custom-field{ display:flex; flex-direction:column; gap:3px; min-width:120px; }
+  .custom-field label{ font-family:var(--font-mono); font-size:10.5px; color:var(--muted); text-transform:uppercase; }
+  .custom-field input{
+    font-family:var(--font-mono); font-size:12.5px; background:var(--paper); color:var(--ink);
+    border:1px solid var(--line); padding:6px 8px; width:100%;
+  }
+  .custom-confirm{
+    font-size:12px; background:var(--chip-bg); border:1px solid var(--line); padding:8px 10px; margin:8px 0;
+    line-height:1.6;
+  }
+  .custom-confirm code{ font-family:var(--font-mono); }
+  #btn-capture-custom{
+    font-family:var(--font-mono); font-size:12.5px; background:var(--accent); color:var(--paper);
+    border:1px solid var(--accent); padding:8px 16px; cursor:pointer;
+  }
+  #btn-capture-custom:disabled{ opacity:.5; cursor:not-allowed; }
+  .custom-example{
+    display:flex; gap:14px; align-items:flex-start; background:var(--paper); border:1px dashed var(--line);
+    padding:12px 14px; margin-top:14px;
+  }
+  .custom-example .txt{ flex:1; font-size:12.5px; line-height:1.75; }
+  .custom-example h4{ margin:0 0 6px; font-size:13px; }
+  .custom-example .meta{ font-family:var(--font-mono); font-size:11px; color:var(--muted); margin-bottom:8px; }
+  .custom-example button{
+    font-family:var(--font-mono); font-size:11.5px; background:var(--accent-2); color:var(--paper);
+    border:1px solid var(--accent-2); padding:6px 12px; cursor:pointer; white-space:nowrap;
+  }
+  .custom-example a{ color:var(--accent-2); }
+  #custom-job-log{
+    font-family:var(--font-mono); font-size:11px; color:var(--muted); background:var(--paper); border:1px solid var(--line-soft);
+    padding:8px 10px; max-height:150px; overflow-y:auto; white-space:pre-wrap; margin-top:10px; display:none;
+  }
+  #custom-disabled-note{ font-size:12px; color:var(--sem-warn); margin-top:6px; }
+
   .map-legend{ display:flex; gap:16px; align-items:center; margin:0 0 26px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
   .map-legend span{ display:inline-flex; align-items:center; gap:6px; }
   .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
@@ -369,13 +434,54 @@
         <select id="filter-phototype"><option value="">全部分類</option></select>
         <select id="filter-year"><option value="">全部年份</option></select>
         <button id="btn-toggle-events">🗺️ 顯示原始通報點（≤3000筆）</button>
+        <button id="btn-toggle-custom">🎯 線上分析（自訂座標）</button>
+        <button id="btn-toggle-tilt3d">🧊 3D 立體檢視</button>
       </div>
       <button id="btn-fullscreen">⛶ 全螢幕地圖</button>
+    </div>
+
+    <div class="custom-panel" id="custom-panel">
+      <h3>🎯 線上分析：任意座標的 GE Web 前後期影像比對</h3>
+      <p class="sub">
+        不限於既有 100 個熱點——在地圖上點一下（或直接輸入座標）設定分析中心，送出後會即時對該
+        座標跑 Google Earth Web 歷史影像擷取＋全部相鄰日期的變遷偵測，與熱點詳情用的是同一套
+        SSIM 像素級比對引擎。<span id="custom-disabled-note" style="display:none;"></span>
+      </p>
+      <div class="custom-row">
+        <div class="custom-field"><label>緯度 lat</label><input type="number" id="custom-lat" step="0.000001" placeholder="點地圖設定"></div>
+        <div class="custom-field"><label>經度 lon</label><input type="number" id="custom-lon" step="0.000001" placeholder="點地圖設定"></div>
+        <div class="custom-field" style="min-width:100px;"><label>GSD (m/px)</label><input type="number" id="custom-gsd" value="0.2" step="0.05" min="0.05" max="2"></div>
+        <div class="custom-field" style="min-width:100px;"><label>歷史期數</label><input type="number" id="custom-ndates" value="10" step="1" min="2" max="30"></div>
+      </div>
+      <div class="custom-confirm" id="custom-confirm">尚未設定中心點——請先點地圖或輸入座標</div>
+      <button id="btn-capture-custom" disabled>🚀 擷取歷史影像＋變遷偵測</button>
+      <div id="custom-job-log"></div>
+
+      <div class="custom-example">
+        <div class="txt">
+          <h4>示範案例：豐丘觀測站（南投縣信義鄉，土石流潛勢溪流「投縣DF190」）</h4>
+          <div class="meta">23.667890, 120.876702 ・ 農村發展及水土保持署現地觀測站，2002 年建置</div>
+          民國 74 年（1985）尼爾森颱風，豐丘野溪上游土石崩塌引發土石流，下游農作物遭掩埋；
+          85 年賀伯、87 年奧托颱風亦傳出土石流災情；88 年 921 地震使原本破碎的地質結構更加
+          鬆散，崩塌地面積顯著增加；90 年桃芝颱風豪雨激發土石流，造成道路掩埋；101 年 5 月 3
+          日豪雨雖有豐富土石料源，所幸未成災。<br>
+          <span style="color:var(--muted);">註：Google Earth Web 在此座標最早的歷史影像回溯至
+          2014 年，早於此的災害（含 921 地震、桃芝颱風）沒有對應的歷史衛星影像可比對——下方
+          範例顯示的是 2014–2025 年間、崩塌地趨於穩定後的十餘期影像變化，不是重現上述各次
+          災害本身。</span>
+        </div>
+        <div>
+          <button id="btn-example-fengqiu">📍 使用此範例座標</button><br><br>
+          <a href="https://dfm.ardswc.gov.tw/mydfm/StationInfo/FileInfo?id=6&amp;lang=TW" target="_blank" rel="noopener" style="font-size:11px;">🔗 官方觀測站頁面 ↗</a>
+        </div>
+      </div>
     </div>
 
     <div id="map-wrap">
       <div id="hotspot-map"></div>
       <div class="baselayer-panel" id="baselayer-panel"></div>
+      <div class="tilt3d-hint" id="tilt3d-hint">🧊 3D 檢視中（視覺瀏覽用，非真實 3D 相機）——
+        熱點/座標點選功能已暫停，可平移縮放瀏覽；如需點選請切回 2D 地圖。</div>
       <div class="coord-readout" id="coord-readout" title="點一下複製座標">
         <span id="coord-text">移動滑鼠查看座標</span> <span>📋</span>
       </div>
@@ -584,6 +690,11 @@ async function loadWatershed(rank){
   try{ d = await api(`/api/watershed/${rank}`); }
   catch(e){ slot.innerHTML = `<div class="ws-loading">分析失敗：${e.message}</div>`; return; }
   if(d.error){ slot.innerHTML = `<div class="ws-loading">${d.error}</div>`; return; }
+  renderWatershedPanels(slot, d);
+}
+
+// 供 loadWatershed(rank) 與 loadCustomWatershed(lat,lon) 共用的結果渲染（2026-09-05 抽出）。
+function renderWatershedPanels(slot, d){
   const panelHtml = (scale) => {
     const s = scale.stats;
     return `
@@ -702,6 +813,241 @@ function initMap(){
   document.addEventListener("fullscreenchange", () => setTimeout(()=> map.invalidateSize(), 80));
 
   initMouseCoordReadout();
+  initTilt3d();
+  initCustomAnalysis();
+}
+
+// ── 3D 立體檢視（2026-09-05，CSS perspective 傾斜——純視覺，非真實 3D 相機）──────────
+// 只轉 #hotspot-map 本體，HUD（底圖面板/座標讀出/線上分析面板）維持水平。傾斜時的
+// 螢幕像素→地理座標換算會失真（perspective 讓上下不同位置的像素代表不同地面距離），
+// 故用 tilt3dActive 旗標暫停「點選」類互動（熱點/自訂座標），只保留平移縮放瀏覽——
+// 見 ARCHITECTURE.md 對這個取捨的完整說明。
+let tilt3dActive = false;
+function initTilt3d(){
+  document.getElementById("btn-toggle-tilt3d").onclick = () => {
+    tilt3dActive = !tilt3dActive;
+    document.getElementById("map-wrap").classList.toggle("tilt-3d", tilt3dActive);
+    document.getElementById("btn-toggle-tilt3d").classList.toggle("active", tilt3dActive);
+    setTimeout(()=> map.invalidateSize(), 520);
+  };
+}
+
+// ── 線上分析：自訂座標（2026-09-05 追加）───────────────────────────────────
+// 把座標點選+擷取送出的機制搬進本站地圖（原本是 imagery_change_toolkit/8074 的通用版本），
+// 示範案例＝豐丘觀測站。公開展示版（ENABLE_LIVE_CAPTURE=false）隱藏送出擷取按鈕，但範例
+// 座標的已完成分析結果（預先在本機跑好、隨資料一起發布）一律可查看，見 btn-example-fengqiu。
+let pickModeActive = false, customTargetMarker = null, customFootprintRect = null, customCaptureBusy = false;
+const FENGQIU = { lat:23.667890, lon:120.876702, site:"custom_23p66789_120p87670" };
+
+function initCustomAnalysis(){
+  document.getElementById("btn-toggle-custom").onclick = () => {
+    pickModeActive = !pickModeActive;
+    document.getElementById("btn-toggle-custom").classList.toggle("active", pickModeActive);
+    document.getElementById("custom-panel").classList.toggle("open", pickModeActive);
+  };
+  map.on("click", (e) => {
+    if(!pickModeActive || tilt3dActive) return;
+    setCustomTarget(e.latlng);
+  });
+  ["custom-lat","custom-lon"].forEach(id=>{
+    document.getElementById(id).addEventListener("input", customCoordInputsChanged);
+  });
+  document.getElementById("custom-gsd").oninput = () => {
+    if(customTargetMarker) customFootprintRect.setBounds(customFootprintBounds(customTargetMarker.getLatLng()));
+    updateCustomConfirm();
+  };
+  document.getElementById("btn-example-fengqiu").onclick = () => {
+    if(!pickModeActive) document.getElementById("btn-toggle-custom").click();
+    document.getElementById("custom-lat").value = FENGQIU.lat.toFixed(6);
+    document.getElementById("custom-lon").value = FENGQIU.lon.toFixed(6);
+    customCoordInputsChanged();
+    map.setView([FENGQIU.lat, FENGQIU.lon], 15);
+    openCustomDetail(FENGQIU.site, FENGQIU.lat, FENGQIU.lon);
+  };
+  refreshCustomCaptureStatus();
+}
+
+function customFootprintBounds(latlng){
+  const gsd = parseFloat(document.getElementById("custom-gsd").value) || 0.2;
+  const wM = gsd * 7680, hM = gsd * 4320;   // 8K 擷取（ge_web_capture_v2_8k.py 預設 viewport）
+  const dLat = (hM / 2) / 111320;
+  const dLon = (wM / 2) / (111320 * Math.cos(latlng.lat * Math.PI / 180));
+  return [[latlng.lat - dLat, latlng.lng - dLon], [latlng.lat + dLat, latlng.lng + dLon]];
+}
+
+function setCustomTarget(latlng){
+  document.getElementById("custom-lat").value = latlng.lat.toFixed(6);
+  document.getElementById("custom-lon").value = latlng.lng.toFixed(6);
+  if(!customTargetMarker){
+    customTargetMarker = L.circleMarker(latlng, { radius:7, color:"#B85C1E", weight:2, fillColor:"#B85C1E", fillOpacity:0.5 }).addTo(map);
+    customFootprintRect = L.rectangle(customFootprintBounds(latlng), { color:"#B85C1E", weight:2, fillOpacity:0.04, dashArray:"6,4" }).addTo(map);
+  } else {
+    customTargetMarker.setLatLng(latlng);
+    customFootprintRect.setBounds(customFootprintBounds(latlng));
+  }
+  updateCustomConfirm();
+}
+
+function customCoordInputsChanged(){
+  const lat = parseFloat(document.getElementById("custom-lat").value);
+  const lon = parseFloat(document.getElementById("custom-lon").value);
+  if(Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180){
+    setCustomTarget(L.latLng(lat, lon));
+  } else {
+    updateCustomConfirm();
+  }
+}
+
+function updateCustomConfirm(){
+  const box = document.getElementById("custom-confirm");
+  const btn = document.getElementById("btn-capture-custom");
+  const lat = parseFloat(document.getElementById("custom-lat").value);
+  const lon = parseFloat(document.getElementById("custom-lon").value);
+  const gsd = document.getElementById("custom-gsd").value;
+  const valid = Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180;
+  if(!valid){
+    box.textContent = "尚未設定中心點——請先點地圖或輸入座標";
+    btn.disabled = true;
+    return;
+  }
+  const wM = Math.round(gsd * 7680), hM = Math.round(gsd * 4320);
+  box.innerHTML = `即將送出：<b>${lat.toFixed(6)}, ${lon.toFixed(6)}</b>　範圍約 ${wM}×${hM} m<br>站點名稱：<code>custom_${lat.toFixed(5)}_${lon.toFixed(5)}</code>`.replace(/-/g,"m").replace(/\.(?=\d{5}(_|<))/g,"p");
+  btn.disabled = customCaptureBusy;
+}
+
+async function refreshCustomCaptureStatus(){
+  let s;
+  try{ s = await api("/api/capture_status"); } catch(e){ return; }
+  customCaptureBusy = !!s.busy;
+  const btn = document.getElementById("btn-capture-custom");
+  const note = document.getElementById("custom-disabled-note");
+  if(!s.enabled){
+    btn.style.display = "none";
+    note.style.display = "block";
+    note.textContent = "此公開展示版未啟用即時線上擷取（需要本機瀏覽器自動化）——可直接查看下方「豐丘觀測站範例」的已完成分析結果。";
+    return;
+  }
+  if(customCaptureBusy){ btn.disabled = true; btn.textContent = "⏳ 已有擷取任務在執行中…"; }
+  updateCustomConfirm();
+}
+
+document.getElementById("btn-capture-custom").onclick = async () => {
+  const btn = document.getElementById("btn-capture-custom");
+  const lat = parseFloat(document.getElementById("custom-lat").value);
+  const lon = parseFloat(document.getElementById("custom-lon").value);
+  const gsd = parseFloat(document.getElementById("custom-gsd").value);
+  const n_dates = parseInt(document.getElementById("custom-ndates").value, 10);
+  const logEl = document.getElementById("custom-job-log");
+  logEl.style.display = "block"; logEl.style.color = ""; logEl.textContent = "送出中…";
+
+  if(customTargetMarker){
+    const mc = customTargetMarker.getLatLng();
+    if(Math.abs(mc.lat - lat) > 1e-4 || Math.abs(mc.lng - lon) > 1e-4){
+      logEl.style.color = "var(--sem-bad)";
+      logEl.textContent = `✘ 座標框與地圖標記不一致，已取消送出——請重新點地圖或輸入座標。`;
+      return;
+    }
+  }
+
+  btn.disabled = true; customCaptureBusy = true;
+  const origLabel = "🚀 擷取歷史影像＋變遷偵測";
+  btn.textContent = "⏳ 送出中…";
+  let r;
+  try{
+    r = await fetch("/api/capture_custom", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({lat, lon, gsd, n_dates}) }).then(x=>x.json());
+  } catch(e){
+    logEl.style.color = "var(--sem-bad)"; logEl.textContent = "✘ 送出失敗：" + e;
+    btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;
+    return;
+  }
+  if(r.error){
+    logEl.style.color = "var(--sem-bad)";
+    logEl.textContent = "✘ " + r.error + "\n（本次請求未執行——不是這次送出的座標）";
+    btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;
+    return;
+  }
+  btn.textContent = "⏳ 擷取中，請勿重複送出…";
+  logEl.textContent = `站點：${r.site}（${lat.toFixed(6)}, ${lon.toFixed(6)}）\n啟動中…`;
+  pollCustomJob(r.job_id, logEl, async (result) => {
+    btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;
+    if(!result) return;
+    logEl.textContent += `\n\n✔ 完成，共 ${result.n_dates} 期。載入完整比對結果…`;
+    await openCustomDetail(result.site, result.lat, result.lon);
+  });
+};
+
+async function pollCustomJob(jid, logEl, onDone){
+  const tick = async () => {
+    const j = await api("/api/job/" + jid);
+    logEl.textContent = j.log.join("\n") || "執行中…";
+    logEl.scrollTop = logEl.scrollHeight;
+    if(j.status === "running"){ setTimeout(tick, 1500); return; }
+    if(j.status !== "done"){ logEl.style.color = "var(--sem-bad)"; logEl.textContent += "\n✘ 失敗：" + j.error; }
+    if(onDone) onDone(j.result);
+  };
+  tick();
+}
+
+// 開啟自訂座標的詳情面板——與 openDetail() 共用 loadPair()/#detail 面板，但沒有
+// rank/巡查優先級/流域分析（既有 100 熱點限定），故清空對應區塊而非顯示過期內容。
+async function openCustomDetail(site, lat, lon){
+  document.getElementById("detail").classList.add("open");
+  document.getElementById("detail-body").innerHTML = '<div class="detail-loading">載入中…</div>';
+  document.getElementById("pair-picker").innerHTML = "";
+  document.getElementById("detail-foot").style.display = "none";
+  currentRank = null;
+  document.getElementById("detail-title").textContent =
+    (site === FENGQIU.site) ? "🎯 豐丘觀測站（示範案例）" : `🎯 自訂座標分析`;
+  document.getElementById("detail-meta").textContent = `${lat.toFixed(6)}, ${lon.toFixed(6)} ・ ${site}`;
+  document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"nearest"});
+  document.getElementById("evidence-card-slot").innerHTML = "";
+  renderCustomWatershedButton(lat, lon);
+
+  let timeline;
+  try{ timeline = await api(`/api/timeline/${site}`); } catch(e){ timeline = {pairs:[]}; }
+  let pairs = timeline.pairs;
+  if(!pairs || !pairs.length){
+    // 沒有 _change_timeline.json（例如公開部署版只保留頭尾一組，比照既有 deephist 站點
+    // 慣例，見 ARCHITECTURE.md）——退而求其次算出「最舊 vs 最新」合成配對，同 openDetail()。
+    let dates = [];
+    try{ dates = (await api(`/api/site_dates/${site}`)).dates || []; } catch(e){ /* ignore */ }
+    if(dates.length < 2){
+      document.getElementById("detail-body").innerHTML = '<div class="detail-loading">此座標尚無擷取資料——請先在上方「線上分析」面板送出擷取。</div>';
+      return;
+    }
+    pairs = [{date_a: dates[0], date_b: dates[dates.length-1]}];
+  }
+  let dramaticIdx = 0;
+  pairs.forEach((p,i)=>{ if((p.overall_change_fraction ?? -1) > (pairs[dramaticIdx].overall_change_fraction ?? -1)) dramaticIdx = i; });
+
+  const picker = document.getElementById("pair-picker");
+  picker.innerHTML = "";
+  pairs.forEach((p,i)=>{
+    const b = document.createElement("button");
+    b.textContent = `${p.date_a} → ${p.date_b}`;
+    if(pairs.length > 1 && i === dramaticIdx) b.classList.add("dramatic");
+    b.title = p.overall_change_fraction != null ? `overall_change=${p.overall_change_fraction}` : "";
+    b.onclick = () => { picker.querySelectorAll("button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); loadPair(site, p.date_a, p.date_b, {lat, lon}); };
+    picker.appendChild(b);
+  });
+  picker.children[dramaticIdx]?.classList.add("active");
+  loadPair(site, pairs[dramaticIdx].date_a, pairs[dramaticIdx].date_b, {lat, lon});
+}
+
+function renderCustomWatershedButton(lat, lon){
+  const slot = document.getElementById("watershed-slot");
+  slot.innerHTML = `<button class="ws-trigger" id="ws-trigger">🌊 執行坡度與流域分析（3×3km，提示可能積水/淹水區域）</button>`;
+  document.getElementById("ws-trigger").onclick = () => loadCustomWatershed(lat, lon);
+}
+async function loadCustomWatershed(lat, lon){
+  const slot = document.getElementById("watershed-slot");
+  slot.innerHTML = `<div class="ws-loading">分析中…（首次約需數秒擷取地形資料，之後會快取；同時計算 3×3km 與 1×1km 兩種尺度）</div>`;
+  let d;
+  try{ d = await api(`/api/watershed_custom?lat=${lat}&lon=${lon}`); }
+  catch(e){ slot.innerHTML = `<div class="ws-loading">分析失敗：${e.message}</div>`; return; }
+  if(d.error){ slot.innerHTML = `<div class="ws-loading">${d.error}</div>`; return; }
+  renderWatershedPanels(slot, d);
 }
 
 function switchBaseLayer(key){
@@ -966,7 +1312,9 @@ function renderMap(){
       radius: 5, color: color, fillColor: color, fillOpacity: 0.75, weight: 1.5
     }).addTo(map);
     m.bindPopup(() => makeHotspotPopup(h));
-    m.on("click", ()=> openDetail(h.rank));
+    // tilt3dActive 時傾斜視角下的點擊命中位置不可靠（見 initTilt3d 說明），連彈窗也一併
+    // 暫停，避免點到跟視覺上不一致的熱點——回到 2D 才恢復。
+    m.on("click", (e)=>{ if(tilt3dActive){ m.closePopup(); return; } openDetail(h.rank); });
   });
 }
 
