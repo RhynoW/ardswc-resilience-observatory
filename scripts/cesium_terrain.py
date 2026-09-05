@@ -103,11 +103,29 @@ class IonTerrainSource:
             self.attributions = [a.get("html", "") for a in self._ep.get("attributions", [])]
         return self._ep
 
+    def _get_authed(self, url_fn, headers_fn):
+        """對需要 `endpoint()` 短期 `accessToken` 的請求發 GET，401 時視為該 token 已過期，
+        清快取重取端點後重試一次（2026-09-06 修正：此物件是 app.py 的 process 級單例，長時間
+        運行後 Cesium ion 發的短期 accessToken 會過期，原本 `self._ep` 一旦快取就終身不變，
+        導致 process 存活愈久、等高線/流域分析愈容易靜默失敗——contours/watershed 兩處都在
+        用同一顆過期 token。實測：`/api/contours_status` 只呼叫 `endpoint()`
+        本身（若已快取，不重新驗證），會誤報「可用」；真正的 tile 請求才會 401。"""
+        for attempt in range(2):
+            ep = self.endpoint()
+            try:
+                return self._get(url_fn(ep), headers_fn(ep))
+            except urllib.error.HTTPError as e:
+                if e.code == 401 and attempt == 0:
+                    self._ep = None
+                    self._layer = None
+                    continue
+                raise
+
     def layer(self):
         if self._layer is None:
-            ep = self.endpoint()
-            _, _, b = self._get(ep["url"] + "layer.json",
-                                 {"Authorization": f"Bearer {ep['accessToken']}"})
+            _, _, b = self._get_authed(
+                lambda ep: ep["url"] + "layer.json",
+                lambda ep: {"Authorization": f"Bearer {ep['accessToken']}"})
             self._layer = json.loads(b)
         return self._layer
 
@@ -164,13 +182,12 @@ class IonTerrainSource:
             return None
         if not self.is_available(x, y, z):
             return None
-        ep = self.endpoint()
         ver = self.layer().get("version", "1.2.0")
-        url = f"{ep['url']}{z}/{x}/{y}.terrain?v={ver}"
-        hdr = {"Authorization": f"Bearer {ep['accessToken']}",
-               "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9"}
         try:
-            st, _, raw = self._get(url, hdr)
+            st, _, raw = self._get_authed(
+                lambda ep: f"{ep['url']}{z}/{x}/{y}.terrain?v={ver}",
+                lambda ep: {"Authorization": f"Bearer {ep['accessToken']}",
+                            "Accept": "application/vnd.quantized-mesh,application/octet-stream;q=0.9"})
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 open(miss, "wb").close()
