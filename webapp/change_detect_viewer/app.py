@@ -57,11 +57,13 @@ sys.path.insert(0, str(HERE))
 import ge_change_detect as CD          # noqa: E402
 import gmaps_tiles as GT               # noqa: E402  — 僅用 apple/nlsc_topo/nlsc_photo 三個來源
 import cesium_terrain as CT            # noqa: E402  — 可開關等高線圖用（Cesium World Terrain）
+import watershed_analysis as WA        # noqa: E402  — 小範圍坡度/流域分析（積水候選提示）
 
 REPO = HERE.parent.parent
 CAPTURES_ROOT = REPO / "data" / "ge_captures"
 DATA_ROOT = REPO / "data" / "ardswc_hotspots"
 CONTOUR_CACHE = REPO / "data" / "contour_cache"
+WATERSHED_CACHE = REPO / "data" / "watershed_cache"
 
 app = Flask(__name__)
 
@@ -612,6 +614,43 @@ def api_contours_status():
                          "commercial_ok": src.commercial_use_allowed()})
     except Exception as e:  # noqa: BLE001
         return jsonify({"available": False, "error": f"{type(e).__name__}: {e}"})
+
+
+# ── 小範圍坡度/流域分析（2026-09-05 追加，scripts/watershed_analysis.py）───────────
+# 每個熱點的 3×3km 鄰域坡度+D8流向+流量累積分析，提示「可能積水/淹水」候選區——
+# 純地形幾何篩選，非水文水利模型（見 watershed_analysis.py 開頭治理說明）。跟等高線一樣
+# 依賴 Cesium World Terrain，同一份 token；磁碟快取（依 rank，同一熱點不重算）。
+@app.route("/api/watershed/<int:rank>")
+def api_watershed(rank):
+    h = _hotspots_by_rank().get(rank)
+    if not h or h.get("lat") is None or h.get("lon") is None:
+        return jsonify({"error": "此熱點無座標資料"}), 404
+
+    stats_fp = WATERSHED_CACHE / f"rank{rank}_stats.json"
+    png_fp = WATERSHED_CACHE / f"rank{rank}.png"
+    cached = _load_json(stats_fp, None)
+    if cached is not None and png_fp.exists():
+        return jsonify(cached)
+
+    try:
+        result = WA.analyze(h["lat"], h["lon"], source=_get_contour_source())
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
+
+    WATERSHED_CACHE.mkdir(parents=True, exist_ok=True)
+    png_fp.write_bytes(result["png_bytes"])
+    payload = {"stats": result["stats"], "governance_note": result["governance_note"],
+               "image_url": f"/image/watershed/rank{rank}.png"}
+    stats_fp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return jsonify(payload)
+
+
+@app.route("/image/watershed/<path:filename>")
+def serve_watershed_image(filename):
+    full = safe_join(str(WATERSHED_CACHE), filename)
+    if not full or not Path(full).exists():
+        abort(404)
+    return send_file(full)
 
 
 # ── 76,773 筆原始事件：統計/分類/地圖疊點（2026-09-04 追加）─────────────────

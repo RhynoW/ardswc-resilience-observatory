@@ -117,6 +117,26 @@
   .evidence-card .ec-factor .ec-flabel{ color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; }
   .evidence-card .ec-factor .ec-fvalue{ font-family:var(--font-mono); font-size:15px; margin-top:2px; }
   .evidence-card .ec-factor .ec-fband{ font-size:11px; margin-top:1px; }
+
+  /* ── 坡度與流域分析 ─────────────────────────────────────── */
+  .ws-trigger{ display:block; width:100%; text-align:left; margin:0 0 16px; padding:10px 16px;
+    border:1px dashed var(--line); background:var(--paper-raised); color:var(--ink); font-size:13px;
+    cursor:pointer; font-family:var(--font-mono); }
+  .ws-trigger:hover{ border-color:var(--accent); color:var(--accent); }
+  .ws-loading{ padding:14px 16px; color:var(--muted); font-size:13px; margin:0 0 16px;
+    border:1px solid var(--line); background:var(--paper-raised); }
+  .ws-card{ border:1px solid var(--line); background:var(--paper-raised); margin:0 0 16px; }
+  .ws-head{ display:flex; align-items:center; justify-content:space-between; padding:9px 16px;
+    border-bottom:1px solid var(--line); }
+  .ws-title{ font-size:13px; font-weight:600; }
+  .ws-collapse{ font-family:var(--font-mono); font-size:11px; padding:3px 10px; border:1px solid var(--line);
+    background:var(--paper); color:var(--ink); cursor:pointer; }
+  .ws-body{ padding:14px 16px; }
+  .ws-img{ width:100%; max-width:640px; display:block; margin:0 auto 10px; border:1px solid var(--line); }
+  .ws-legend{ display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:8px; }
+  .ws-legend div{ display:flex; align-items:center; gap:6px; }
+  .ws-swatch{ display:inline-block; width:12px; height:12px; border-radius:2px; flex:none; }
+  .ws-stats{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); line-height:1.6; margin-bottom:4px; }
   .stat-bars{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
   @media (max-width:780px){ .stat-bars{ grid-template-columns:1fr; } }
   .bar-row{ display:grid; grid-template-columns:90px 1fr 46px; align-items:center; gap:8px; font-size:12.5px; margin:5px 0; }
@@ -451,6 +471,7 @@
       <button class="detail-close" id="detail-close">✕ 關閉</button>
     </div>
     <div id="evidence-card-slot"></div>
+    <div id="watershed-slot"></div>
     <div class="pair-picker" id="pair-picker"></div>
     <div id="detail-body"><div class="detail-loading">選擇左側熱點或地圖上的點以載入影像…</div></div>
     <div class="detail-foot" id="detail-foot" style="display:none;">
@@ -533,6 +554,52 @@ function renderEvidenceCard(rank){
         <div class="ec-factor"><div class="ec-flabel">資料信心</div><div class="ec-fvalue" style="font-size:12px;">${confSourceLabel}</div><div class="ec-fband ${CONF_BAND_CLASS[f.confidence.band]}">${f.confidence.band}</div></div>
       </div>
     </div>`;
+}
+
+// ── 小範圍坡度與流域分析（3×3km，積水/淹水候選提示）─────────────────────────
+// 按需計算（非隨詳情面板自動載入）：Cesium 地形擷取+D8流向+流量累積需要幾秒鐘，
+// 且並非每次查看熱點都需要看這個，做成按鈕觸發比較合理。結果依 rank 磁碟快取，
+// 同一熱點第二次點擊直接讀快取（同等高線 tile 快取的慣例）。
+function renderWatershedButton(rank){
+  const slot = document.getElementById("watershed-slot");
+  slot.innerHTML = `<button class="ws-trigger" id="ws-trigger">🌊 執行坡度與流域分析（3×3km，提示可能積水/淹水區域）</button>`;
+  document.getElementById("ws-trigger").onclick = () => loadWatershed(rank);
+}
+async function loadWatershed(rank){
+  const slot = document.getElementById("watershed-slot");
+  slot.innerHTML = `<div class="ws-loading">分析中…（首次約需 3–5 秒擷取地形資料，之後會快取）</div>`;
+  let d;
+  try{ d = await api(`/api/watershed/${rank}`); }
+  catch(e){ slot.innerHTML = `<div class="ws-loading">分析失敗：${e.message}</div>`; return; }
+  if(d.error){ slot.innerHTML = `<div class="ws-loading">${d.error}</div>`; return; }
+  const s = d.stats;
+  slot.innerHTML = `
+    <div class="ws-card">
+      <div class="ws-head">
+        <span class="ws-title">🌊 坡度與流域分析（${s.span_km}×${s.span_km}km，格距約 ${s.cellsize_m_actual}m）</span>
+        <button class="ws-collapse" id="ws-collapse">收合 ▲</button>
+      </div>
+      <div class="ws-body" id="ws-body">
+        <img class="ws-img" src="${d.image_url}?t=${Date.now()}" alt="坡度與流域分析">
+        <div class="ws-legend">
+          <div><span class="ws-swatch" style="background:#eb5a28;"></span>積水候選（局部窪地或平緩高匯流區）</div>
+          <div><span class="ws-swatch" style="background:#1e78c8;"></span>推估排水/匯流路徑</div>
+          <div><span class="ws-swatch" style="background:#fff; border:2px solid #c82828;"></span>該熱點通報座標</div>
+        </div>
+        <div class="ws-stats">
+          高程 ${s.elev_min_m}–${s.elev_max_m} m ・ 積水候選面積佔比 ${(s.risk_area_fraction*100).toFixed(2)}%
+          （局部窪地 ${s.n_sink_cells} 格、平緩高匯流 ${s.n_flat_highflow_cells} 格）
+          ・ 判定門檻：坡度 &lt;${s.slope_flat_threshold_deg}° 且流量累積前 ${(100-s.accum_percentile_threshold).toFixed(0)}%
+        </div>
+        <p class="governance-note">⚠ ${d.governance_note}</p>
+      </div>
+    </div>`;
+  document.getElementById("ws-collapse").onclick = (e) => {
+    const body = document.getElementById("ws-body");
+    const collapsed = body.style.display === "none";
+    body.style.display = collapsed ? "" : "none";
+    e.target.textContent = collapsed ? "收合 ▲" : "展開 ▼";
+  };
 }
 
 async function api(path, opts){
@@ -928,6 +995,7 @@ async function openDetail(rank, preferSite, preferA, preferB){
   document.getElementById("detail-title").textContent = `#${rank} ${h.county||""}${h.district||""}`;
   document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"nearest"});
   renderEvidenceCard(rank);
+  renderWatershedButton(rank);
 
   let sites;
   try{ sites = await api(`/api/hotspot_sites/${rank}`); }
