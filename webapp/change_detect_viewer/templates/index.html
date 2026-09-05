@@ -818,27 +818,38 @@ async function refreshEventsLayer(){
   if(yr) params.set("year", yr);
   const data = await api("/api/events?" + params.toString());
   // 雙圈標記：外圈黃色加粗暈邊（無論疊在深色森林或淺色地形圖底圖上都保持高對比、不會被
-  // 背景吃掉，比先前的白色更醒目）＋內圈實心色點精準定位。外圈設 interactive:false，避免
-  // 疊在內圈點擊熱區上互相干擾。
+  // 背景吃掉，比先前的白色更醒目）＋內圈實心色點精準定位。
+  //
+  // 右鍵熱區修正（2026-09-05，使用者回報「選單依然沒有出現」）：原本外圈設
+  // interactive:false，只有內圈（半徑 3px，加邊框粗細後實際命中半徑只有 ~3.5px）能接收
+  // 事件——但外圈（半徑 7px＋粗邊框 3px，視覺上約 8.5px 半徑）才是使用者實際看得到、會
+  // 拿滑鼠去點的範圍。這造成「看起來能點的地方」比「真正能點的地方」大超過一倍，一般縮放
+  // 層級下使用者幾乎不可能精準點在那顆小內點上——這才是選單打不開的真正原因，不是先前修過
+  // 的事件冒泡問題（那個 bug 確實修好了，只是修好了也沒用，因為使用者的滑鼠位置從一開始
+  // 就命中不到內圈）。修法：外圈也設為 interactive、掛上同一個處理函式，讓整個視覺上看得
+  // 到的黃色暈邊範圍都可以右鍵點擊，而不是只有中心那個小點。
+  const onEventContextMenu = (p) => (e) => {
+    L.DomEvent.preventDefault(e);
+    L.DomEvent.stopPropagation(e);
+    // L.DomEvent.stopPropagation() 只擋 Leaflet 自己內部要不要繼續派給其他圖層，
+    // 不會真的呼叫原生 Event.stopPropagation()——原生 contextmenu 事件仍會一路冒泡到
+    // document，正好撞上下面那個「在選單外右鍵即關閉選單」的全域監聽器，導致選單一開
+    // 就被同一次點擊自己關掉。要真的擋住冒泡必須手動呼叫原生事件的 stopPropagation()。
+    if(e.originalEvent) e.originalEvent.stopPropagation();
+    showEventContextMenu(e.originalEvent, p);
+  };
   const markers = [];
   data.points.filter(p=>p.lat!=null && p.lon!=null).forEach(p=>{
-    markers.push(L.circleMarker([p.lat, p.lon], {
-      radius:7, color:"#FFD400", weight:3, opacity:.95, fillColor:"#FFD400", fillOpacity:.2, interactive:false
-    }));
+    const handler = onEventContextMenu(p);
+    const outer = L.circleMarker([p.lat, p.lon], {
+      radius:7, color:"#FFD400", weight:3, opacity:.95, fillColor:"#FFD400", fillOpacity:.2
+    });
+    outer.on("contextmenu", handler);
     const inner = L.circleMarker([p.lat, p.lon], {
       radius:3, color:"#7A3212", weight:1, fillColor:"#B85C1E", fillOpacity:.95
     });
-    inner.on("contextmenu", (e) => {
-      L.DomEvent.preventDefault(e);
-      L.DomEvent.stopPropagation(e);
-      // L.DomEvent.stopPropagation() 只擋 Leaflet 自己內部要不要繼續派給其他圖層，
-      // 不會真的呼叫原生 Event.stopPropagation()——原生 contextmenu 事件仍會一路冒泡到
-      // document，正好撞上下面那個「在選單外右鍵即關閉選單」的全域監聽器，導致選單一開
-      // 就被同一次點擊自己關掉。要真的擋住冒泡必須手動呼叫原生事件的 stopPropagation()。
-      if(e.originalEvent) e.originalEvent.stopPropagation();
-      showEventContextMenu(e.originalEvent, p);
-    });
-    markers.push(inner);
+    inner.on("contextmenu", handler);
+    markers.push(outer, inner);
   });
   eventsLayer = L.layerGroup(markers).addTo(map);
   document.getElementById("events-truncate-note").textContent =
