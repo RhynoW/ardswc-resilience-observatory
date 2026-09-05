@@ -88,6 +88,15 @@
   .no-verdict{ font-size:11.5px; color:var(--muted); font-style:italic; }
   .governance-note{ font-size:11.5px; color:var(--sem-warn); max-width:70ch; line-height:1.5; margin-top:6px; }
 
+  /* ── 通報點右鍵選單 ─────────────────────────────────────── */
+  .event-ctxmenu{ position:fixed; z-index:6000; background:var(--paper-raised); border:1px solid var(--line);
+    box-shadow:0 4px 16px rgba(0,0,0,.25); min-width:190px; padding:6px 0; font-size:13px; }
+  .event-ctxmenu .ec-title{ padding:4px 14px 8px; font-family:var(--font-mono); font-size:10.5px;
+    color:var(--muted); border-bottom:1px solid var(--line-soft); margin-bottom:4px; white-space:nowrap; }
+  .event-ctxmenu button{ display:block; width:100%; text-align:left; padding:7px 14px; border:none;
+    background:none; color:var(--ink); font-size:13px; cursor:pointer; }
+  .event-ctxmenu button:hover{ background:var(--line-soft); }
+
   /* ── 巡查優先級 A–D ─────────────────────────────────────── */
   .tier-badge{ display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono);
     font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:2px;
@@ -464,6 +473,12 @@
   <div class="lb-cap" id="lightbox-cap"></div>
 </div>
 
+<div id="event-ctxmenu" class="event-ctxmenu" hidden>
+  <div class="ec-title" id="ec-title"></div>
+  <button id="ec-search">🔍 搜尋相關報導</button>
+  <button id="ec-archive">📷 水保署歷史影像庫</button>
+</div>
+
 <footer>
   <span>地景複發熱點觀測站 · 台灣專用</span>
   <span>資料截至 2026-09-04 · 公開展示版：11 個熱點含完整比對面板，其餘 89 個熱點提供中繼資料與巡查優先級</span>
@@ -722,23 +737,68 @@ async function refreshEventsLayer(){
   if(pt) params.set("photo_type", pt);
   if(yr) params.set("year", yr);
   const data = await api("/api/events?" + params.toString());
-  // 雙圈標記：外圈白色暈邊（無論疊在深色森林或淺色地形圖底圖上都保持高對比、不會被背景吃掉）
-  // ＋內圈實心色點精準定位，比單一小圓點在任何底圖上都更醒目。外圈設 interactive:false，
-  // 避免疊在內圈點擊熱區上互相干擾。
+  // 雙圈標記：外圈黃色加粗暈邊（無論疊在深色森林或淺色地形圖底圖上都保持高對比、不會被
+  // 背景吃掉，比先前的白色更醒目）＋內圈實心色點精準定位。外圈設 interactive:false，避免
+  // 疊在內圈點擊熱區上互相干擾。
   const markers = [];
   data.points.filter(p=>p.lat!=null && p.lon!=null).forEach(p=>{
     markers.push(L.circleMarker([p.lat, p.lon], {
-      radius:7, color:"#ffffff", weight:2, opacity:.95, fillColor:"#ffffff", fillOpacity:.25, interactive:false
+      radius:7, color:"#FFD400", weight:3, opacity:.95, fillColor:"#FFD400", fillOpacity:.2, interactive:false
     }));
-    markers.push(L.circleMarker([p.lat, p.lon], {
+    const inner = L.circleMarker([p.lat, p.lon], {
       radius:3, color:"#7A3212", weight:1, fillColor:"#B85C1E", fillOpacity:.95
-    }));
+    });
+    inner.on("contextmenu", (e) => {
+      L.DomEvent.preventDefault(e);
+      L.DomEvent.stopPropagation(e);
+      showEventContextMenu(e.originalEvent, p);
+    });
+    markers.push(inner);
   });
   eventsLayer = L.layerGroup(markers).addTo(map);
   document.getElementById("events-truncate-note").textContent =
     `顯示 ${data.returned.toLocaleString()} / 符合條件共 ${data.total_matched.toLocaleString()} 筆` +
     (data.truncated ? "（已裁切，請縮小篩選範圍查看完整分佈）" : "");
 }
+
+// ── 通報點右鍵選單：搜尋相關報導／連結水保署歷史影像庫 ──────────────────────
+// 「水保署歷史影像庫」連到 https://photo.ardswc.gov.tw/Repository/Database——這是
+// 實際存在、已核實的官方歷史災害影像查詢平台（97,500+ 張影像的來源系統）。**刻意不做成
+// 精確到單筆事件的深度連結**：該平台的地理範圍查詢（Query.LeftX/LeftY/RightX/RightY 等）
+// 是帶 ASP.NET CSRF token 的 POST 表單，不支援用純 URL 查詢字串預帶座標——硬做一個查詢
+// 字串只會被該站悄悄忽略，等於是假裝有深度連結卻其實無效，比單純連到搜尋首頁更誤導。
+// 使用者可在開啟的搜尋頁自行用通報點座標/年份查詢。
+let _ctxMenuPoint = null;
+function showEventContextMenu(evt, p){
+  const menu = document.getElementById("event-ctxmenu");
+  document.getElementById("ec-title").textContent =
+    `${p.photo_type_label || "事件"} · ${p.year || "年份未知"} · ${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}`;
+  _ctxMenuPoint = p;
+  menu.hidden = false;
+  const mw = 200, mh = 110;
+  const x = Math.min(evt.clientX, window.innerWidth - mw - 8);
+  const y = Math.min(evt.clientY, window.innerHeight - mh - 8);
+  menu.style.left = x + "px";
+  menu.style.top = y + "px";
+}
+function hideEventContextMenu(){
+  document.getElementById("event-ctxmenu").hidden = true;
+  _ctxMenuPoint = null;
+}
+document.getElementById("ec-search").onclick = () => {
+  if(!_ctxMenuPoint) return;
+  const p = _ctxMenuPoint;
+  const q = `${p.lat.toFixed(5)},${p.lon.toFixed(5)} 坡地災害 ${p.year || ""}`;
+  window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener");
+  hideEventContextMenu();
+};
+document.getElementById("ec-archive").onclick = () => {
+  window.open("https://photo.ardswc.gov.tw/Repository/Database", "_blank", "noopener");
+  hideEventContextMenu();
+};
+document.addEventListener("click", (e)=>{ if(!e.target.closest("#event-ctxmenu")) hideEventContextMenu(); });
+document.addEventListener("contextmenu", (e)=>{ if(!e.target.closest("#event-ctxmenu")) hideEventContextMenu(); });
+document.addEventListener("keydown", (e)=>{ if(e.key === "Escape") hideEventContextMenu(); });
 
 document.getElementById("btn-toggle-events").onclick = (e)=>{
   eventsVisible = !eventsVisible;
