@@ -196,6 +196,21 @@ def api_data_status():
     })
 
 
+_JGW_DATE_RE = re.compile(r"_gmap_(\d{8})\.jgw$")
+
+
+def _list_dated_dates(capture_dir):
+    """回傳該站點所有已知日期字串，只看 `.jgw` 世界檔是否存在——不要求對應的原始
+    `.png` 也存在。公開精簡部署版本為了省空間只帶 `.jgw`（不含數十 MB 的原始 8K 擷取圖，
+    比對面板全部走 `_change_detect/` 下已算好的圖），沿用 `CD._list_dated()`（要求 `.png`
+    存在，見 `ge_change_detect.py`）會把所有精簡站點誤判成「沒有資料」，導致這些熱點在
+    詳情面板顯示「尚無擷取資料」——即使 `_change_detect/` 裡其實已經有完整算好的比對結果。
+    這裡只回傳日期字串（呼叫端本來就只用日期，不用路徑），本地完整資料集的行為不變
+    （`.jgw` 與 `.png` 一律成對出現，見 §14 系列擷取腳本）。"""
+    return sorted(m.group(1) for p in capture_dir.glob("*_gmap_*.jgw")
+                  if (m := _JGW_DATE_RE.search(p.name)))
+
+
 @app.route("/api/hotspot_sites/<int:rank>")
 def api_hotspot_sites(rank):
     """該熱點目前有哪些擷取站點可用（深度 25 期 / 快篩 8 期），各自的日期清單。
@@ -203,9 +218,9 @@ def api_hotspot_sites(rank):
     out = {}
     for site in (f"ardswc_top{rank:02d}_deephist", f"ardswc_top{rank:02d}"):
         d = CAPTURES_ROOT / site
-        dated = CD._list_dated(d) if d.exists() else []
+        dated = _list_dated_dates(d) if d.exists() else []
         if len(dated) >= 2:
-            out[site] = [x[0] for x in dated]
+            out[site] = dated
     return jsonify(out)
 
 
