@@ -257,6 +257,20 @@
   }
   #custom-disabled-note{ font-size:12px; color:var(--sem-warn); margin-top:6px; }
 
+  /* ── 擷取進度條（2026-09-05 追加）───────────────────────────────────────── */
+  #custom-progress-wrap{ display:none; margin-top:10px; }
+  #custom-progress-status{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--ink); margin-bottom:5px;
+    display:flex; justify-content:space-between; gap:10px;
+  }
+  #custom-progress-status .eta{ color:var(--muted); white-space:nowrap; }
+  .custom-progress-track{ height:8px; background:var(--chip-bg); border:1px solid var(--line); overflow:hidden; }
+  .custom-progress-fill{
+    height:100%; width:0%; background:var(--accent); transition:width .6s linear;
+  }
+  .custom-progress-fill.done{ background:var(--sem-ok); }
+  .custom-progress-fill.error{ background:var(--sem-bad); }
+
   .map-legend{ display:flex; gap:16px; align-items:center; margin:0 0 26px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
   .map-legend span{ display:inline-flex; align-items:center; gap:6px; }
   .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
@@ -456,7 +470,14 @@
         <div class="custom-field" style="min-width:100px;"><label>歷史期數</label><input type="number" id="custom-ndates" value="10" step="1" min="2" max="30"></div>
       </div>
       <div class="custom-confirm" id="custom-confirm">尚未設定中心點——請先點地圖或輸入座標</div>
-      <button id="btn-capture-custom" disabled>🚀 擷取歷史影像＋變遷偵測</button>
+      <button id="btn-capture-custom" disabled>🚀 開始擷取</button>
+      <div id="custom-progress-wrap">
+        <div id="custom-progress-status">
+          <span id="custom-progress-label">準備中…</span>
+          <span class="eta" id="custom-progress-eta"></span>
+        </div>
+        <div class="custom-progress-track"><div class="custom-progress-fill" id="custom-progress-fill"></div></div>
+      </div>
       <div id="custom-job-log"></div>
 
       <div class="custom-example">
@@ -938,6 +959,21 @@ async function refreshCustomCaptureStatus(){
   updateCustomConfirm();
 }
 
+// 進度時間估算（2026-09-05，依公開部署版無 GPU 的實測時間校準）：容器模式每期歷史影像約
+// 35-45s（含頁面/瀏覽器啟動的固定開銷），相鄰配對的 SSIM 變遷偵測很快（約 1-2s/組）。
+// 純時間估算當基準（穩定、不受 log 文字格式影響），並行再從 log 解析真實步驟數
+// （`[i/n]`／`完成：overall_change=`）疊加顯示，兩者互補：前者保證一直有進度可看，
+// 後者在能解析時給出更準確的「目前第幾步」文字。
+const CAPTURE_OVERHEAD_SEC = 22, CAPTURE_PER_DATE_SEC = 40, DIFF_PER_PAIR_SEC = 2;
+function estimateTotalSec(n_dates){
+  return CAPTURE_OVERHEAD_SEC + n_dates * CAPTURE_PER_DATE_SEC + Math.max(0, n_dates - 1) * DIFF_PER_PAIR_SEC;
+}
+function fmtMinSec(totalSec){
+  totalSec = Math.max(0, Math.round(totalSec));
+  const m = Math.floor(totalSec / 60), s = totalSec % 60;
+  return m > 0 ? `${m} 分 ${s} 秒` : `${s} 秒`;
+}
+
 document.getElementById("btn-capture-custom").onclick = async () => {
   const btn = document.getElementById("btn-capture-custom");
   const lat = parseFloat(document.getElementById("custom-lat").value);
@@ -945,7 +981,13 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   const gsd = parseFloat(document.getElementById("custom-gsd").value);
   const n_dates = parseInt(document.getElementById("custom-ndates").value, 10);
   const logEl = document.getElementById("custom-job-log");
+  const progWrap = document.getElementById("custom-progress-wrap");
+  const progFill = document.getElementById("custom-progress-fill");
+  const progLabel = document.getElementById("custom-progress-label");
+  const progEta = document.getElementById("custom-progress-eta");
   logEl.style.display = "block"; logEl.style.color = ""; logEl.textContent = "送出中…";
+  progWrap.style.display = "none";
+  progFill.className = "custom-progress-fill"; progFill.style.width = "0%";
 
   if(customTargetMarker){
     const mc = customTargetMarker.getLatLng();
@@ -957,7 +999,7 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   }
 
   btn.disabled = true; customCaptureBusy = true;
-  const origLabel = "🚀 擷取歷史影像＋變遷偵測";
+  const origLabel = "🚀 開始擷取";
   btn.textContent = "⏳ 送出中…";
   let r;
   try{
@@ -976,7 +1018,11 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   }
   btn.textContent = "⏳ 擷取中，請勿重複送出…";
   logEl.textContent = `站點：${r.site}（${lat.toFixed(6)}, ${lon.toFixed(6)}）\n啟動中…`;
-  pollCustomJob(r.job_id, logEl, async (result) => {
+  progWrap.style.display = "block";
+  progLabel.textContent = "準備中…";
+  const estTotalSec = estimateTotalSec(n_dates);
+  progEta.textContent = `預估共需約 ${fmtMinSec(estTotalSec)}`;
+  pollCustomJob(r.job_id, logEl, n_dates, estTotalSec, async (result) => {
     btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;
     if(!result) return;
     logEl.textContent += `\n\n✔ 完成，共 ${result.n_dates} 期。載入完整比對結果…`;
@@ -984,13 +1030,53 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   });
 };
 
-async function pollCustomJob(jid, logEl, onDone){
+async function pollCustomJob(jid, logEl, n_dates, estTotalSec, onDone){
+  const t0 = Date.now();
+  const progFill = document.getElementById("custom-progress-fill");
+  const progLabel = document.getElementById("custom-progress-label");
+  const progEta = document.getElementById("custom-progress-eta");
+
+  // 從 log 文字解析真實步驟（比純時間估算準，但不一定每次都找得到，找不到時純靠時間）：
+  // 擷取階段的 "✔ [i/n]"、變遷偵測階段的 "-> 完成：overall_change="（每組一行）。
+  function parseStepLabel(logText){
+    const captureMatches = [...logText.matchAll(/✔ \[(\d+)\/(\d+)\]/g)];
+    if(captureMatches.length && captureMatches[captureMatches.length-1][1] != captureMatches[captureMatches.length-1][2]){
+      const [, i, n] = captureMatches[captureMatches.length-1];
+      return `擷取歷史影像中：第 ${i}/${n} 期`;
+    }
+    const diffMatches = [...logText.matchAll(/完成：overall_change=/g)];
+    if(diffMatches.length){
+      const totalPairs = Math.max(1, n_dates - 1);
+      return `變遷偵測中：第 ${Math.min(diffMatches.length, totalPairs)}/${totalPairs} 組`;
+    }
+    if(captureMatches.length) return "擷取歷史影像中…";
+    return "啟動瀏覽器＋定位中…";
+  }
+
   const tick = async () => {
     const j = await api("/api/job/" + jid);
-    logEl.textContent = j.log.join("\n") || "執行中…";
+    const logText = j.log.join("\n") || "執行中…";
+    logEl.textContent = logText;
     logEl.scrollTop = logEl.scrollHeight;
-    if(j.status === "running"){ setTimeout(tick, 1500); return; }
-    if(j.status !== "done"){ logEl.style.color = "var(--sem-bad)"; logEl.textContent += "\n✘ 失敗：" + j.error; }
+
+    const elapsedSec = (Date.now() - t0) / 1000;
+    if(j.status === "running"){
+      const pct = Math.min(96, (elapsedSec / estTotalSec) * 100);
+      progFill.style.width = pct.toFixed(1) + "%";
+      progLabel.textContent = parseStepLabel(logText);
+      const remain = Math.max(0, estTotalSec - elapsedSec);
+      progEta.textContent = remain > 3 ? `預估剩餘約 ${fmtMinSec(remain)}` : "即將完成…";
+      setTimeout(tick, 1500);
+      return;
+    }
+    if(j.status === "done"){
+      progFill.className = "custom-progress-fill done"; progFill.style.width = "100%";
+      progLabel.textContent = "✔ 完成"; progEta.textContent = `耗時 ${fmtMinSec(elapsedSec)}`;
+    } else {
+      logEl.style.color = "var(--sem-bad)"; logEl.textContent += "\n✘ 失敗：" + j.error;
+      progFill.className = "custom-progress-fill error"; progFill.style.width = "100%";
+      progLabel.textContent = "✘ 失敗"; progEta.textContent = `耗時 ${fmtMinSec(elapsedSec)}`;
+    }
     if(onDone) onDone(j.result);
   };
   tick();
