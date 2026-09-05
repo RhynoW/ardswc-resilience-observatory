@@ -97,6 +97,14 @@
     background:none; color:var(--ink); font-size:13px; cursor:pointer; }
   .event-ctxmenu button:hover{ background:var(--line-soft); }
 
+  /* ── 熱點地圖左鍵彈出視窗（Leaflet popup 內容）────────────── */
+  .hotspot-popup{ font-size:12.5px; min-width:170px; }
+  .hotspot-popup-actions{ display:flex; flex-direction:column; gap:4px; margin-top:8px;
+    padding-top:6px; border-top:1px solid var(--line-soft); }
+  .hotspot-popup-actions button{ text-align:left; padding:5px 8px; border:1px solid var(--line);
+    background:var(--paper-raised); color:var(--ink); font-size:12px; cursor:pointer; }
+  .hotspot-popup-actions button:hover{ border-color:var(--accent); color:var(--accent); }
+
   /* ── 巡查優先級 A–D ─────────────────────────────────────── */
   .tier-badge{ display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono);
     font-size:11px; font-weight:700; letter-spacing:.02em; padding:3px 9px; border-radius:2px;
@@ -910,6 +918,40 @@ function markerColor(h){
   if(l) return VERDICT_COLOR[l.verdict] || "#666";
   return "#B85C1E";
 }
+// 熱點左鍵彈出視窗——補上原本設計給通報點右鍵選單用的兩個動作（搜尋相關報導／水保署歷史
+// 影像庫），使用者回報這裡也需要同樣的功能，比照通報點的做法（見 onEventContextMenu）：
+// 「水保署歷史影像庫」一律連到 https://photo.ardswc.gov.tw/Repository/Database 搜尋首頁，
+// 不假裝有精確到單一熱點的深度連結（該站空間查詢是帶 CSRF token 的 POST 表單，query string
+// 無效，見程式碼歷史紀錄的驗證過程）。搜尋關鍵字這裡用縣市+鄉鎮（熱點才有的欄位，比通報點
+// 只能用座標更精準好用）。Leaflet popup 內容用真正的 DOM 節點＋onclick，不用內嵌
+// onclick="..." 字串；Leaflet 本身會自動擋掉 popup 內點擊事件冒泡到地圖，不需要額外
+// stopPropagation。
+function makeHotspotPopup(h){
+  const box = document.createElement("div");
+  box.className = "hotspot-popup";
+  const info = document.createElement("div");
+  info.innerHTML = `<strong>#${h.rank} ${h.county||""}${h.district||""}</strong><br>複發 ${h.n_distinct_years||"?"} 年 · 自動篩選分數 ${h.change_score ?? "—"}`;
+  box.appendChild(info);
+
+  const actions = document.createElement("div");
+  actions.className = "hotspot-popup-actions";
+
+  const btnSearch = document.createElement("button");
+  btnSearch.textContent = "🔍 搜尋相關報導";
+  btnSearch.onclick = () => {
+    const q = (`${h.county||""}${h.district||""}`.trim() || `${h.lat},${h.lon}`) + " 坡地災害";
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener");
+  };
+  const btnArchive = document.createElement("button");
+  btnArchive.textContent = "📷 水保署歷史影像庫";
+  btnArchive.onclick = () => {
+    window.open("https://photo.ardswc.gov.tw/Repository/Database", "_blank", "noopener");
+  };
+  actions.appendChild(btnSearch);
+  actions.appendChild(btnArchive);
+  box.appendChild(actions);
+  return box;
+}
 function renderMap(){
   HOTSPOTS.forEach(h=>{
     if(h.lat == null || h.lon == null) return;
@@ -917,7 +959,7 @@ function renderMap(){
     const m = L.circleMarker([h.lat, h.lon], {
       radius: 5, color: color, fillColor: color, fillOpacity: 0.75, weight: 1.5
     }).addTo(map);
-    m.bindPopup(`<strong>#${h.rank} ${h.county||""}${h.district||""}</strong><br>複發 ${h.n_distinct_years||"?"} 年 · 自動篩選分數 ${h.change_score ?? "—"}`);
+    m.bindPopup(() => makeHotspotPopup(h));
     m.on("click", ()=> openDetail(h.rank));
   });
 }
