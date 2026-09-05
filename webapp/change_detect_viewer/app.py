@@ -905,6 +905,18 @@ GE_CAPTURE_CONTAINER_MODE = os.environ.get("GE_CAPTURE_CONTAINER_MODE", "0") == 
 # 本機模式維持原上限 30（桌機資源充足、8K wrapper 通常快得多）。
 MAX_N_DATES = 12 if GE_CAPTURE_CONTAINER_MODE else 30
 
+
+@app.route("/api/category_locations")
+def api_category_locations():
+    """分類地點清單（2026-09-05 追加）——7 大類「線上分析」快速選點：水保署災害通報熱區
+    （既有 100 熱點，此處僅連結不重複列出）、土石流觀測站（23）、大規模崩塌潛勢區（94）、
+    海岸侵蝕熱點、河川侵淤熱點、都市開發示範座標、捷運興建示範座標。每筆皆為真實來源座標
+    （官方 PDF／開放資料集／維基百科），非本站推算或假設；找不到精確座標的項目一律標註
+    「概略／未驗證」而非留白湊數，見 `data/ardswc_hotspots/category_locations.json` 內每筆
+    的 `note`/`source` 欄位。純靜態資料，直接讀檔回傳。"""
+    return jsonify(_load_json(DATA_ROOT / "category_locations.json", {"categories": []}))
+
+
 _jobs_lock = threading.Lock()
 _jobs = {}
 _jid_seq = itertools.count(1)
