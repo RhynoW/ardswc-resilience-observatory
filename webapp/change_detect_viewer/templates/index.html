@@ -445,7 +445,9 @@
       <p class="sub">
         不限於既有 100 個熱點——在地圖上點一下（或直接輸入座標）設定分析中心，送出後會即時對該
         座標跑 Google Earth Web 歷史影像擷取＋全部相鄰日期的變遷偵測，與熱點詳情用的是同一套
-        SSIM 像素級比對引擎。<span id="custom-disabled-note" style="display:none;"></span>
+        SSIM 像素級比對引擎。<strong>公開展示版無 GPU，每個歷史日期約需 35–45 秒</strong>，
+        送出後請耐心等候（下方會顯示即時進度 log；同一時間只能有一個人在跑，忙碌時請稍候再試）。
+        <span id="custom-disabled-note" style="display:none;"></span>
       </p>
       <div class="custom-row">
         <div class="custom-field"><label>緯度 lat</label><input type="number" id="custom-lat" step="0.000001" placeholder="點地圖設定"></div>
@@ -921,10 +923,15 @@ async function refreshCustomCaptureStatus(){
   customCaptureBusy = !!s.busy;
   const btn = document.getElementById("btn-capture-custom");
   const note = document.getElementById("custom-disabled-note");
+  if(s.max_n_dates){
+    const ndatesEl = document.getElementById("custom-ndates");
+    ndatesEl.max = s.max_n_dates;
+    if(parseInt(ndatesEl.value, 10) > s.max_n_dates) ndatesEl.value = s.max_n_dates;
+  }
   if(!s.enabled){
     btn.style.display = "none";
     note.style.display = "block";
-    note.textContent = "此公開展示版未啟用即時線上擷取（需要本機瀏覽器自動化）——可直接查看下方「豐丘觀測站範例」的已完成分析結果。";
+    note.textContent = "此部署目前已暫停線上即時擷取功能——可直接查看下方「豐丘觀測站範例」的已完成分析結果，或稍後再試。";
     return;
   }
   if(customCaptureBusy){ btn.disabled = true; btn.textContent = "⏳ 已有擷取任務在執行中…"; }

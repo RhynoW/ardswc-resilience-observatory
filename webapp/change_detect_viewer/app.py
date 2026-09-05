@@ -68,9 +68,9 @@ import ardswc_photo_search as APS      # noqa: E402  — 水保署官方歷史�
 REPO = HERE.parent.parent
 CAPTURES_ROOT = REPO / "data" / "ge_captures"
 DATA_ROOT = REPO / "data" / "ardswc_hotspots"
+WATERSHED_CACHE = REPO / "data" / "watershed_cache"
 ARDSWC_META_CACHE = REPO / "data" / "ardswc_meta_cache"
 CONTOUR_CACHE = REPO / "data" / "contour_cache"
-WATERSHED_CACHE = REPO / "data" / "watershed_cache"
 
 app = Flask(__name__)
 
@@ -133,8 +133,8 @@ def _report_marker(site, date_a, date_b, roi):
     for d in (date_a, date_b):
         cand = capture_dir / f"{site}_gmap_{d}.png"
         # 只檢查 .jgw 是否存在，不要求原始 png 本身存在——_read_jgw() 只讀 .jgw 文字內容，
-        # 從未觸碰 png 像素資料，故公開部署版可以只帶 .jgw 世界檔（幾十 bytes）而不必
-        # 附上對應的原始 8K 擷取圖（數 MB～數十 MB），紅點標記功能仍完整可用。
+        # 從未觸碰 png 像素資料（公開部署版因此可以只帶 .jgw 世界檔、不附原始 8K 擷取圖，
+        # 見 ardswc-resilience-observatory 這份精簡發布版；此處同步修正保持兩份一致）。
         if cand.with_suffix(".jgw").exists():
             png = cand
             break
@@ -212,12 +212,10 @@ _JGW_DATE_RE = re.compile(r"_gmap_(\d{8})\.jgw$")
 
 def _list_dated_dates(capture_dir):
     """回傳該站點所有已知日期字串，只看 `.jgw` 世界檔是否存在——不要求對應的原始
-    `.png` 也存在。公開精簡部署版本為了省空間只帶 `.jgw`（不含數十 MB 的原始 8K 擷取圖，
-    比對面板全部走 `_change_detect/` 下已算好的圖），沿用 `CD._list_dated()`（要求 `.png`
-    存在，見 `ge_change_detect.py`）會把所有精簡站點誤判成「沒有資料」，導致這些熱點在
-    詳情面板顯示「尚無擷取資料」——即使 `_change_detect/` 裡其實已經有完整算好的比對結果。
-    這裡只回傳日期字串（呼叫端本來就只用日期，不用路徑），本地完整資料集的行為不變
-    （`.jgw` 與 `.png` 一律成對出現，見 §14 系列擷取腳本）。"""
+    `.png` 也存在。公開精簡部署版（ardswc-resilience-observatory，見該 repo）為了省空間
+    只帶 `.jgw`，沿用 `CD._list_dated()`（要求 `.png` 存在）在那份會把所有精簡站點誤判成
+    「沒有資料」；本機完整資料集的行為不受影響（`.jgw` 與 `.png` 一律成對出現）。這裡只
+    回傳日期字串（呼叫端本來就只用日期，不用路徑），兩份 app.py 保持一致。"""
     return sorted(m.group(1) for p in capture_dir.glob("*_gmap_*.jgw")
                   if (m := _JGW_DATE_RE.search(p.name)))
 
@@ -883,13 +881,29 @@ def api_events():
 # 座標，即時跑 GE Web 歷史影像擷取＋全部相鄰日期變遷偵測，不必侷限在既有 100 個熱點。
 # 範例／預設座標：豐丘觀測站（南投縣信義鄉，土石流潛勢溪流「投縣DF190」），見前端敘事卡片。
 #
-# 公開 HF Space 無法跑這個功能——需要真實瀏覽器自動化（Playwright + Chromium）操作
-# earth.google.com/web，該容器只有 python:3.11-slim（無瀏覽器），且已知連外部網站的
-# 出站連線在該容器裡經常逾時（見 Dockerfile 對 Apple token 換發的既有記錄）。故用環境變數
-# 開關（同 GMAPS_DEMO_APPLE_AUTO 的既有取捨模式）：本機預設開啟，公開部署版 Dockerfile
-# 明確關閉，前端據此隱藏「送出擷取」按鈕、改顯示已預先擷取好的豐丘案例（fail-closed，
-# 不會讓使用者按下一個保證失敗的按鈕）。
+# **公開 HF Space 確認可行（2026-09-05 實測驗證，推翻本節原先「無法跑」的結論）**：起初認為
+# 需要真實瀏覽器自動化的容器（python:3.11-slim 無瀏覽器）做不到，但在獨立的私有測試 Space
+# （同款 cpu-basic 硬體）實測：Playwright **內建 Chromium**（非 channel=chrome）以
+# `headless=True` 即可正確載入 GE Web、進歷史模式、逐步走訪日期 stepper、截出正確日期的
+# 清晰影像——不需要虛擬螢幕(Xvfb)、不需要真的 Google Chrome、不需要 GPU。過程中一併修正
+# 兩個真正的可攜性 bug：(1) `ge_web_capture*.py` 硬編碼開發者本機路徑 `F:\GitHub\...`，容器
+# 上根本不存在（已改用 `Path(__file__).resolve().parent.parent`）；(2) `_read_stepper()` 的
+# 日期正則只認中文格式（開發者本機 zh-TW locale），容器預設 en-US locale 下 GE Web 渲染英文
+# 日期（`Jan 1, 2020`），原正則直接匹配失敗、整支函式提早回傳 None（已加英文月份格式的
+# fallback，中文本機行為完全不變）。詳細測試記錄與取捨見 ARCHITECTURE.md「線上分析」章節。
+#
+# 因此改用 `GE_CAPTURE_CONTAINER_MODE` 環境變數切換擷取後端（同 GMAPS_DEMO_APPLE_AUTO 的既有
+# 取捨模式）：預設 `0`＝本機沿用既有 `ge_web_capture_v2_8k.py`（8K viewport、真 Chrome、
+# headed、持久化 profile，本機桌機資源充足、追求最高解析度）；公開部署版 Dockerfile 設
+# `GE_CAPTURE_CONTAINER_MODE=1`＝改呼叫 `ge_web_capture_v2.py --headless-container`（1920×1080
+# viewport，實測在 cpu-basic 無 GPU 下最穩定——2560×1440 曾出現 screenshot 逾時與日期讀取
+# 錯位，8K 更不用談）。`ENABLE_LIVE_CAPTURE` 開關保留，但公開版現在**預設開啟**——僅在真的
+# 需要暫時停用時（例如濫用/資源異常）才手動關閉，不再是「這裡先天做不到」的 fail-closed 用途。
 ENABLE_LIVE_CAPTURE = os.environ.get("ENABLE_LIVE_CAPTURE", "1") != "0"
+GE_CAPTURE_CONTAINER_MODE = os.environ.get("GE_CAPTURE_CONTAINER_MODE", "0") == "1"
+# 容器模式無 GPU、實測約 35-45s/期，上限收緊避免單一任務佔用整個容器 20+ 分鐘；
+# 本機模式維持原上限 30（桌機資源充足、8K wrapper 通常快得多）。
+MAX_N_DATES = 12 if GE_CAPTURE_CONTAINER_MODE else 30
 
 _jobs_lock = threading.Lock()
 _jobs = {}
@@ -938,7 +952,7 @@ def api_capture_status():
     """供前端頁面載入時檢查是否已有擷取任務在跑，並回報本部署是否啟用線上擷取——
     避免公開展示版顯示一個保證失敗的按鈕（見上方 ENABLE_LIVE_CAPTURE 說明），也避免使用者
     以為按鈕沒反應而重複送出卻不知背景其實正在跑一個不同座標的舊任務（CLAUDE.md §17.4）。"""
-    return jsonify({"busy": _capture_lock.locked(), "enabled": ENABLE_LIVE_CAPTURE})
+    return jsonify({"busy": _capture_lock.locked(), "enabled": ENABLE_LIVE_CAPTURE, "max_n_dates": MAX_N_DATES})
 
 
 def _coord_slug(lat, lon):
@@ -950,8 +964,8 @@ def _coord_slug(lat, lon):
 @app.route("/api/capture_custom", methods=["POST"])
 def api_capture_custom():
     if not ENABLE_LIVE_CAPTURE:
-        return jsonify({"error": "此部署未啟用線上即時擷取（需要本機瀏覽器自動化，公開展示版"
-                                  "無法執行）。請改用下方「豐丘觀測站範例」查看已完成的分析結果。"}), 403
+        return jsonify({"error": "此部署目前已暫停線上即時擷取功能。請改用下方「豐丘觀測站範例」"
+                                  "查看已完成的分析結果，或稍後再試。"}), 403
     body = request.get_json(force=True)
     try:
         lat = float(body.get("lat"))
@@ -961,7 +975,7 @@ def api_capture_custom():
     if not (-90 <= lat <= 90 and -180 <= lon <= 180):
         return jsonify({"error": "座標超出範圍"}), 400
     gsd = float(body.get("gsd", 0.2))
-    n_dates = max(2, min(30, int(body.get("n_dates", 10))))
+    n_dates = max(2, min(MAX_N_DATES, int(body.get("n_dates", 10))))
     slug = _coord_slug(lat, lon)
 
     if _capture_lock.locked():
@@ -976,9 +990,17 @@ def api_capture_custom():
             return
         try:
             _job_log(jid, f"擷取 {slug}（{lat},{lon}）gsd={gsd}m/px n_dates={n_dates} …（GE Web 瀏覽器自動化，數分鐘）")
-            cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2_8k.py"),
-                   "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
-                   "--n-dates", str(n_dates)]
+            if GE_CAPTURE_CONTAINER_MODE:
+                # 容器模式：跳過 8K wrapper（該腳本設計是「先試 8K、失敗才退 fallback」，在無 GPU
+                # 容器上從一開始就不該碰 8K），直接呼叫 v2 的 headless-container 分支＋較小 viewport
+                # （見上方 GE_CAPTURE_CONTAINER_MODE 說明的實測依據）。
+                cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2.py"),
+                       "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
+                       "--n-dates", str(n_dates), "--headless-container", "--vw", "1920", "--vh", "1080"]
+            else:
+                cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2_8k.py"),
+                       "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
+                       "--n-dates", str(n_dates)]
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                      text=True, encoding="utf-8", errors="replace", cwd=str(REPO))
             for line in proc.stdout:

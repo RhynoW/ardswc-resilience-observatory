@@ -35,7 +35,7 @@ try:                       # Windows cp950 console 無法印 ✔ 等字元 → �
 except Exception:
     pass
 
-REPO = Path(r"F:\GitHub\SOM_Agent_Workflow")
+REPO = Path(__file__).resolve().parent.parent  # 可攜路徑（2026-09-05 修正，原硬編碼 F:\ 在容器/HF Space 上不存在）
 # 使用者提供的「已驗證合理視野」範本 URL（蕪湖 apron，dist≈15784）。只抽換 data= 內的日期即可維持視野。
 # GE 預設載入地形 → 相機到地表距離小於海平面距離，dist 太小(如 1200/5000)會太近而糊；此 dist 已驗證正確。
 DEFAULT_TEMPLATE = ("https://earth.google.com/web/@31.39041627,118.3970501,17.25758692a,"
@@ -180,11 +180,24 @@ def _enable_a11y(page):
         return False
 
 
+_EN_MONTHS = {m: i + 1 for i, m in enumerate(
+    ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])}
+
+
 def _read_stepper(page):
     """從 semantics 樹讀歷史日期列：回傳 (date 'YYYY-MM-DD'|None, newer中心xy|None, older中心xy|None)。
     以『按鈕標籤』辨識(與位置無關)：newer=較新的圖片/newer、older=較舊的圖片/older——比純位置穩健：
     實測某些視角(旋轉/近景/搜尋)兩個箭頭都在日期左側，純『左=prev 右=next』會抓不到 next。
-    回傳 (date, next=newer, prev=older)：next 走向較新、prev 走向較舊(最早)。"""
+    回傳 (date, next=newer, prev=older)：next 走向較新、prev 走向較舊(最早)。
+
+    **英文 locale fallback（2026-09-05 追加）**：容器環境（無 zh-TW 系統 locale）下 GE Web 會用
+    英文渲染，且整條歷史工具列（『Older images』/日期/『Newer images』等）被 Flutter 拼成同一個
+    accessibility 節點（如 `'...Historical ImageryOlder imagesJan 1, 2020Newer imagesCollapse...'`），
+    不再是各自獨立、長度 <16 的短節點——原本的中文數字日期正則＋短節點長度限制會直接找不到、
+    整支函式提早回傳 None。故先照舊嘗試中文短節點格式（開發者本機 zh-TW locale 下的既有行為
+    完全不變），找不到才在**任何節點**（不限長度）內用英文月份格式（`Jan 1, 2020`）的正則再找
+    一次——按鈕比對邏輯本身沿用同一段（找到的節點 y 座標一樣落在按鈕列同一帶，`newer`/`older`
+    的英文字串比對本來就已支援，只是先前從未執行到）。"""
     import re
     try:
         nodes = page.evaluate(_JS_NODES)
@@ -195,6 +208,13 @@ def _read_stepper(page):
         m = re.search(r'(\d{4}).(\d{1,2}).(\d{1,2})日?$', o['tx'])
         if m and o['y'] < 180 and len(o['tx']) < 16:
             dl = (o, f"{m.group(1)}-{m.group(2).zfill(2)}-{m.group(3).zfill(2)}"); break
+    if not dl:
+        for o in nodes:
+            if o['y'] >= 180:
+                continue
+            m = re.search(r'\b([A-Z][a-z]{2})\.?\s+(\d{1,2}),\s+(\d{4})\b', o['tx'])
+            if m and m.group(1) in _EN_MONTHS:
+                dl = (o, f"{m.group(3)}-{_EN_MONTHS[m.group(1)]:02d}-{int(m.group(2)):02d}"); break
     if not dl:
         return None, None, None
     o, ds = dl
