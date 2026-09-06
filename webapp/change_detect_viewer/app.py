@@ -1021,11 +1021,17 @@ def api_health():
         "category_locations.json": cats.exists(),
     }
 
+    # 判斷「有真正可播放內容」要看 `_change_detect/` 底下算好的比對面板（前端實際讀取的
+    # 檔案），不是站點目錄本身有沒有原始擷取 PNG——公開部署版刻意不帶原始擷取影像
+    # （~30GB，見 README「資料範圍」），只帶已算好的比對面板，若檢查原始 PNG 會在公開版
+    # 上恆為 0、誤報「degraded」，即使功能其實完全正常（2026-09-06 上線後才發現此落差，
+    # 已修正；教訓：健康檢查要驗證『使用者真正會用到的產出』，不要驗證中間產物是否存在）。
     n_deep_sites = 0
     if CAPTURES_ROOT.exists():
         n_deep_sites = sum(
             1 for p in CAPTURES_ROOT.iterdir()
-            if p.is_dir() and p.name.startswith("ardswc_top") and any(p.glob("*.png"))
+            if p.is_dir() and p.name.startswith("ardswc_top")
+            and (p / "_change_detect").is_dir() and any((p / "_change_detect").glob("*.jpg"))
         )
     checks["offline_capture_cache"] = {
         "ok": n_deep_sites > 0,
