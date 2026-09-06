@@ -1,0 +1,19 @@
+{
+  "site": "ardswc_top47",
+  "pairs": [
+    {
+      "date_a": "20211106",
+      "date_b": "20230121",
+      "overall_change_fraction": 0.7235,
+      "mean_ssim": 0.2898,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20230121",
+      "date_b": "20250101",
+      "overall_change_fraction": 0.1442,
+      "mean_ssim": 0.6917,
+      "n_regions": 30
+    }
+  ]
+}

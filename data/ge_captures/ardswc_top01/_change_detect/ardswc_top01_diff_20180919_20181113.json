@@ -1,0 +1,42 @@
+{
+  "site": "ardswc_top01",
+  "date_a": "20180919",
+  "date_b": "20181113",
+  "image_a": "F:\\GitHub\\SOM_Agent_Workflow\\data\\ge_captures\\ardswc_top01\\ardswc_top01_gmap_20180919.png",
+  "image_b": "F:\\GitHub\\SOM_Agent_Workflow\\data\\ge_captures\\ardswc_top01\\ardswc_top01_gmap_20181113.png",
+  "roi": {
+    "ui_top": 166,
+    "ui_bottom": 44,
+    "ui_top_auto": true,
+    "width": 7680,
+    "height": 4110
+  },
+  "panels": {
+    "before": "ardswc_top01_diff_20180919_20181113_before.jpg",
+    "after": "ardswc_top01_diff_20180919_20181113_after.jpg",
+    "overlay": "ardswc_top01_diff_20180919_20181113_overlay.jpg",
+    "heat": "ardswc_top01_diff_20180919_20181113_heat.jpg",
+    "combo": "ardswc_top01_diff_20180919_20181113.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.0,
+      -0.01
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.4703
+  },
+  "ssim_thresh": 0.35,
+  "min_region_px": 80,
+  "win_size": 11,
+  "mean_ssim": 0.9998,
+  "overall_change_fraction": 0.0,
+  "n_regions": 0,
+  "regions": [],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

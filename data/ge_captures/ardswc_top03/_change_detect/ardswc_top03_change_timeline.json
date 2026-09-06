@@ -1,0 +1,54 @@
+{
+  "site": "ardswc_top03",
+  "pairs": [
+    {
+      "date_a": "20190105",
+      "date_b": "20190321",
+      "overall_change_fraction": 0.8516,
+      "mean_ssim": 0.3444,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20190321",
+      "date_b": "20200502",
+      "overall_change_fraction": 0.5178,
+      "mean_ssim": 0.5925,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20200502",
+      "date_b": "20201202",
+      "overall_change_fraction": 0.8363,
+      "mean_ssim": 0.4022,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20201202",
+      "date_b": "20211106",
+      "overall_change_fraction": 0.428,
+      "mean_ssim": 0.3641,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20211106",
+      "date_b": "20220822",
+      "overall_change_fraction": 0.3841,
+      "mean_ssim": 0.377,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20220822",
+      "date_b": "20230121",
+      "overall_change_fraction": 0.271,
+      "mean_ssim": 0.2675,
+      "n_regions": 30
+    },
+    {
+      "date_a": "20230121",
+      "date_b": "20250101",
+      "overall_change_fraction": 0.0319,
+      "mean_ssim": 0.7366,
+      "n_regions": 30
+    }
+  ]
+}
