@@ -291,6 +291,27 @@
     border:1px solid var(--accent-2); padding:6px 12px; cursor:pointer; white-space:nowrap;
   }
   .cat-detail a{ color:var(--accent-2); }
+
+  /* ── 觀測導覽 landing page（2026-09-06 追加）─────────────────────────────── */
+  .guide-hero{ display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; margin:0 0 28px; }
+  .guide-hero .lead{ flex:2 1 420px; }
+  .guide-hero .stats{ flex:1 1 220px; display:flex; flex-direction:column; gap:10px; }
+  .guide-stat{ border:1px solid var(--line); background:var(--paper-raised); padding:10px 14px; }
+  .guide-stat .n{ font-family:var(--font-mono); font-weight:700; font-size:20px; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .guide-stat .l{ font-size:11px; color:var(--muted); margin-top:2px; }
+  .guide-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin:0 0 10px; }
+  .guide-card{ background:var(--paper-raised); padding:20px 20px 18px; display:flex; flex-direction:column; gap:6px; }
+  .guide-card .icon-row{ display:flex; align-items:center; gap:10px; }
+  .guide-card .icon{ font-size:24px; line-height:1; }
+  .guide-card h4{ margin:0; font-size:14.5px; }
+  .guide-card .count{ font-family:var(--font-mono); font-size:10.5px; color:var(--accent); text-transform:uppercase; letter-spacing:.03em; margin:2px 0 4px; }
+  .guide-card p{ font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.65; flex:1; }
+  .guide-card button{
+    font-family:var(--font-mono); font-size:11.5px; background:var(--accent-2); color:var(--paper);
+    border:1px solid var(--accent-2); padding:7px 13px; cursor:pointer; align-self:flex-start;
+  }
+  .guide-card button:hover{ background:var(--accent); border-color:var(--accent); }
+  .guide-note{ font-size:12px; color:var(--muted); max-width:74ch; margin:16px 0 0; line-height:1.6; }
   #custom-job-log{
     font-family:var(--font-mono); font-size:11px; color:var(--muted); background:var(--paper); border:1px solid var(--line-soft);
     padding:8px 10px; max-height:150px; overflow-y:auto; white-space:pre-wrap; margin-top:10px; display:none;
@@ -446,7 +467,8 @@
     <h1 class="brand-title">地景複發熱點觀測站</h1>
   </div>
   <nav class="tabs">
-    <button data-tab="dashboard" class="active">觀測站首頁</button>
+    <button data-tab="guide" class="active">觀測導覽</button>
+    <button data-tab="dashboard">觀測站首頁</button>
     <button data-tab="hotspots">熱點總覽</button>
     <button data-tab="ledger">深度驗證台帳</button>
     <button data-tab="findings">發現與建言</button>
@@ -455,8 +477,29 @@
 
 <main>
 
+  <!-- ── 觀測導覽（2026-09-06 追加，landing page）───────────── -->
+  <section id="tab-guide" class="tabpanel active">
+    <div class="guide-hero">
+      <div class="lead">
+        <h2>災變觀測導覽</h2>
+        <p class="sec-sub">從水保署 76,773 筆歷史通報整理出的長期複發熱點出發，延伸到土石流觀測站、
+        大規模崩塌潛勢區、海岸/河川侵蝕案例、都市開發示範區與捷運工程——以下 7 大類、共
+        <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入「線上分析」，
+        即時擷取 Google Earth Web 歷史影像做前後期比對，找出真正在變化的地方。</p>
+      </div>
+      <div class="stats">
+        <div class="guide-stat"><div class="n">76,773</div><div class="l">全台去重災害事件紀錄</div></div>
+        <div class="guide-stat"><div class="n">100</div><div class="l">複發熱點（Top 100）</div></div>
+        <div class="guide-stat"><div class="n" id="guide-other-n">—</div><div class="l">其餘 6 大類真實地點總數</div></div>
+      </div>
+    </div>
+    <div class="guide-grid" id="guide-grid"><div style="padding:20px; color:var(--muted); font-size:13px;">載入分類清單中…</div></div>
+    <p class="guide-note">⚠ 每一筆座標皆有真實來源（官方 PDF／政府開放資料／維基百科），無法找到精確座標的地點
+      一律標註「概略／未驗證」而非編造座標湊數——詳見各分類卡片與「線上分析」面板內每個地點的來源連結。</p>
+  </section>
+
   <!-- ── 首頁 ───────────────────────────── -->
-  <section id="tab-dashboard" class="tabpanel active">
+  <section id="tab-dashboard" class="tabpanel">
     <h2>從 7 萬 6 千筆通報到 100 個真正複發的地點</h2>
     <p class="sec-sub">依「不同年份出現次數」而非照片總數，從水保署全台災害影像通報中篩出長期地質不穩定熱點，再用十年以上衛星歷史影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
 
@@ -922,11 +965,54 @@ function initCustomAnalysis(){
 
 async function loadCategoryData(){
   try{ CATEGORY_DATA = await api("/api/category_locations"); }
-  catch(e){ document.getElementById("cat-tabs").textContent = "分類清單載入失敗"; return; }
+  catch(e){
+    document.getElementById("cat-tabs").textContent = "分類清單載入失敗";
+    document.getElementById("guide-grid").innerHTML = '<div style="padding:20px; color:var(--sem-bad); font-size:13px;">分類清單載入失敗</div>';
+    return;
+  }
   renderCatTabs();
   if(CATEGORY_DATA.categories && CATEGORY_DATA.categories.length){
     selectCategory(CATEGORY_DATA.categories.find(c=>c.locations.length)?.id || CATEGORY_DATA.categories[0].id);
   }
+  renderGuideCards();
+}
+
+// ── 觀測導覽 landing page 卡片（2026-09-06 追加）───────────────────────────
+function renderGuideCards(){
+  const grid = document.getElementById("guide-grid");
+  if(!CATEGORY_DATA || !CATEGORY_DATA.categories){ grid.innerHTML = ""; return; }
+  const otherTotal = CATEGORY_DATA.categories.filter(c=>!c.link_to_tab).reduce((s,c)=>s+c.locations.length, 0);
+  document.getElementById("guide-other-n").textContent = otherTotal.toLocaleString();
+  document.getElementById("guide-total-n").textContent = (100 + otherTotal).toLocaleString();
+
+  grid.innerHTML = CATEGORY_DATA.categories.map(cat=>{
+    const countLabel = cat.link_to_tab ? "100 個熱點" : `${cat.locations.length} 個地點`;
+    return `
+    <div class="guide-card">
+      <div class="icon-row"><span class="icon">${cat.icon||"📍"}</span><h4>${cat.label}</h4></div>
+      <div class="count">${countLabel}</div>
+      <p>${cat.summary||""}</p>
+      <button data-cat="${cat.id}" data-link="${cat.link_to_tab||''}">
+        ${cat.link_to_tab ? "前往熱點總覽 →" : "瀏覽地點清單 →"}
+      </button>
+    </div>`;
+  }).join("");
+
+  grid.querySelectorAll("button[data-cat]").forEach(btn=>{
+    btn.onclick = () => {
+      const catId = btn.dataset.cat, linkTab = btn.dataset.link;
+      if(linkTab){
+        document.querySelector(`nav.tabs button[data-tab="${linkTab}"]`).click();
+        return;
+      }
+      document.querySelector('nav.tabs button[data-tab="dashboard"]').click();
+      setTimeout(()=>{
+        if(!pickModeActive) document.getElementById("btn-toggle-custom").click();
+        selectCategory(catId);
+        document.getElementById("custom-panel").scrollIntoView({behavior:"smooth", block:"start"});
+      }, 80);
+    };
+  });
 }
 
 function renderCatTabs(){
