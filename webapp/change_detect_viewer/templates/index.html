@@ -323,7 +323,9 @@
   .guide-stat{ border:1px solid var(--line); background:var(--paper-raised); padding:10px 14px; }
   .guide-stat .n{ font-family:var(--font-mono); font-weight:700; font-size:20px; color:var(--accent); font-variant-numeric:tabular-nums; }
   .guide-stat .l{ font-size:11px; color:var(--muted); margin-top:2px; }
-  .guide-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin:0 0 10px; }
+  .guide-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin:0 0 10px;
+    outline:3px solid transparent; outline-offset:4px; transition:outline-color 1.8s ease; }
+  .guide-grid.deep-link-highlight{ outline-color:var(--accent); transition:outline-color .15s ease; }
   .guide-card{ background:var(--paper-raised); padding:20px 20px 18px; display:flex; flex-direction:column; gap:6px; }
   .guide-card .icon-row{ display:flex; align-items:center; gap:10px; }
   .guide-card .icon{ font-size:24px; line-height:1; }
@@ -971,15 +973,35 @@ async function api(path, opts){
 }
 
 // ── 分頁切換 ──────────────────────────────────────────
+function switchTab(tabName){
+  const btn = document.querySelector(`nav.tabs button[data-tab="${tabName}"]`);
+  if(!btn) return;
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("tab-"+tabName).classList.add("active");
+  if(tabName === "dashboard") setTimeout(()=> map && map.invalidateSize(), 50);
+}
 document.querySelectorAll("nav.tabs button").forEach(btn=>{
-  btn.onclick = () => {
-    document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".tabpanel").forEach(p=>p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
-    if(btn.dataset.tab === "dashboard") setTimeout(()=> map && map.invalidateSize(), 50);
-  };
+  btn.onclick = () => switchTab(btn.dataset.tab);
 });
+
+// ── 深度連結（2026-09-06 追加）：供簡報/外部素材直接連到特定畫面，
+// 例如 ?view=categories 開場即切到「地圖・延伸探索」分頁並捲動到 7 大類地點瀏覽器，
+// 不需要口頭說明「請點哪個分頁」。純前端路由，不影響一般網址正常開啟行為。
+function handleDeepLink(){
+  const view = new URLSearchParams(location.search).get("view");
+  if(view === "categories"){
+    switchTab("dashboard");
+    setTimeout(() => {
+      const el = document.getElementById("guide-grid");
+      if(!el) return;
+      el.scrollIntoView({behavior:"smooth", block:"start"});
+      el.classList.add("deep-link-highlight");
+      setTimeout(()=> el.classList.remove("deep-link-highlight"), 2600);
+    }, 300);
+  }
+}
 
 // ── 底圖（Google/Apple/Bing/ESRI/NLSC 地形圖/NLSC 正射影像，不含百度/騰訊）──────
 function toQuadKey(x, y, z){
@@ -2210,6 +2232,7 @@ async function init(){
   loadEventStats();
   renderDataStatus();
   loadHealth();
+  handleDeepLink();
 }
 init();
 </script>
