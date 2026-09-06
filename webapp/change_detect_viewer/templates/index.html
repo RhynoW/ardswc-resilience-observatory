@@ -59,6 +59,30 @@
   nav.tabs button:hover{ color:var(--ink); }
   nav.tabs button.active{ color:var(--ink); border-color:var(--line); background:var(--paper); border-bottom-color:var(--paper); }
 
+  .health-badge{
+    font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--muted); border:1px solid var(--line); padding:5px 10px; text-decoration:none; white-space:nowrap;
+  }
+  .health-badge:hover{ color:var(--ink); border-color:var(--ink); }
+  .health-badge.hb-ok::before{ content:"● "; color:#3E7A5C; }
+  .health-badge.hb-degraded::before{ content:"● "; color:#9C7A1E; }
+  .health-badge.hb-demo::before{ content:"◆ "; color:var(--accent); }
+  .health-badge.hb-err::before{ content:"● "; color:#7A3A38; }
+  #health-popover{
+    display:none; position:fixed; top:54px; right:20px; z-index:2000; width:min(360px, 90vw);
+    background:var(--paper-raised); border:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.18);
+    padding:16px 18px; font-size:12.5px; line-height:1.6;
+  }
+  #health-popover.open{ display:block; }
+  #health-popover h4{ margin:0 0 8px; font-size:13px; }
+  #health-popover .hb-row{ display:flex; justify-content:space-between; gap:10px; padding:3px 0; border-bottom:1px dotted var(--line-soft); }
+  #health-popover .hb-row:last-of-type{ border-bottom:none; }
+  #health-popover .hb-note{ color:var(--muted); font-size:11px; margin-top:8px; }
+  .demo-banner{
+    background:var(--accent); color:#fff; text-align:center; font-family:var(--font-mono);
+    font-size:12px; padding:6px 10px; letter-spacing:.02em;
+  }
+
   main{ max-width:1180px; margin:0 auto; padding:28px 24px 100px; }
   .tabpanel{ display:none; }
   .tabpanel.active{ display:block; }
@@ -312,6 +336,65 @@
   }
   .guide-card button:hover{ background:var(--accent); border-color:var(--accent); }
   .guide-note{ font-size:12px; color:var(--muted); max-width:74ch; margin:16px 0 0; line-height:1.6; }
+
+  /* ── 決策首頁（2026-09-06 改版：巡查優先級與決策價值優先於功能清單）─────── */
+  .decision-hero{ max-width:86ch; margin:0 0 30px; }
+  .eyebrow{ font-family:var(--font-mono); font-size:11px; color:var(--accent); text-transform:uppercase;
+    letter-spacing:.06em; margin-bottom:8px; }
+  .decision-hero h2{ font-size:27px; line-height:1.35; margin:0 0 12px; }
+  .decision-lead{ font-size:14.5px; line-height:1.75; color:var(--ink); max-width:none; }
+  .decision-lead strong{ color:var(--accent-2); }
+
+  .priority-cta{ border:1px solid var(--line); background:var(--paper-raised); padding:22px 24px 20px; margin:0 0 30px; }
+  .pc-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .pc-sub{ font-size:11.5px; color:var(--muted); }
+  .pc-tiers{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:16px; }
+  @media (max-width:700px){ .pc-tiers{ grid-template-columns:repeat(2,1fr); } }
+  .pc-tier{ background:var(--paper); padding:16px 14px; text-align:center; }
+  .pc-tier .pt-n{ font-family:var(--font-mono); font-weight:700; font-size:30px; font-variant-numeric:tabular-nums; line-height:1; }
+  .pc-tier .pt-label{ font-size:11.5px; margin-top:8px; font-weight:600; }
+  .pc-tier .pt-desc{ font-size:10.5px; color:var(--muted); margin-top:3px; line-height:1.4; }
+  .pc-tier.pt-A .pt-n{ color:var(--accent); }
+  .pc-tier.pt-B .pt-n{ color:#9C7A1E; }
+  .pc-tier.pt-C .pt-n{ color:var(--accent-2); }
+  .pc-tier.pt-D .pt-n{ color:var(--muted); }
+  .pc-goto{
+    font-family:var(--font-mono); font-size:12.5px; background:var(--accent); color:#fff;
+    border:1px solid var(--accent); padding:9px 18px; cursor:pointer; letter-spacing:.02em;
+  }
+  .pc-goto:hover{ opacity:.88; }
+
+  .proof-section{ margin:0 0 32px; }
+  .proof-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:14px; }
+  .proof-card{ background:var(--paper-raised); padding:18px 20px 16px; cursor:pointer; display:flex; flex-direction:column; gap:8px; border-top:3px solid var(--line); }
+  .proof-card:hover{ background:var(--chip-bg); }
+  .proof-card.pf-ok{ border-top-color:#3E7A5C; }
+  .proof-card.pf-warn{ border-top-color:#9C7A1E; }
+  .proof-card.pf-bad{ border-top-color:#7A3A38; }
+  .proof-card .pf-kicker{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .proof-card .pf-title{ font-weight:600; font-size:15px; }
+  .proof-card .pf-verdict{ display:inline-block; align-self:flex-start; font-family:var(--font-mono); font-size:10.5px;
+    text-transform:uppercase; padding:2px 8px; letter-spacing:.03em; }
+  .proof-card.pf-ok .pf-verdict{ background:#3E7A5C; color:#fff; }
+  .proof-card.pf-warn .pf-verdict{ background:#9C7A1E; color:#fff; }
+  .proof-card.pf-bad .pf-verdict{ background:#7A3A38; color:#fff; }
+  .proof-card .pf-score{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .proof-card .pf-explain{ font-size:12.5px; color:var(--muted); line-height:1.6; flex:1; }
+  .proof-card .pf-cta{ font-family:var(--font-mono); font-size:11px; color:var(--accent); margin-top:2px; }
+
+  .explore-more{ border-top:1px solid var(--line); padding-top:20px; }
+  .explore-more h4{ font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 12px; }
+  .explore-links{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+  .explore-link{
+    font-family:var(--font-mono); font-size:12px; background:var(--paper-raised); border:1px solid var(--line);
+    color:var(--muted); padding:9px 14px; cursor:pointer;
+  }
+  .explore-link:hover{ color:var(--ink); border-color:var(--ink); }
+
+  .dashboard-support-note{
+    font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.02em;
+    border:1px dashed var(--line); padding:8px 12px; margin-bottom:22px; display:inline-block;
+  }
   #custom-job-log{
     font-family:var(--font-mono); font-size:11px; color:var(--muted); background:var(--paper); border:1px solid var(--line-soft);
     padding:8px 10px; max-height:150px; overflow-y:auto; white-space:pre-wrap; margin-top:10px; display:none;
@@ -467,25 +550,75 @@
     <h1 class="brand-title">地景複發熱點觀測站</h1>
   </div>
   <nav class="tabs">
-    <button data-tab="guide" class="active">觀測導覽</button>
-    <button data-tab="dashboard">觀測站首頁</button>
+    <button data-tab="guide" class="active">決策首頁</button>
     <button data-tab="hotspots">熱點總覽</button>
     <button data-tab="ledger">深度驗證台帳</button>
+    <button data-tab="dashboard">地圖・延伸探索</button>
     <button data-tab="findings">發現與建言</button>
   </nav>
+  <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
 </header>
+<div id="health-popover"></div>
+<div id="demo-banner" class="demo-banner" style="display:none;"></div>
 
 <main>
 
   <!-- ── 觀測導覽（2026-09-06 追加，landing page）───────────── -->
   <section id="tab-guide" class="tabpanel active">
+    <div class="decision-hero">
+      <div class="eyebrow">OSSInt 2026 · 跨國空間情報於國家韌性應用學生競賽</div>
+      <h2>具有真實導入潛力的空間情報國家韌性決策原型</h2>
+      <p class="sec-sub decision-lead">這不是「AI 自動判定災害」的黑箱系統，而是一套<strong>候選排序＋證據鏈</strong>的決策
+      輔助原型：把 76,773 筆水保署歷史通報，收斂成 100 個長期複發熱點，再用透明規則排出
+      <strong>巡查優先級</strong>，讓有限的地面稽查人力知道「下一步該先去哪裡」——每一個排序背後都附上
+      可回溯、可驗證的證據鏈，而不是一個要人盲目相信的分數。</p>
+    </div>
+
+    <div class="priority-cta">
+      <div class="pc-head">
+        <h3 style="margin:0;">巡查優先級總覽——決策價值從這裡開始</h3>
+        <span class="pc-sub">依複發性／近期變遷證據／地形起伏／資料信心四項透明規則，對全部 100 個熱點自動分級</span>
+      </div>
+      <div class="pc-tiers" id="pc-tiers">
+        <div style="padding:16px; color:var(--muted); font-size:12.5px;">載入優先級統計中…</div>
+      </div>
+      <button id="pc-goto-a" class="pc-goto">→ 查看 A 級「建議優先現勘」完整名單</button>
+    </div>
+
+    <div class="proof-section">
+      <h3>為什麼可以信任這套排序？——兩個真實命中，一個真實誤報</h3>
+      <p class="sec-sub" style="max-width:78ch;">11 個熱點做過完整人工目視覆核，我們不是只挑好看的結果展示。
+      以下 3 個真實案例涵蓋整個結果光譜：一個乾淨可信的命中、一個「分數很高但需要人工複核才能定案」的
+      真實訊號、一個「分數也很高、但其實是系統性錯誤」的誤報——點卡片可看完整的原始影像與判斷依據。</p>
+      <div class="proof-grid" id="proof-grid">
+        <div style="padding:20px; color:var(--muted); font-size:13px;">載入案例中…</div>
+      </div>
+    </div>
+
+    <div class="explore-more">
+      <h4>延伸探索（支援功能，非本站主線）</h4>
+      <div class="explore-links">
+        <button class="explore-link" data-tab="hotspots">📋 100 熱點完整清單與優先級排序</button>
+        <button class="explore-link" data-tab="ledger">🔍 11 個熱點的完整目視覆核紀錄</button>
+        <button class="explore-link" data-tab="dashboard">🗺️ 地圖瀏覽・7 大類真實地點・線上即時分析・3D 檢視</button>
+      </div>
+      <p class="guide-note">⚠ 即時線上擷取（任意座標的 Google Earth Web 比對）與 3D 立體檢視為輔助探索工具，
+        依賴外部服務即時狀況；正式展示以上方已驗證的巡查優先級與三個案例為準——即時功能是否可用可查右上角「系統狀態」。</p>
+    </div>
+  </section>
+
+  <!-- ── 首頁 ───────────────────────────── -->
+  <section id="tab-dashboard" class="tabpanel">
+    <div class="dashboard-support-note">支援工具——地圖瀏覽／7 大類真實地點快速索引／任意座標線上分析／3D 檢視。
+      本站核心結論（巡查優先級、三個驗證案例）見「決策首頁」。</div>
+
     <div class="guide-hero">
       <div class="lead">
-        <h2>災變觀測導覽</h2>
+        <h3 style="margin:0 0 8px;">7 大類真實地點快速索引</h3>
         <p class="sec-sub">從水保署 76,773 筆歷史通報整理出的長期複發熱點出發，延伸到土石流觀測站、
         大規模崩塌潛勢區、海岸/河川侵蝕案例、都市開發示範區與捷運工程——以下 7 大類、共
-        <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入「線上分析」，
-        即時擷取 Google Earth Web 歷史影像做前後期比對，找出真正在變化的地方。</p>
+        <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入下方「線上分析」，
+        即時擷取 Google Earth Web 歷史影像做前後期比對。</p>
       </div>
       <div class="stats">
         <div class="guide-stat"><div class="n">76,773</div><div class="l">全台去重災害事件紀錄</div></div>
@@ -496,11 +629,8 @@
     <div class="guide-grid" id="guide-grid"><div style="padding:20px; color:var(--muted); font-size:13px;">載入分類清單中…</div></div>
     <p class="guide-note">⚠ 每一筆座標皆有真實來源（官方 PDF／政府開放資料／維基百科），無法找到精確座標的地點
       一律標註「概略／未驗證」而非編造座標湊數——詳見各分類卡片與「線上分析」面板內每個地點的來源連結。</p>
-  </section>
 
-  <!-- ── 首頁 ───────────────────────────── -->
-  <section id="tab-dashboard" class="tabpanel">
-    <h2>從 7 萬 6 千筆通報到 100 個真正複發的地點</h2>
+    <h2 style="margin-top:36px;">從 7 萬 6 千筆通報到 100 個真正複發的地點</h2>
     <p class="sec-sub">依「不同年份出現次數」而非照片總數，從水保署全台災害影像通報中篩出長期地質不穩定熱點，再用十年以上衛星歷史影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
 
     <div class="statgrid">
@@ -719,7 +849,7 @@
 </div>
 
 <footer>
-  <span>地景複發熱點觀測站 · 台灣專用</span>
+  <span>地景複發熱點觀測站 · 台灣專用 · 所有排序皆為候選建議與證據鏈，非 AI 自動判定災害結果</span>
   <span>資料截至 2026-09-04 · 公開展示版：11 個熱點含完整比對面板，其餘 89 個熱點提供中繼資料與巡查優先級</span>
 </footer>
 
@@ -1638,6 +1768,112 @@ function renderStats(){
   document.getElementById("stat-tier-a-n").textContent = nA;
 }
 
+// ── 決策首頁：巡查優先級總覽（2026-09-06 改版）───────────────────────────
+const PC_TIER_DESC = {
+  A: "複發性高＋近期有可信變遷證據", B: "有候選訊號，信心不足需人工複核",
+  C: "複發性高但近期無可靠變遷證據", D: "資料不足，無法支持任何判斷",
+};
+function renderPriorityTiers(){
+  const wrap = document.getElementById("pc-tiers");
+  const items = Object.values(PRIORITY_BY_RANK);
+  const counts = { A: 0, B: 0, C: 0, D: 0 };
+  for(const p of items) if(counts[p.tier] !== undefined) counts[p.tier]++;
+  wrap.innerHTML = ["A","B","C","D"].map(t => `
+    <div class="pc-tier pt-${t}">
+      <div class="pt-n">${counts[t]}</div>
+      <div class="pt-label">${t} 級・${TIER_ACTION[t]}</div>
+      <div class="pt-desc">${PC_TIER_DESC[t]}</div>
+    </div>`).join("");
+}
+document.getElementById("pc-goto-a").onclick = () => {
+  document.querySelector('nav.tabs button[data-tab="hotspots"]').click();
+  const btnA = document.querySelector('#tier-filter button[data-tier="A"]');
+  if(btnA) btnA.click();
+};
+
+// ── 決策首頁：三個真實案例（候選排序＋證據鏈的具體示範，非精心挑選的好結果）──
+// 選案準則（誠實記錄）：44＝11 個深度驗證熱點中唯一「對位成功＋熱區集中」皆通過的乾淨命中；
+// 80＝全部 100 熱點中自動分數最高（0.978），但目視覆核後誠實標示「熱區近乎滿版，可信度存疑」
+//   ——刻意選它是要示範「分數最高≠最可信」，這正是「候選排序≠AI自動判定」的核心論點；
+// 48＝分數也很高（0.906）但目視覆核後確認是對位失敗造成的偽陽性（老漁港不可能 7 年城市化）。
+const PROOF_CASES = [
+  { rank: 44, kicker: "案例一・真實命中", cls: "pf-ok",
+    explain: "河岸/坡地訊號集中，與臺中和平區松鶴長年坡地侵蝕問題吻合。11 個深度驗證熱點中，唯一同時「對位成功」且「目視確認乾淨無疑」的案例。" },
+  { rank: 80, kicker: "案例二・分數最高≠最可信", cls: "pf-warn",
+    explain: "自動分數 0.978，是全部 100 個熱點中最高分——但目視覆核發現熱區幾乎佈滿整張畫面，不是集中訊號，可信度存疑。分數本身不能直接採信，需搭配熱區集中度一起判讀。" },
+  { rank: 48, kicker: "案例三・真實誤報", cls: "pf-bad",
+    explain: "自動分數高達 0.906，但宜蘭蘇澳的老漁港不可能在 7 年內完成城市化——目視覆核確認是兩期影像框取範圍不一致造成的偽陽性，非真實地貌變化。" },
+];
+function renderProofCards(){
+  const wrap = document.getElementById("proof-grid");
+  wrap.innerHTML = PROOF_CASES.map(pc => {
+    const l = LEDGER_BY_RANK[pc.rank];
+    if(!l) return "";
+    return `
+      <div class="proof-card ${pc.cls}" data-rank="${pc.rank}">
+        <div class="pf-kicker">${pc.kicker}</div>
+        <div class="pf-title">#${l.rank} ${l.name}</div>
+        <span class="pf-verdict">${l.verdict_label}</span>
+        <div class="pf-score">自動分數 ${l.score.toFixed(3)}　${l.date_a} → ${l.date_b}</div>
+        <div class="pf-explain">${pc.explain}</div>
+        <div class="pf-cta">查看完整證據鏈與原始影像 →</div>
+      </div>`;
+  }).join("");
+  wrap.querySelectorAll(".proof-card").forEach(card => {
+    card.onclick = () => {
+      const l = LEDGER_BY_RANK[Number(card.dataset.rank)];
+      document.querySelector('nav.tabs button[data-tab="ledger"]').click();
+      openDetail(l.rank, l.site, l.date_a, l.date_b);
+    };
+  });
+}
+document.querySelectorAll(".explore-link[data-tab]").forEach(btn => {
+  btn.onclick = () => document.querySelector(`nav.tabs button[data-tab="${btn.dataset.tab}"]`).click();
+});
+
+// ── 服務健康狀態（2026-09-06 追加，競賽審查意見：現場展示不受外部服務影響）───
+async function loadHealth(){
+  const badge = document.getElementById("health-badge");
+  const pop = document.getElementById("health-popover");
+  let h;
+  try{ h = await api("/api/health"); }
+  catch(e){
+    badge.className = "health-badge hb-err";
+    badge.textContent = "● 系統狀態：無法取得";
+    pop.innerHTML = `<div class="hb-note">健康檢查端點呼叫失敗：${e.message}</div>`;
+    return;
+  }
+  const cls = h.demo_mode ? "hb-demo" : (h.status === "ok" ? "hb-ok" : "hb-degraded");
+  badge.className = "health-badge " + cls;
+  badge.textContent = h.demo_mode ? "◆ 離線展示模式" : (h.status === "ok" ? "● 系統狀態：正常" : "● 系統狀態：部分功能異常");
+
+  if(h.demo_mode){
+    const banner = document.getElementById("demo-banner");
+    banner.style.display = "block";
+    banner.textContent = "◆ 目前為離線展示模式：即時線上擷取已停用，僅顯示已驗證的既有分析結果，不受外部服務（Google Earth Web）現場狀況影響。";
+  }
+
+  const c = h.checks;
+  pop.innerHTML = `
+    <h4>服務健康狀態</h4>
+    <div class="hb-row"><span>核心資料檔案</span><span>${c.core_data_files.ok ? "✔ 完整" : "✘ 缺失"}</span></div>
+    <div class="hb-row"><span>離線可播放熱點數</span><span>${c.offline_capture_cache.deep_verified_sites_with_images}</span></div>
+    <div class="hb-row"><span>線上即時擷取</span><span>${c.live_capture.feature_enabled ? (c.live_capture.busy ? "執行中" : "可用") : "已停用"}</span></div>
+    <div class="hb-row"><span>Playwright 瀏覽器自動化</span><span>${c.live_capture.playwright_installed ? "✔ 已安裝" : "✘ 未安裝"}</span></div>
+    <div class="hb-row"><span>Cesium 地形 token</span><span>${c.cesium_terrain_token.configured ? "已設定" : "未設定（選配）"}</span></div>
+    <div class="hb-row"><span>背景任務</span><span>${h.background_jobs.running} 執行中 / ${h.background_jobs.total_tracked} 累計</span></div>
+    <div class="hb-row"><span>版本</span><span>${h.git_commit}</span></div>
+    <div class="hb-note">${h.governance_note}</div>`;
+}
+document.getElementById("health-badge").onclick = (e) => {
+  e.preventDefault();
+  document.getElementById("health-popover").classList.toggle("open");
+};
+document.addEventListener("click", (e) => {
+  const pop = document.getElementById("health-popover");
+  if(pop.classList.contains("open") && !pop.contains(e.target) && e.target.id !== "health-badge") pop.classList.remove("open");
+});
+
 // ── 熱點總覽表格 ──────────────────────────────────────
 function methodLabel(m){ return m === "deephist25" ? "深度 25 期" : m === "quickscan8" ? "快篩 8 期" : (m||"—"); }
 
@@ -1969,8 +2205,11 @@ async function init(){
   renderMap();
   renderHotspotsTable();
   renderLedger();
+  renderPriorityTiers();
+  renderProofCards();
   loadEventStats();
   renderDataStatus();
+  loadHealth();
 }
 init();
 </script>

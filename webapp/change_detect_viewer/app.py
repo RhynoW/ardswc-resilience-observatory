@@ -904,6 +904,9 @@ GE_CAPTURE_CONTAINER_MODE = os.environ.get("GE_CAPTURE_CONTAINER_MODE", "0") == 
 # 容器模式無 GPU、實測約 35-45s/期，上限收緊避免單一任務佔用整個容器 20+ 分鐘；
 # 本機模式維持原上限 30（桌機資源充足、8K wrapper 通常快得多）。
 MAX_N_DATES = 12 if GE_CAPTURE_CONTAINER_MODE else 30
+# 離線展示模式（見下方 /api/health 區塊完整說明）：現場展示時可主動開啟，關閉對外部
+# 服務（GE Web/Playwright 即時擷取）的依賴，只保留完全本機快取驅動的功能。預設關閉。
+DEMO_MODE = os.environ.get("DEMO_MODE", "0") == "1"
 
 
 @app.route("/api/category_locations")
@@ -964,7 +967,110 @@ def api_capture_status():
     """供前端頁面載入時檢查是否已有擷取任務在跑，並回報本部署是否啟用線上擷取——
     避免公開展示版顯示一個保證失敗的按鈕（見上方 ENABLE_LIVE_CAPTURE 說明），也避免使用者
     以為按鈕沒反應而重複送出卻不知背景其實正在跑一個不同座標的舊任務（CLAUDE.md §17.4）。"""
-    return jsonify({"busy": _capture_lock.locked(), "enabled": ENABLE_LIVE_CAPTURE, "max_n_dates": MAX_N_DATES})
+    return jsonify({
+        "busy": _capture_lock.locked(), "enabled": ENABLE_LIVE_CAPTURE and not DEMO_MODE,
+        "max_n_dates": MAX_N_DATES, "demo_mode": DEMO_MODE,
+    })
+
+
+# ── DEMO_MODE + /api/health（2026-09-06 追加，競賽審查意見）──────────────────
+# 動機：本次開發過程中真實發生過兩次「現場展示會失敗」的事故——HF Space 被切到 PAUSED、
+# Cesium ion token 靜默過期——都不是使用者能在展示現場當場排除的問題。審查意見要求「提供
+# 離線 Demo 與服務健康狀態，確保現場展示不受外部服務影響」，直接對應這兩個真實事故。
+#
+# DEMO_MODE=1 時：關閉「線上分析」（不再對外發起 GE Web/Playwright 即時擷取——那條路徑
+# 依賴外部網站可用性，正是最不適合在展示現場當場示範的部分），僅保留完全依賴本機快取
+# 資料的功能（100 熱點清單/地圖/優先級、11 個深度驗證熱點的既有比對面板、深度驗證台帳）。
+# 旗標定義見上方（與 ENABLE_LIVE_CAPTURE/MAX_N_DATES 放在一起）。
+
+
+def _git_commit() -> str:
+    """盡力取得目前部署的 git commit（純讀檔，不呼叫 `git` 指令，容器內不一定有 git binary）。
+    讀不到就誠實回 'unknown'，不要用空字串或猜測值假裝知道。"""
+    try:
+        head = (REPO / ".git" / "HEAD").read_text(encoding="utf-8").strip()
+        if head.startswith("ref:"):
+            ref_path = REPO / ".git" / head.split(" ", 1)[1].strip()
+            if ref_path.exists():
+                return ref_path.read_text(encoding="utf-8").strip()[:12]
+            return "unknown"
+        return head[:12]
+    except OSError:
+        return "unknown"
+
+
+@app.route("/api/health")
+def api_health():
+    """服務健康狀態一覽——供現場展示前自我檢查，也供任何人查證本站目前實際能做到什麼，
+    不是行銷宣稱。每一項都是可驗證的具體檢查，不是籠統的『系統正常』。
+
+    刻意不對 Cesium ion 發即時網路請求（`/api/contours_status` 已有專門端點做這件事、
+    且會真的打 API）——健康檢查本身若依賴外部網路，一旦外部服務恰好是導致展示失敗的
+    那個環節，健康檢查也會跟著卡住/逾時，失去意義。這裡只檢查『token 是否已設定』這種
+    本地、即時、不受網路影響的事實；要看 token 是否仍然有效，另外呼叫 /api/contours_status。
+    """
+    checks = {}
+
+    top100 = DATA_ROOT / "top100_consolidated.json"
+    ledger = DATA_ROOT / "ledger.json"
+    cats = DATA_ROOT / "category_locations.json"
+    checks["core_data_files"] = {
+        "ok": top100.exists() and ledger.exists(),
+        "top100_consolidated.json": top100.exists(),
+        "ledger.json": ledger.exists(),
+        "category_locations.json": cats.exists(),
+    }
+
+    n_deep_sites = 0
+    if CAPTURES_ROOT.exists():
+        n_deep_sites = sum(
+            1 for p in CAPTURES_ROOT.iterdir()
+            if p.is_dir() and p.name.startswith("ardswc_top") and any(p.glob("*.png"))
+        )
+    checks["offline_capture_cache"] = {
+        "ok": n_deep_sites > 0,
+        "deep_verified_sites_with_images": n_deep_sites,
+        "note": "此數字＝離線展示模式下實際可完整播放比對面板的熱點數，不受任何外部服務影響。",
+    }
+
+    cesium_token_set = bool(os.environ.get("CESIUM_ION_TOKEN"))
+    checks["cesium_terrain_token"] = {
+        "ok": True,  # 未設定不算故障——等高線/流域分析本就是選配功能，見 §governance
+        "configured": cesium_token_set,
+        "note": "未設定時等高線/流域分析功能自動隱藏，不影響其餘功能；"
+                "設定後的實際有效性另見 /api/contours_status（會真的呼叫 Cesium API）。",
+    }
+
+    playwright_ok = False
+    try:
+        import importlib.util
+        playwright_ok = importlib.util.find_spec("playwright") is not None
+    except Exception:  # noqa: BLE001
+        playwright_ok = False
+    checks["live_capture"] = {
+        "ok": True,  # 停用是刻意設定，不是故障
+        "feature_enabled": ENABLE_LIVE_CAPTURE and not DEMO_MODE,
+        "demo_mode": DEMO_MODE,
+        "playwright_installed": playwright_ok,
+        "container_mode": GE_CAPTURE_CONTAINER_MODE,
+        "busy": _capture_lock.locked(),
+    }
+
+    with _jobs_lock:
+        n_jobs_running = sum(1 for j in _jobs.values() if j.get("status") == "running")
+        n_jobs_total = len(_jobs)
+
+    all_ok = all(c["ok"] for c in checks.values())
+    return jsonify({
+        "status": "ok" if all_ok else "degraded",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "git_commit": _git_commit(),
+        "demo_mode": DEMO_MODE,
+        "checks": checks,
+        "background_jobs": {"running": n_jobs_running, "total_tracked": n_jobs_total},
+        "governance_note": ("此頁面回報的是系統元件的可用性事實，不是資料本身的正確性——"
+                             "資料正確性判斷見「深度驗證台帳」分頁與各筆案例的候選排序/證據鏈說明。"),
+    })
 
 
 def _coord_slug(lat, lon):
@@ -975,6 +1081,10 @@ def _coord_slug(lat, lon):
 
 @app.route("/api/capture_custom", methods=["POST"])
 def api_capture_custom():
+    if DEMO_MODE:
+        return jsonify({"error": "目前為離線展示模式（DEMO_MODE），已停用即時線上擷取以避免現場"
+                                  "展示受外部服務（Google Earth Web）狀況影響。請改用「熱點總覽」"
+                                  "分頁瀏覽已完成的既有分析結果。"}), 403
     if not ENABLE_LIVE_CAPTURE:
         return jsonify({"error": "此部署目前已暫停線上即時擷取功能。請改用下方「豐丘觀測站範例」"
                                   "查看已完成的分析結果，或稍後再試。"}), 403
