@@ -61,16 +61,20 @@ sys.path.insert(0, str(SCRIPTS))
 sys.path.insert(0, str(HERE))
 import ge_change_detect as CD          # noqa: E402
 import gmaps_tiles as GT               # noqa: E402  — 僅用 apple/nlsc_topo/nlsc_photo 三個來源
-import cesium_terrain as CT            # noqa: E402  — 可開關等高線圖用（Cesium World Terrain）
+import cesium_terrain as CT            # noqa: E402  — 等高線/流域的備援地形來源（Cesium World Terrain）
+import dtm20 as DTM                    # noqa: E402  — 主要地形來源：全臺灣 20 m DTM（內政部地政司，本地檔）
 import watershed_analysis as WA        # noqa: E402  — 小範圍坡度/流域分析（積水候選提示）
 import ardswc_photo_search as APS      # noqa: E402  — 水保署官方歷史影像庫真實查詢
 
 REPO = HERE.parent.parent
 CAPTURES_ROOT = REPO / "data" / "ge_captures"
 DATA_ROOT = REPO / "data" / "ardswc_hotspots"
-WATERSHED_CACHE = REPO / "data" / "watershed_cache"
+# 地形來源：有本地 DTM 檔就用它（免 token、可商用、20 m），沒有才退回 Cesium World Terrain。
+# 兩種來源的高程不同，快取依來源分開放，避免換來源後仍讀到舊來源算出的等高線/流域圖。
+TERRAIN_TAG = "dtm20" if DTM.is_available() else "cesium"
+WATERSHED_CACHE = REPO / "data" / "watershed_cache" / TERRAIN_TAG
 ARDSWC_META_CACHE = REPO / "data" / "ardswc_meta_cache"
-CONTOUR_CACHE = REPO / "data" / "contour_cache"
+CONTOUR_CACHE = REPO / "data" / "contour_cache" / TERRAIN_TAG
 
 app = Flask(__name__)
 
@@ -615,7 +619,7 @@ _contour_source = None  # 延遲初始化：token 不存在時不能讓整個 ap
 def _get_contour_source():
     global _contour_source
     if _contour_source is None:
-        _contour_source = CT.IonTerrainSource()
+        _contour_source = DTM.Dtm20Source() if DTM.is_available() else CT.IonTerrainSource()
     return _contour_source
 
 
@@ -740,7 +744,7 @@ def api_contours_status():
 # 並列顯示 3×3km（粗略地形脈絡）與 1×1km（更細節，res_m 也對應收窄到 10m）兩種尺度——
 # 兩者用同一個 governance_note（同一套方法論、只差取樣範圍），故整個端點回一份結果，
 # 前端一次拿到兩張圖並排顯示，不必發兩次請求。
-_WATERSHED_SCALES = [("3km", 3.0, 20.0), ("1km", 1.0, 10.0)]
+_WATERSHED_SCALES = [("3km", 3.0, 20.0), ("1km", 1.0, 20.0)]   # DTM 原生 20 m，更細只是內插
 
 
 @app.route("/api/watershed/<int:rank>")
@@ -764,7 +768,12 @@ def _run_watershed(cache_key, lat, lon):
             (WATERSHED_CACHE / f"{cache_key}_{tag}.png").exists() for tag, _, _ in _WATERSHED_SCALES):
         return cached, None
 
-    src = _get_contour_source()
+    try:
+        src = _get_contour_source()
+    except RuntimeError:
+        # 沒有 Cesium ion token：原本這裡的例外沒被接住，整個請求變成無訊息的 500
+        return None, ("找不到地形資料來源。請執行 python scripts/prepare_dtm20.py 下載全臺灣 20 m DTM"
+                      "（建議），或設定環境變數 CESIUM_ION_TOKEN／建立 .cesium_ion_token 後重新啟動。")
     scales_out = []
     governance_note = None
     WATERSHED_CACHE.mkdir(parents=True, exist_ok=True)
@@ -1039,6 +1048,13 @@ def api_health():
         "note": "此數字＝離線展示模式下實際可完整播放比對面板的熱點數，不受任何外部服務影響。",
     }
 
+    checks["terrain_dtm20"] = {
+        "ok": True,  # 沒有本地 DTM 不算故障——會退回 Cesium（若有 token）
+        "available": DTM.is_available(),
+        "active_terrain_source": TERRAIN_TAG,
+        "note": "全臺灣 20 m DTM（內政部地政司）為主要地形來源；未整備時退回 Cesium World Terrain。",
+    }
+
     cesium_token_set = bool(os.environ.get("CESIUM_ION_TOKEN"))
     checks["cesium_terrain_token"] = {
         "ok": True,  # 未設定不算故障——等高線/流域分析本就是選配功能，見 §governance
@@ -1132,7 +1148,12 @@ def api_capture_custom():
                        "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
                        "--n-dates", str(n_dates), "--headless-container", "--vw", "1920", "--vh", "1080"]
             else:
-                cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2_8k.py"),
+                # 8K wrapper 只存在於私有研究倉庫；公開精簡版沒有，找不到就直接用 v2
+                # （本機真 Chrome、有頭、持久化 profile、預設 2560×1440 viewport）。
+                script = SCRIPTS / "ge_web_capture_v2_8k.py"
+                if not script.exists():
+                    script = SCRIPTS / "ge_web_capture_v2.py"
+                cmd = [sys.executable, str(script),
                        "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
                        "--n-dates", str(n_dates)]
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

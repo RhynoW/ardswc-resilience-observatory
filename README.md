@@ -41,8 +41,9 @@ license: mit
 ## 技術架構
 
 Flask 後端 + Leaflet 前端單頁應用；比對引擎為 SSIM 像素級變遷偵測
-（`scripts/ge_change_detect.py`）；地形起伏取自 Cesium World Terrain（`CESIUM_ION_TOKEN`
-為選配 Space secret，未設定時等高線疊圖開關自動隱藏，不影響其餘功能）；Google Earth Web
+（`scripts/ge_change_detect.py`）；地形起伏取自內政部地政司全臺灣 20 m DTM
+（`scripts/prepare_dtm20.py` 下載整備；沒有時退回 Cesium World Terrain，需選配 `CESIUM_ION_TOKEN`；
+兩者皆無時等高線疊圖開關自動隱藏，不影響其餘功能）；Google Earth Web
 歷史影像期數不足時，可用 Sentinel-2（每 5 天重訪、10 m 解析度，選配 `SENTINEL_INSTANCE_ID`
 secret）補充時間軸，只適用面積級變化。系統架構、API
 一覽與資料治理原則見 [ARCHITECTURE.md](ARCHITECTURE.md)；完整開發過程與除錯記錄維護在
@@ -56,7 +57,7 @@ secret）補充時間軸，只適用面積級變化。系統架構、API
 ## 現場展示可靠性
 
 - **`/api/health`**：即時回報核心資料檔案、離線可播放熱點數、線上擷取/Playwright 可用性、
-  Cesium 地形 token 設定狀態，供展示前自我檢查——不是行銷宣稱，每一項都是可驗證的具體事實。
+  地形來源（20 m DTM／Cesium token）狀態，供展示前自我檢查——不是行銷宣稱，每一項都是可驗證的具體事實。
   頁面右上角「系統狀態」徽章即時顯示。
 - **`DEMO_MODE=1`**（選配 Space variable）：現場展示時可主動開啟，停用依賴外部服務
   （Google Earth Web 即時擷取）的功能，只保留完全由本機快取資料驅動的核心內容（100 熱點
@@ -66,5 +67,5 @@ secret）補充時間軸，只適用面積級變化。系統架構、API
 ## 底圖與資料來源
 
 Google／ESRI／Bing／OSM／Apple（選配）／內政部國土測繪中心 1/50000 地形圖與航照正射
-影像；地形資料 © Cesium World Terrain（免費層級，非商用）；原始事件資料來自行政院農業部
+影像；地形資料 © 內政部地政司 2025年版全臺灣20公尺網格DTM（政府資料開放授權條款第1版；無本地檔時備援為 Cesium World Terrain，非商用）；原始事件資料來自行政院農業部
 水土保持署 ARDSWC。

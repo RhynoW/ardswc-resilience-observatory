@@ -1650,7 +1650,7 @@ function switchBaseLayer(key){
   });
 }
 
-// ── 等高線疊圖（Cesium World Terrain，可開關）──────────────────────────
+// ── 等高線疊圖（全臺灣 20 m DTM，無本地檔時退回 Cesium；可開關）──────────────────────────
 // 非同步查可用性，不卡頁面首次渲染（同 Apple 底圖走後端代理不同，這裡另外走一次
 // 專屬 /api/contours_status，因為 Cesium ion 的驗證往返可能比 Apple bootstrap 慢）。
 // 找不到 token／API 打不通時直接不顯示開關（fail-closed：沒有能力就不假裝有）。
@@ -1676,7 +1676,7 @@ async function initContourToggle(panel){
       // 0.85 只會讓好不容易調粗調亮的線又整體變淡，沒有必要。
       contourLayer = contourLayer || L.tileLayer("/api/contours/{z}/{x}/{y}", {
         minZoom: 11, maxZoom: 21, maxNativeZoom: 15, opacity: 1, zIndex: 650,
-        attribution: "Terrain © Cesium World Terrain（非商用）"
+        attribution: (status.attributions && status.attributions.length ? status.attributions.join(" ") : "Terrain © Cesium World Terrain（非商用）")
       });
       contourLayer.addTo(map);
     } else if(contourLayer){

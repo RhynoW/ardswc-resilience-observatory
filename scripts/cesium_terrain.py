@@ -231,6 +231,9 @@ def fetch_terrain(lat0, lon0, span_km=4.5, res_m=30.0, token=None, level=None, s
     回傳 (z_grid, lat_axis, lon_axis, info)——與原始 stk_engine 版本不同之處：不包 Terrain
     物件，直接給 numpy 網格＋座標軸（本模組唯一用途是畫等高線，不需要幾何查詢介面）。
     """
+    if source is not None and hasattr(source, "fetch_grid"):
+        # 本地 DTM 來源（scripts/dtm20.py）：直接取網格，不走 quantized-mesh 流程
+        return source.fetch_grid(lat0, lon0, span_km=span_km, res_m=res_m)
     src = source or IonTerrainSource(token=token)
     need = src.max_level
     for z in range(6, src.max_level + 1):

@@ -6,3 +6,5 @@ scipy
 scikit-image
 pillow
 playwright==1.48.0
+rasterio
+pyproj

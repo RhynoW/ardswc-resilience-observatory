@@ -23,6 +23,11 @@ RUN playwright install --with-deps chromium
 
 COPY . .
 
+# 全臺灣 20 m DTM（內政部地政司，政府資料開放授權條款第1版）：建置時從 TGOS 下載（269 MB，
+# 續傳）並轉成 224 MB 的分塊壓縮 GeoTIFF，不放進 git。失敗不擋建置——執行期找不到 DTM 檔時
+# 等高線/流域分析自動退回 Cesium World Terrain（需 CESIUM_ION_TOKEN），兩者皆無則該功能隱藏/回明確錯誤。
+RUN python scripts/prepare_dtm20.py || echo "WARN: DTM prepare failed; falling back to Cesium terrain"
+
 RUN useradd -m -u 1000 appuser \
     && mkdir -p /app/data/cesium_cache /app/data/contour_cache \
     && chown -R appuser:appuser /app /ms-playwright

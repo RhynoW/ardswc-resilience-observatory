@@ -38,7 +38,7 @@
                      ├─ 靜態 JSON 讀取（熱點清單/台帳/事件統計/分類地點）
                      ├─ ge_change_detect.py（SSIM 比對，讀取已快取的影像/JSON）
                      ├─ ge_web_capture_v2.py（線上分析：即時 GE Web 擷取，見 §5）
-                     ├─ cesium_terrain.py（地形資料：等高線疊圖／坡度流域分析）
+                     ├─ dtm20.py／cesium_terrain.py（地形資料：等高線疊圖／坡度流域分析；DTM 為主、Cesium 備援）
                      ├─ watershed_analysis.py（D8 流向＋流量累積，積水候選提示）
                      ├─ ardswc_photo_search.py（水保署歷史影像庫真實查詢）
                      └─ gmaps_tiles.py（Apple／國土測繪中心底圖圖磚代理）
@@ -137,7 +137,7 @@
 
 ## 8. 其他功能模組（支援功能）
 
-- **坡度與流域分析**：Cesium World Terrain 地形資料 → D8 流向＋流量累積，提示「可能
+- **坡度與流域分析**：全臺灣 20 m DTM（內政部地政司；無本地檔時退回 Cesium World Terrain）→ D8 流向＋流量累積，提示「可能
   積水/淹水」候選區——純地形幾何篩選，**不是水文水利模型**（無降雨強度/排水設施等
   資料，見前端固定顯示的治理警語）。
 - **3D 立體檢視**：CSS `perspective`/`rotateX` 對地圖做視覺傾斜，**非真實 3D 相機**。
@@ -147,8 +147,9 @@
   路由，直接呼叫水保署公開資料 API（依分類＋年份分頁掃描，非操作該站帶 CSRF token 的
   搜尋表單），依「事件分類＋西元年份＋座標」現查真實候選，而非連到一個無法帶查詢條件的
   搜尋首頁。
-- **等高線疊圖**：Cesium World Terrain（免費層級，非商用），`CESIUM_ION_TOKEN` 未設定時
-  自動隱藏開關。
+- **等高線疊圖**：全臺灣 20 m DTM（可商用）；無本地 DTM 檔時退回 Cesium World Terrain
+  （免費層級，非商用，需 `CESIUM_ION_TOKEN`）；兩者皆無時自動隱藏開關。等高線/流域快取依地形來源
+  分目錄存放（`data/*_cache/dtm20|cesium/`），換來源不會讀到舊來源的結果。
 
 ## 9. API 一覽
 
@@ -180,8 +181,9 @@
 
 | 變數 | 預設 | 說明 |
 |---|---|---|
-| `CESIUM_ION_TOKEN` | 未設定 | 選配 Space secret；未設定時等高線/坡度流域分析自動隱藏 |
-| `SENTINEL_INSTANCE_ID` | 未設定 | 選配 Space secret（Copernicus Data Space Sentinel Hub Instance ID，等同存取憑證、免費 10,000 請求/月）；設定後「線上分析」面板出現「用 Sentinel-2 補充時間軸」按鈕（`sentinel_assist.py`）。**只補充時間解析度、不取代 GE 影像**：10 m/像素，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）。未設定時入口自動隱藏 |
+| `TW_DTM20_PATH` | `data/dtm/tw_dtm20.tif` | 全臺灣 20 m DTM（內政部地政司 2025 年版，[data.gov.tw/dataset/176927](https://data.gov.tw/dataset/176927)，政府資料開放授權條款第1版，可商用）。**主要地形來源**：等高線疊圖與坡度/流域分析優先使用，免 token、免網路。由 `scripts/prepare_dtm20.py` 下載整備（Docker 建置時自動執行；失敗不擋建置） |
+| `CESIUM_ION_TOKEN` | 未設定 | 選配 Space secret；**僅在沒有本地 DTM 檔時**作為備援地形來源（Cesium World Terrain，非商用）。兩者皆無時等高線/坡度流域分析自動隱藏 |
+| `SENTINEL_INSTANCE_ID` | 未設定 | 選配 Space secret（Copernicus Data Space Sentinel Hub Instance ID，等同存取憑證、免費 10,000 請求/月）；設定後「線上分析」面板出現「用 Sentinel-2 補充時間軸」按鈕（`sentinel_assist.py`）。**只補充時間解析度、不取代 GE 影像**：10 m/像素，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）。未設定時入口自動隱藏。本機開發可改放 repo 根目錄的 `.sentinel_instance_id`（已 gitignore，環境變數優先），本機即預設開啟 |
 | `ENABLE_LIVE_CAPTURE` | `1` | 線上分析的緊急停用開關 |
 | `DEMO_MODE` | `0` | **離線展示模式**（2026-09-06 追加）：設為 `1` 時停用線上即時擷取（不受
 Google Earth Web 現場狀況影響），只保留完全依賴本機快取資料的核心內容，首頁與頁首會

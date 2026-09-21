@@ -8,3 +8,7 @@ data/ardswc_meta_cache/
 tile_cache/
 *.log
 .DS_Store
+
+# 本機專用憑證（不進 repo；HF 用 Space secret）
+.sentinel_instance_id
+data/dtm/

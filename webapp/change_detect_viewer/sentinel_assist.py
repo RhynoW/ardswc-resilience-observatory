@@ -47,8 +47,19 @@ LAYERS = ("TRUE_COLOR", "FALSE_COLOR")
 UA = "ardswc-resilience-observatory/1.0 (sentinel-assist)"
 
 
+_LOCAL_ID_FILE = Path(__file__).resolve().parents[2] / ".sentinel_instance_id"
+
+
 def instance_id():
-    return os.environ.get("SENTINEL_INSTANCE_ID", "").strip()
+    """優先讀環境變數（HF Space secret）；沒有再讀 repo 根目錄的 `.sentinel_instance_id`
+    （本機專用、已列入 .gitignore，讓本機開發預設就能用，又不把憑證放進 repo）。"""
+    v = os.environ.get("SENTINEL_INSTANCE_ID", "").strip()
+    if v:
+        return v
+    try:
+        return _LOCAL_ID_FILE.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
 
 
 def is_configured():
