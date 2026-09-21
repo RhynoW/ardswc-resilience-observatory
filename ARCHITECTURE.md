@@ -181,6 +181,7 @@
 | 變數 | 預設 | 說明 |
 |---|---|---|
 | `CESIUM_ION_TOKEN` | 未設定 | 選配 Space secret；未設定時等高線/坡度流域分析自動隱藏 |
+| `SENTINEL_INSTANCE_ID` | 未設定 | 選配 Space secret（Copernicus Data Space Sentinel Hub Instance ID，等同存取憑證、免費 10,000 請求/月）；設定後「線上分析」面板出現「用 Sentinel-2 補充時間軸」按鈕（`sentinel_assist.py`）。**只補充時間解析度、不取代 GE 影像**：10 m/像素，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）。未設定時入口自動隱藏 |
 | `ENABLE_LIVE_CAPTURE` | `1` | 線上分析的緊急停用開關 |
 | `DEMO_MODE` | `0` | **離線展示模式**（2026-09-06 追加）：設為 `1` 時停用線上即時擷取（不受
 Google Earth Web 現場狀況影響），只保留完全依賴本機快取資料的核心內容，首頁與頁首會

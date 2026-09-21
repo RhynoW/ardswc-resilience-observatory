@@ -42,7 +42,9 @@ license: mit
 
 Flask 後端 + Leaflet 前端單頁應用；比對引擎為 SSIM 像素級變遷偵測
 （`scripts/ge_change_detect.py`）；地形起伏取自 Cesium World Terrain（`CESIUM_ION_TOKEN`
-為選配 Space secret，未設定時等高線疊圖開關自動隱藏，不影響其餘功能）。系統架構、API
+為選配 Space secret，未設定時等高線疊圖開關自動隱藏，不影響其餘功能）；Google Earth Web
+歷史影像期數不足時，可用 Sentinel-2（每 5 天重訪、10 m 解析度，選配 `SENTINEL_INSTANCE_ID`
+secret）補充時間軸，只適用面積級變化。系統架構、API
 一覽與資料治理原則見 [ARCHITECTURE.md](ARCHITECTURE.md)；完整開發過程與除錯記錄維護在
 私有研究倉庫，這份公開版本為精簡發布版。
 

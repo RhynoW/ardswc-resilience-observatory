@@ -49,7 +49,7 @@ import subprocess
 import sys
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from flask import Flask, abort, jsonify, render_template, request, send_file
@@ -1047,6 +1047,12 @@ def api_health():
                 "設定後的實際有效性另見 /api/contours_status（會真的呼叫 Cesium API）。",
     }
 
+    checks["sentinel2_assist"] = {
+        "ok": True,  # 未設定不算故障——Sentinel-2 補充時間軸是選配功能
+        "configured": S2.is_configured(),
+        "note": "未設定 SENTINEL_INSTANCE_ID（Space secret）時，Sentinel-2 補充分析入口自動隱藏。",
+    }
+
     playwright_ok = False
     try:
         import importlib.util
@@ -1168,6 +1174,142 @@ def api_capture_custom():
             _job_finish(jid, error=str(e))
         finally:
             _capture_lock.release()
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": jid, "site": slug})
+
+
+# ── Sentinel-2 輔助來源（補 GE Web 歷史影像時間解析度不足；設計見 sentinel_assist.py）──
+# 站點命名 `custom_s2_<lat>_<lon>` 符合既有 custom_ 規則，輸出檔名/世界檔格式與 GE 擷取一致，
+# 因此 /api/timeline、/api/pair、/image 與詳情面板不必改動即可使用。
+import sentinel_assist as S2
+
+_s2_lock = threading.Lock()
+S2_MAX_DATES = 16
+S2_MAX_CLOUD_LOCAL = 0.15   # AOI 內局部雲量比例上限，超過的日期直接剔除
+S2_MIN_VALID_FRAMES = 2
+S2_MAX_OUTLIER = 0.25       # 與中位數影像偏離的像素比例上限（薄雲/霧/雲影檢查）
+
+
+@app.route("/api/sentinel_status")
+def api_sentinel_status():
+    return jsonify({"available": S2.is_configured() and not DEMO_MODE, "busy": _s2_lock.locked(),
+                    "max_n_dates": S2_MAX_DATES, "resolution_m": S2.NATIVE_M_PER_PX,
+                    "demo_mode": DEMO_MODE})
+
+
+@app.route("/api/sentinel_capture", methods=["POST"])
+def api_sentinel_capture():
+    if DEMO_MODE:
+        return jsonify({"error": "目前為離線展示模式（DEMO_MODE），已停用即時外部取像。"}), 403
+    if not S2.is_configured():
+        return jsonify({"error": "此部署未設定 Sentinel-2 存取（SENTINEL_INSTANCE_ID）。"}), 403
+    body = request.get_json(force=True)
+    try:
+        lat, lon = float(body.get("lat")), float(body.get("lon"))
+        n_dates = max(2, min(S2_MAX_DATES, int(body.get("n_dates", 10))))
+        half_km = max(0.5, min(5.0, float(body.get("half_km", 2.5))))
+        max_cloud = max(0.0, min(100.0, float(body.get("max_cloud", 40))))
+        layer = body.get("layer", "TRUE_COLOR")
+        if layer not in S2.LAYERS:
+            raise ValueError("layer")
+        d0, d1 = S2.default_range(int(body.get("years", 3)))
+        if body.get("start"):
+            d0 = date.fromisoformat(body["start"])
+        if body.get("end"):
+            d1 = date.fromisoformat(body["end"])
+    except (TypeError, ValueError):
+        return jsonify({"error": "參數格式錯誤（lat/lon/n_dates/half_km/max_cloud/layer/start/end）"}), 400
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180) or d0 >= d1:
+        return jsonify({"error": "座標或日期區間不合理"}), 400
+    half_m = half_km * 1000.0
+    slug = "custom_s2_" + _coord_slug(lat, lon)[len("custom_"):]
+
+    if _s2_lock.locked():
+        return jsonify({"error": "目前已有 Sentinel-2 任務在執行，請稍候再試"}), 409
+
+    jid = _new_job("sentinel")
+
+    def _run():
+        if not _s2_lock.acquire(blocking=False):
+            _job_finish(jid, error="lock busy")
+            return
+        try:
+            _job_log(jid, f"Sentinel-2 補充時間軸 {slug}（{lat},{lon}）範圍 ±{half_km}km，{d0}～{d1}，場景雲量 ≤{max_cloud:g}%")
+            scenes = S2.search_scenes(lat, lon, d0, d1, max_cloud=max_cloud, half_m=half_m)
+            _job_log(jid, f"目錄搜尋到 {len(scenes)} 個候選日期")
+            if len(scenes) < S2_MIN_VALID_FRAMES:
+                _job_finish(jid, error="此區間可用日期不足（需 ≥2）——請放寬雲量上限或拉長日期區間")
+                return
+            # 多挑一些候選，因為之後會逐張剔除局部雲蓋/無資料的日期
+            candidates = S2.select_dates(scenes, min(len(scenes), n_dates * 2))
+
+            site_dir = CAPTURES_ROOT / slug
+            site_dir.mkdir(parents=True, exist_ok=True)
+            # 同座標重跑時清掉舊結果，避免新舊日期混在同一條時間軸
+            for old in [*site_dir.glob(f"{slug}_gmap_*"), *(site_dir / "_change_detect").glob("*")]:
+                old.unlink()
+
+            frames = []   # (ymd, img, bounds_3857, aoi_cloud)
+            for i, sc in enumerate(candidates, 1):
+                ymd = sc["date"]
+                try:
+                    img, bounds = S2.fetch_image(lat, lon, half_m, ymd, layer)
+                except Exception as e:  # noqa: BLE001
+                    _job_log(jid, f"✘ {ymd} 取像失敗，略過：{e}")
+                    continue
+                cf, bf = S2.cloud_fraction(img), S2.blank_fraction(img)
+                if bf > 0.05:
+                    _job_log(jid, f"✘ {ymd} 此範圍無資料（近黑 {bf:.0%}），略過")
+                    continue
+                if cf > S2_MAX_CLOUD_LOCAL:
+                    _job_log(jid, f"✘ {ymd} AOI 內雲/亮區 {cf:.0%} 過高，略過")
+                    continue
+                frames.append((ymd, img, bounds, cf))
+                _job_log(jid, f"✔ [{len(frames)}/{len(candidates)}] {ymd} 取像完成（場景雲量 {sc['cloud']}%，AOI 亮雲 {cf:.0%}）")
+
+            # 薄雲/霧檢查：與所有期別的中位數比對，剔除離群期別，再挑偏離最小的 n_dates 期
+            scores = S2.outlier_scores([f[1] for f in frames])
+            ranked = sorted(zip(scores, frames), key=lambda t: t[0])
+            good = []
+            for score, f in ranked:
+                if score > S2_MAX_OUTLIER or len(good) >= n_dates:
+                    _job_log(jid, f"✘ {f[0]} {'偏離其他期別過大（疑似薄雲/霧/雲影）' if score > S2_MAX_OUTLIER else '超過期數上限'}"
+                                  f"（離群 {score:.0%}），略過")
+                    continue
+                good.append(f)
+            good.sort(key=lambda f: f[0])
+            kept = [f[0] for f in good]
+            for ymd, img, bounds, _cf in good:
+                S2.save_frame(site_dir, slug, ymd, img, bounds)
+            if len(kept) < S2_MIN_VALID_FRAMES:
+                _job_finish(jid, error=f"通過品質檢查的日期只有 {len(kept)} 個（需 ≥2），請放寬雲量上限或拉長區間")
+                return
+
+            _job_log(jid, f"取像完成（{len(kept)} 期），開始變遷偵測（全部相鄰日期）…")
+            dated = CD._list_dated(site_dir)
+            out_dir = site_dir / "_change_detect"
+            ssim_thresh = float(body.get("ssim_thresh", 0.45))
+            summary = []
+            for i in range(len(dated) - 1):
+                (da, pa), (db, pb) = dated[i], dated[i + 1]
+                # 10 m 解析度、同傳感器同幾何：不需 GE 的 UI 邊條裁切；最小區域用 48px（放大 2× 後約 0.5 ha）。
+                r = CD.detect_change(pa, pb, da, db, out_dir, slug, ui_top=0, ui_bottom=0,
+                                     ui_top_auto=False, ssim_thresh=ssim_thresh, min_region_px=48)
+                summary.append({"date_a": da, "date_b": db,
+                                 "overall_change_fraction": r["overall_change_fraction"],
+                                 "mean_ssim": r["mean_ssim"], "n_regions": r["n_regions"]})
+                _job_log(jid, f"{da} -> {db} 完成：overall_change={r['overall_change_fraction']}")
+            (out_dir / f"{slug}_change_timeline.json").write_text(
+                json.dumps({"site": slug, "source": "sentinel-2", "resolution_m": S2.NATIVE_M_PER_PX,
+                            "pairs": summary}, ensure_ascii=False, indent=2), encoding="utf-8")
+            _job_log(jid, "✔ 全部完成")
+            _job_finish(jid, result={"site": slug, "lat": lat, "lon": lon, "n_dates": len(kept), "pairs": summary})
+        except Exception as e:  # noqa: BLE001
+            _job_log(jid, f"失敗：{type(e).__name__}: {e}")
+            _job_finish(jid, error=str(e))
+        finally:
+            _s2_lock.release()
 
     threading.Thread(target=_run, daemon=True).start()
     return jsonify({"job_id": jid, "site": slug})

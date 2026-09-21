@@ -205,6 +205,7 @@
   .baselayer-panel{
     position:absolute; top:10px; right:10px; z-index:1000; background:var(--paper-raised);
     border:1px solid var(--line); padding:10px 12px; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,.15);
+    max-height:calc(100% - 20px); overflow-y:auto;
   }
   .baselayer-panel .title{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:6px; }
   .baselayer-panel label{ display:flex; align-items:center; gap:6px; padding:2px 0; cursor:pointer; white-space:nowrap; }
@@ -699,6 +700,7 @@
       </div>
       <div class="custom-confirm" id="custom-confirm">尚未設定中心點——請先點地圖或輸入座標、或從上方清單選一個地點</div>
       <button id="btn-capture-custom" disabled>🚀 開始擷取</button>
+      <button id="btn-sentinel-custom" disabled style="display:none;" title="Sentinel-2 每 5 天重訪、10 m 解析度：補足 Google Earth 歷史影像期數不足，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）">🛰️ 用 Sentinel-2 補充時間軸（10 m・約 3 年）</button>
       <div id="custom-progress-wrap">
         <div id="custom-progress-status">
           <span id="custom-progress-label">準備中…</span>
@@ -1020,9 +1022,34 @@ const BingLayer = L.TileLayer.extend({
   }
 });
 
+// 公開、免金鑰、CORS 開放的圖資（瀏覽器直連，不經後端代理；僅供顯示，與變遷偵測用的影像來源無關）。
+// 舊圖層 TOPO05KPHOTO_{民國年} 缺 77/82/85 年；無資料的圖磚會回 HTTP 200 的空白圖而非 404。
+const NLSC_WMTS = "https://wmts.nlsc.gov.tw/wmts";
+const NLSC_WMS = "https://wms.nlsc.gov.tw/wms";
+const NLSC_ATTR = "© 內政部國土測繪中心";
+const SINICA_TILE = "https://gis.sinica.edu.tw/tileserver/file-exists.php?img=";
+const SINICA_ATTR = "© 中央研究院人社中心 GIS 專題中心";
+const HIST_YEARS = [];
+for(let y = 114; y >= 65; y--){ if(![77, 82, 85].includes(y)) HIST_YEARS.push(String(y).padStart(3, "0")); }
+let histYear = "100";
+
+// 疊圖（透明，可複選）。zIndex 需高於底圖，理由同等高線圖層。
+const OVERLAY_DEFS = [
+  { key:"nlsc_contour", label:"🏔️ 等高線（國土測繪中心，z10+）", make: ()=> L.tileLayer.wms(NLSC_WMS, { layers:"MOI_CONTOUR_2", format:"image/png", transparent:true, minZoom:10, maxZoom:20, zIndex:640, attribution:NLSC_ATTR }) },
+  { key:"nlsc_slope", label:"⛰️ 坡度分級", make: ()=> L.tileLayer.wms(NLSC_WMS, { layers:"MOI_SLOPEP_LV7_2", format:"image/png", transparent:true, opacity:0.6, maxZoom:20, zIndex:641, attribution:NLSC_ATTR }) },
+  { key:"nlsc_liq", label:"🌊 土壤液化潛勢", make: ()=> L.tileLayer(NLSC_WMTS + "/SoilLiquefaction2/default/GoogleMapsCompatible/{z}/{y}/{x}", { minZoom:6, maxZoom:20, maxNativeZoom:18, opacity:0.5, zIndex:642, attribution:NLSC_ATTR }) },
+  { key:"nlsc_luimap", label:"🌾 國土利用現況", make: ()=> L.tileLayer.wms(NLSC_WMS, { layers:"LUIMAP", format:"image/png", transparent:true, opacity:0.6, maxZoom:20, zIndex:643, attribution:NLSC_ATTR }) },
+  { key:"nlsc_parcel", label:"📐 地籍圖（z16+）", make: ()=> L.tileLayer(NLSC_WMTS + "/LAND_OPENDATA/default/GoogleMapsCompatible/{z}/{y}/{x}", { minZoom:16, maxZoom:21, maxNativeZoom:20, opacity:0.6, zIndex:644, attribution:NLSC_ATTR }) },
+];
+const overlayObjs = {};
+
 const BASE_LAYER_DEFS = [
   { key:"nlsc_topo", label:"國土測繪中心 1/50000 地形圖", make: ()=> L.tileLayer("/api/tile/nlsc_topo/{z}/{x}/{y}", { maxZoom:19, maxNativeZoom:17, attribution:"內政部國土測繪中心" }) },
   { key:"nlsc_photo", label:"台灣航照正射影像", make: ()=> L.tileLayer("/api/tile/nlsc_photo/{z}/{x}/{y}", { maxZoom:20, maxNativeZoom:20, attribution:"內政部國土測繪中心" }) },
+  { key:"nlsc_emap", label:"國土測繪中心 通用電子地圖", make: ()=> L.tileLayer(NLSC_WMTS + "/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}", { minZoom:6, maxZoom:20, maxNativeZoom:18, attribution:NLSC_ATTR }) },
+  { key:"nlsc_hist", label:"國土測繪中心 歷史正射影像", hasYear:true, make: ()=> L.tileLayer(NLSC_WMTS + "/TOPO05KPHOTO_" + histYear + "/default/GoogleMapsCompatible/{z}/{y}/{x}", { minZoom:6, maxZoom:20, maxNativeZoom:18, attribution:NLSC_ATTR + " · 民國" + histYear + "年" }) },
+  { key:"sinica_1904", label:"臺灣堡圖 1904（中研院）", make: ()=> L.tileLayer(SINICA_TILE + "JM20K_1904-jpg-{z}-{x}-{y}", { minZoom:6, maxZoom:20, maxNativeZoom:18, attribution:SINICA_ATTR }) },
+  { key:"sinica_corona", label:"Corona 衛星影像 1966（中研院）", make: ()=> L.tileLayer(SINICA_TILE + "Taiwan_Corona_1966-png-{z}-{x}-{y}", { minZoom:6, maxZoom:20, maxNativeZoom:18, attribution:SINICA_ATTR }) },
   { key:"osm", label:"OpenStreetMap", make: ()=> L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { subdomains:["a","b","c"], maxZoom:19, attribution:"© OpenStreetMap contributors" }) },
   { key:"google", label:"Google 衛星", make: ()=> L.tileLayer("https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", { subdomains:["mt0","mt1","mt2","mt3"], maxZoom:21, attribution:"Imagery © Google" }) },
   { key:"esri", label:"ESRI World Imagery", make: ()=> L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom:21, maxNativeZoom:19, attribution:"Imagery © Esri, Maxar" }) },
@@ -1051,10 +1078,26 @@ function initMap(){
     cb.onchange = () => switchBaseLayer(def.key);
     label.appendChild(cb);
     label.appendChild(document.createTextNode(def.label));
+    if(def.hasYear){
+      const sel = document.createElement("select");
+      sel.style.cssText = "font-size:11px; margin-left:4px;";
+      HIST_YEARS.forEach(y=>{ const o = document.createElement("option"); o.value = y; o.textContent = "民國" + Number(y) + "年"; sel.appendChild(o); });
+      sel.value = histYear;
+      sel.onclick = e => e.stopPropagation();
+      sel.onchange = () => {
+        histYear = sel.value;
+        const wasActive = (activeBaseKey === def.key);
+        if(wasActive) map.removeLayer(baseLayerObjs[def.key]);
+        baseLayerObjs[def.key] = def.make();
+        if(wasActive) baseLayerObjs[def.key].addTo(map);
+      };
+      label.appendChild(sel);
+    }
     panel.appendChild(label);
   });
   baseLayerObjs[activeBaseKey].addTo(map);
 
+  initOverlayToggles(panel);
   initContourToggle(panel);
 
   document.getElementById("btn-fullscreen").onclick = () => {
@@ -1401,6 +1444,59 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   });
 };
 
+// ── Sentinel-2 補充時間軸（後端見 sentinel_assist.py；結果沿用同一套站點/配對/詳情面板）──
+async function initSentinelButton(){
+  let s;
+  try{ s = await api("/api/sentinel_status"); } catch(e){ return; }
+  const btn = document.getElementById("btn-sentinel-custom");
+  if(!s.available) return;   // 未設定 Instance ID：不顯示（fail-closed）
+  btn.style.display = "";
+  const refresh = () => {
+    const lat = parseFloat(document.getElementById("custom-lat").value);
+    const lon = parseFloat(document.getElementById("custom-lon").value);
+    btn.disabled = !(Number.isFinite(lat) && Number.isFinite(lon)) || customCaptureBusy;
+  };
+  ["custom-lat","custom-lon"].forEach(id => document.getElementById(id).addEventListener("input", refresh));
+  setInterval(refresh, 1500);
+  refresh();
+
+  btn.onclick = async () => {
+    const lat = parseFloat(document.getElementById("custom-lat").value);
+    const lon = parseFloat(document.getElementById("custom-lon").value);
+    const n_dates = Math.min(s.max_n_dates, parseInt(document.getElementById("custom-ndates").value, 10) || 10);
+    const logEl = document.getElementById("custom-job-log");
+    const progWrap = document.getElementById("custom-progress-wrap");
+    const progFill = document.getElementById("custom-progress-fill");
+    logEl.style.display = "block"; logEl.style.color = ""; logEl.textContent = "送出中…";
+    progFill.className = "custom-progress-fill"; progFill.style.width = "0%";
+    btn.disabled = true; customCaptureBusy = true;
+    const label = btn.textContent;
+    btn.textContent = "⏳ Sentinel-2 取像中…";
+    const restore = () => { customCaptureBusy = false; btn.textContent = label; refresh(); };
+    let r;
+    try{
+      r = await fetch("/api/sentinel_capture", { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({lat, lon, n_dates}) }).then(x=>x.json());
+    } catch(e){
+      logEl.style.color = "var(--sem-bad)"; logEl.textContent = "✘ 送出失敗：" + e; restore(); return;
+    }
+    if(r.error){
+      logEl.style.color = "var(--sem-bad)"; logEl.textContent = "✘ " + r.error; restore(); return;
+    }
+    progWrap.style.display = "block";
+    document.getElementById("custom-progress-label").textContent = "搜尋可用日期…";
+    // 每期約 3–6 秒（WMS 取像）+ 每組 ~1 秒偵測；候選日期最多取 2 倍再剔除雲/無資料
+    const est = 8 + n_dates * 2 * 4 + n_dates * 1;
+    pollCustomJob(r.job_id, logEl, n_dates, est, async (result) => {
+      restore();
+      if(!result) return;
+      logEl.textContent += `\n\n✔ 完成，共 ${result.n_dates} 期 Sentinel-2（10 m/像素）。載入完整比對結果…`;
+      await openCustomDetail(result.site, result.lat, result.lon);
+    });
+  };
+}
+initSentinelButton();
+
 async function pollCustomJob(jid, logEl, n_dates, estTotalSec, onDone){
   const t0 = Date.now();
   const progFill = document.getElementById("custom-progress-fill");
@@ -1463,7 +1559,7 @@ async function openCustomDetail(site, lat, lon){
   currentRank = null;
   const locName = findLocationBySite(site)?.name;
   document.getElementById("detail-title").textContent =
-    locName ? `🎯 ${locName}（示範案例）` : `🎯 自訂座標分析`;
+    locName ? `🎯 ${locName}（示範案例）` : (site.startsWith("custom_s2_") ? `🛰️ Sentinel-2 補充分析（10 m/像素，僅面積級變化）` : `🎯 自訂座標分析`);
   document.getElementById("detail-meta").textContent = `${lat.toFixed(6)}, ${lon.toFixed(6)} ・ ${site}`;
   document.getElementById("detail").scrollIntoView({behavior:"smooth", block:"nearest"});
   document.getElementById("evidence-card-slot").innerHTML = "";
@@ -1515,6 +1611,30 @@ async function loadCustomWatershed(lat, lon){
   renderWatershedPanels(slot, d);
 }
 
+function initOverlayToggles(panel){
+  const divider = document.createElement("div");
+  divider.className = "title";
+  divider.style.marginTop = "8px";
+  divider.textContent = "疊圖";
+  panel.appendChild(divider);
+  OVERLAY_DEFS.forEach(def=>{
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.onchange = () => {
+      if(cb.checked){
+        overlayObjs[def.key] = overlayObjs[def.key] || def.make();
+        overlayObjs[def.key].addTo(map);
+      } else if(overlayObjs[def.key]){
+        map.removeLayer(overlayObjs[def.key]);
+      }
+    };
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(def.label));
+    panel.appendChild(label);
+  });
+}
+
 function switchBaseLayer(key){
   if(key === activeBaseKey) return;
   map.removeLayer(baseLayerObjs[activeBaseKey]);
@@ -1538,12 +1658,6 @@ async function initContourToggle(panel){
   let status;
   try{ status = await api("/api/contours_status"); } catch(e){ return; }
   if(!status.available) return;
-
-  const divider = document.createElement("div");
-  divider.className = "title";
-  divider.style.marginTop = "8px";
-  divider.textContent = "疊圖";
-  panel.appendChild(divider);
 
   const label = document.createElement("label");
   const cb = document.createElement("input");
