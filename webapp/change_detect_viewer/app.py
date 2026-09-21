@@ -1054,6 +1054,12 @@ def api_health():
         "active_terrain_source": TERRAIN_TAG,
         "note": "全臺灣 20 m DTM（內政部地政司）為主要地形來源；未整備時退回 Cesium World Terrain。",
     }
+    if not DTM.is_available():
+        log_fp = REPO / "data" / "dtm_prepare.log"   # Docker 建置時整備腳本的輸出
+        try:
+            checks["terrain_dtm20"]["prepare_log_tail"] = log_fp.read_text(encoding="utf-8", errors="replace")[-1200:]
+        except OSError:
+            checks["terrain_dtm20"]["prepare_log_tail"] = None
 
     cesium_token_set = bool(os.environ.get("CESIUM_ION_TOKEN"))
     checks["cesium_terrain_token"] = {
