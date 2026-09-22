@@ -31,6 +31,29 @@ NATIVE_RES_M = 20.0
 ATTRIBUTION = "地形資料 © 內政部地政司 2025年版全臺灣20公尺網格數值地形模型（DTM，政府資料開放授權條款第1版）"
 
 _transformer = None
+_OV = None
+_OV_FACTOR = 16
+
+
+def _overview(path):
+    """整島降採樣概覽（每格 16×16 原始格平均，約 320 m）；首次計算約 8 秒，之後存 .npy 直接載入。"""
+    global _OV
+    if _OV is not None:
+        return _OV
+    import rasterio
+    from rasterio.enums import Resampling
+    cache = Path(path).with_name(Path(path).stem + f"_ov{_OV_FACTOR}.npy")
+    with rasterio.open(path) as ds:
+        w, h = ds.width, ds.height
+        if cache.exists():
+            arr = np.load(cache)
+        else:
+            arr = ds.read(1, out_shape=(int(np.ceil(h / _OV_FACTOR)), int(np.ceil(w / _OV_FACTOR))),
+                          resampling=Resampling.average).astype(np.float32)
+            arr[~np.isfinite(arr) | (arr < -500)] = np.nan
+            np.save(cache, arr)
+    _OV = (arr, w / arr.shape[1], h / arr.shape[0])
+    return _OV
 
 
 def _to_twd97(lon, lat):
@@ -142,3 +165,56 @@ class Dtm20Source:
                 "res_m_effective": res_eff, "source": "tw-dtm20-2025",
                 "attributions": self.attributions, "commercial_ok": True}
         return z, gl, go, info
+
+    def sample_points(self, lon, lat, max_px=2048):
+        """在任意 (lon, lat) 點取高程（雙線性）。供 3D Cesium 地形使用（/api/dtm_heights）。
+        範圍過大時對視窗做面積平均降採樣（每邊最多 max_px），避免粗層級整張讀入。
+        無資料（海域/範圍外）回 0.0——Cesium 地形不能有 NaN，海面即 0 m。"""
+        import rasterio
+        from rasterio.enums import Resampling
+        from rasterio.windows import Window
+        from scipy.ndimage import map_coordinates
+
+        lon = np.asarray(lon, dtype=np.float64); lat = np.asarray(lat, dtype=np.float64)
+        E, N = _to_twd97(lon, lat)
+        out = np.zeros(lon.shape, np.float32)
+        with rasterio.open(self.path) as ds:
+            col_f = (np.asarray(E) - ds.bounds.left) / NATIVE_RES_M - 0.5
+            row_f = (ds.bounds.top - np.asarray(N)) / NATIVE_RES_M - 0.5
+            c0, c1 = max(int(np.floor(col_f.min())) - 1, 0), min(int(np.ceil(col_f.max())) + 2, ds.width)
+            r0, r1 = max(int(np.floor(row_f.min())) - 1, 0), min(int(np.ceil(row_f.max())) + 2, ds.height)
+            if c1 <= c0 or r1 <= r0:
+                return out
+            wpx, hpx = c1 - c0, r1 - r0
+            sc = max(1.0, max(wpx, hpx) / float(max_px))
+            if sc >= 2:
+                # 粗層級（視窗每邊 > 4096 px（約 82 km））：用整島概覽（記憶體＋磁碟快取），避免每次解壓整張 224 MB
+                ov, fx, fy = _overview(self.path)
+                oc0, oc1 = int(c0 // fx), int(np.ceil(c1 / fx)) + 1
+                or0, or1 = int(r0 // fy), int(np.ceil(r1 / fy)) + 1
+                win = ov[or0:or1, oc0:oc1].astype(np.float32).copy()
+                c0, r0, sx, sy = oc0 * fx, or0 * fy, fx, fy
+            else:
+                shape = (max(1, int(np.ceil(hpx / sc))), max(1, int(np.ceil(wpx / sc))))
+                win = ds.read(1, window=Window(c0, r0, wpx, hpx), out_shape=shape,
+                              resampling=Resampling.average if sc > 1 else Resampling.nearest).astype(np.float32)
+                sx, sy = wpx / shape[1], hpx / shape[0]
+            ds_w, ds_h = ds.width, ds.height
+        bad = ~np.isfinite(win) | (win < -500)
+        win[bad] = np.nan
+        if bad.all():
+            return out
+        if bad.any():
+            from scipy.ndimage import distance_transform_edt
+            idx = distance_transform_edt(bad, return_distances=False, return_indices=True)
+            filled = win[tuple(idx)]
+        else:
+            filled = win
+        cc = ((col_f - c0) + 0.5) / sx - 0.5
+        rr = ((row_f - r0) + 0.5) / sy - 0.5
+        z = map_coordinates(filled, [rr, cc], order=1, mode="nearest").astype(np.float32)
+        nanm = map_coordinates(bad.astype(np.float32), [rr, cc], order=1, mode="nearest") > 0.5
+        z[nanm] = 0.0
+        outside = (col_f < -0.5) | (row_f < -0.5) | (col_f > ds_w - 0.5) | (row_f > ds_h - 0.5)
+        z[outside] = 0.0
+        return z

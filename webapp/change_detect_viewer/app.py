@@ -1206,6 +1206,50 @@ def api_capture_custom():
     return jsonify({"job_id": jid, "site": slug})
 
 
+# ── 3D Cesium：地形高程（本地 20 m DTM）與 UAV 對位成果 ─────────────────────────
+# 不需要 Cesium ion token：前端用 CustomHeightmapTerrainProvider，逐 tile 向 /api/dtm_heights
+# 取 float32 高程。DTM 為正高（TWVD2001），此處原樣使用、未換算橢球高（臺灣兩者差約 20 m）——
+# 影像是貼在地形表面上，視覺上不受影響，但若與 GNSS 橢球高資料疊合需另行換算。
+_DTM_SRC = None
+
+
+@app.route("/api/dtm_heights")
+def api_dtm_heights():
+    """west/south/east/north（度）+ n（每邊取樣點數，含邊界）→ n×n float32 小端序，
+    第一列為北緣、由北到南，每列由西到東（Cesium CustomHeightmapTerrainProvider 順序）。"""
+    global _DTM_SRC
+    if not DTM.is_available():
+        return jsonify({"error": "未整備本地 DTM（scripts/prepare_dtm20.py）"}), 503
+    try:
+        west, south, east, north = (float(request.args[k]) for k in ("west", "south", "east", "north"))
+        n = int(request.args.get("n", 65))
+    except (KeyError, ValueError):
+        return jsonify({"error": "缺少或格式錯誤的 west/south/east/north/n"}), 400
+    if not (2 <= n <= 257) or not (west < east and south < north) or (east - west) > 4 or (north - south) > 4:
+        return jsonify({"error": "參數超出範圍"}), 400
+    if _DTM_SRC is None:
+        _DTM_SRC = DTM.Dtm20Source()
+    import numpy as np
+    lons = np.linspace(west, east, n)
+    lats = np.linspace(north, south, n)          # 第一列 = 北
+    LO, LA = np.meshgrid(lons, lats)
+    z = _DTM_SRC.sample_points(LO, LA)
+    resp = send_file(io.BytesIO(z.astype("<f4").tobytes()), mimetype="application/octet-stream")
+    resp.headers["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+@app.route("/api/uav_registration/<uid>")
+def api_uav_registration(uid):
+    """UAV 對位成果的中繼資料（static/uav/<id>/meta.json）；id 僅允許數字，擋路徑穿越。"""
+    if not uid.isdigit():
+        abort(404)
+    fp = HERE / "static" / "uav" / uid / "meta.json"
+    if not fp.exists():
+        abort(404)
+    return jsonify(json.loads(fp.read_text(encoding="utf-8")))
+
+
 # ── Sentinel-2 輔助來源（補 GE Web 歷史影像時間解析度不足；設計見 sentinel_assist.py）──
 # 站點命名 `custom_s2_<lat>_<lon>` 符合既有 custom_ 規則，輸出檔名/世界檔格式與 GE 擷取一致，
 # 因此 /api/timeline、/api/pair、/image 與詳情面板不必改動即可使用。

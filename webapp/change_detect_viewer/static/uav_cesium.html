@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>UAV 空拍成果 3D 疊合</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.126.0/Build/Cesium/Widgets/widgets.css">
+<style>
+  html, body, #cesium { margin:0; width:100%; height:100%; overflow:hidden; background:#111; font-family:system-ui,"Noto Sans TC",sans-serif; }
+  #panel { position:absolute; top:10px; left:10px; z-index:10; max-width:340px; background:rgba(20,24,28,.88); color:#eee;
+           padding:10px 12px; border-radius:6px; font-size:12.5px; line-height:1.5; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  #panel h1 { font-size:14px; margin:0 0 6px; }
+  #panel .warn { color:#ffd38a; margin-top:6px; }
+  #panel label { display:flex; align-items:center; gap:6px; margin-top:6px; }
+  #panel input[type=range] { flex:1; }
+  #panel a { color:#8ecbff; }
+  #status { position:absolute; bottom:10px; left:10px; z-index:10; background:rgba(20,24,28,.85); color:#ddd; font-size:12px; padding:4px 8px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div id="cesium"></div>
+<div id="panel">
+  <h1 id="title">載入中…</h1>
+  <div id="method"></div>
+  <div class="warn" id="quality"></div>
+  <label><input type="checkbox" id="chk-uav" checked> UAV 疊合影像　不透明度
+    <input type="range" id="alpha" min="0" max="100" value="85"></label>
+  <label>地形誇大倍率
+    <input type="range" id="exag" min="1" max="3" step="0.5" value="1"><span id="exag-v">1×</span></label>
+  <div style="margin-top:6px" id="attr"></div>
+</div>
+<div id="status">初始化…</div>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.126.0/Build/Cesium/Cesium.js"></script>
+<script>
+(async function(){
+  const qs = new URLSearchParams(location.search);
+  const id = (qs.get("id") || "639247251496169680").replace(/\D/g, "");
+  const status = t => { document.getElementById("status").textContent = t; };
+
+  let meta;
+  try{
+    meta = await (await fetch(`/api/uav_registration/${id}`)).json();
+  } catch(e){ status("讀不到此 UAV 影像的對位成果（id=" + id + "）"); return; }
+
+  document.getElementById("title").textContent = meta.title;
+  document.getElementById("method").textContent = "對位方法：" + meta.method;
+  document.getElementById("quality").textContent =
+    `⚠ 精度：匹配內點 ${meta.quality.joint_inliers} 個。` + meta.quality.note;
+  const attr = document.getElementById("attr");
+  attr.append("影像來源：" + meta.attribution + "　");
+  const a = document.createElement("a"); a.href = meta.source_page; a.target = "_blank"; a.rel = "noopener"; a.textContent = "原始頁面";
+  attr.append(a);
+  attr.append("　地形：內政部地政司 20 m DTM（正高，未換算橢球高）；底圖：Esri World Imagery。");
+
+  // ── 地形：本地 20 m DTM，逐 tile 向 /api/dtm_heights 取高程（不需 Cesium ion token）
+  const N = 65, TW = { w: 119.2, s: 21.7, e: 122.3, n: 25.5 };       // 臺灣本島與周邊，範圍外直接平地
+  const scheme = new Cesium.GeographicTilingScheme();
+  const flat = () => new Float32Array(N * N);
+  const terrain = new Cesium.CustomHeightmapTerrainProvider({
+    width: N, height: N, tilingScheme: scheme,
+    callback: async (x, y, level) => {
+      const r = scheme.tileXYToRectangle(x, y, level);
+      const west = Cesium.Math.toDegrees(r.west), east = Cesium.Math.toDegrees(r.east);
+      const south = Cesium.Math.toDegrees(r.south), north = Cesium.Math.toDegrees(r.north);
+      if (east < TW.w || west > TW.e || north < TW.s || south > TW.n || (east - west) > 4) return flat();
+      try{
+        const res = await fetch(`/api/dtm_heights?west=${west}&south=${south}&east=${east}&north=${north}&n=${N}`);
+        if (!res.ok) return flat();
+        return new Float32Array(await res.arrayBuffer());
+      } catch(e){ return flat(); }
+    }
+  });
+
+  const viewer = new Cesium.Viewer("cesium", {
+    baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      maximumLevel: 19, credit: "Esri, Maxar, Earthstar Geographics" })),
+    terrainProvider: terrain,
+    baseLayerPicker: false, geocoder: false, homeButton: false, sceneModePicker: false, navigationHelpButton: false,
+    animation: false, timeline: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+    requestRenderMode: false
+  });
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+  viewer.scene.globe.enableLighting = false;
+
+  // ── UAV 對位成果：影像（RGBA，範圍外透明）貼在地形上
+  const b = meta.bounds_lonlat;
+  const provider = await Cesium.SingleTileImageryProvider.fromUrl(`/static/uav/${id}/${meta.image}`, {
+    rectangle: Cesium.Rectangle.fromDegrees(b.west, b.south, b.east, b.north) });
+  const layer = viewer.imageryLayers.addImageryProvider(provider);
+  layer.alpha = 0.85;
+  document.getElementById("alpha").oninput = e => { layer.alpha = e.target.value / 100; };
+  document.getElementById("chk-uav").onchange = e => { layer.show = e.target.checked; };
+  document.getElementById("exag").oninput = e => {
+    viewer.scene.verticalExaggeration = parseFloat(e.target.value);
+    document.getElementById("exag-v").textContent = e.target.value + "×";
+  };
+
+  // ── 視角：相機放在海面側（東南）往西北看。UAV 原本朝南拍，但這一帶內陸山高 1000 m 以上，
+  // 從北往南看相機會落在山體裡面（整片只看到地表綠色）。
+  const [lon, lat] = meta.center_lonlat;
+  viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(lon, lat, 100),
+    new Cesium.HeadingPitchRange(Cesium.Math.toRadians(310), Cesium.Math.toRadians(-30), 1800));
+  viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+
+  status("完成：UAV 影像已疊在 DTM 地形上（滑鼠拖曳旋轉、滾輪縮放）");
+  window.__viewer = viewer;        // 供自動化截圖檢查用
+})().catch(e => { document.getElementById("status").textContent = "錯誤：" + e; console.error(e); });
+</script>
+</body>
+</html>
