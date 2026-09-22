@@ -375,6 +375,22 @@
   .validation-block{ margin:0 0 28px; }
   @media (max-width:900px){ .vd-grid{ grid-template-columns:repeat(2,1fr); } }
   @media (max-width:560px){ .vd-grid{ grid-template-columns:1fr; } }
+  .subpanel{ margin-top:48px; padding-top:28px; border-top:1px solid var(--line); }
+  .tech-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin:16px 0 22px; }
+  .tech-card{ background:var(--paper-raised); padding:16px 18px; display:flex; flex-direction:column; gap:6px; }
+  .tech-card .tc-kicker{ font-family:var(--font-mono); font-size:10.5px; color:var(--muted); letter-spacing:.06em; }
+  .tech-card h4{ margin:0; font-size:15px; }
+  .tech-card p{ margin:0; font-size:12.5px; line-height:1.6; flex:1; }
+  .tc-go{ align-self:flex-start; margin-top:6px; font-family:var(--font-mono); font-size:11.5px; background:none; border:1px solid var(--ink); color:var(--ink); padding:5px 12px; cursor:pointer; }
+  .tc-go:hover{ background:var(--ink); color:var(--paper); }
+  .uav3d-panel{ border:1px solid var(--line); background:var(--paper-raised); padding:16px 18px; margin:0 0 12px; }
+  .uav3d-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+  .uav3d-frame{ height:560px; border:1px solid var(--line); background:var(--paper); display:flex; align-items:center; justify-content:center; }
+  .uav3d-frame iframe{ width:100%; height:100%; border:0; }
+  @media (max-width:1200px){ .tech-grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:760px){ .tech-grid{ grid-template-columns:1fr; } }
+  @media (max-width:700px){ .uav3d-frame{ height:420px; } }
+  .flash-highlight{ outline:3px solid var(--accent); outline-offset:3px; transition:outline-color .6s; }
   .pc-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .export-btn{
     font-family:var(--font-mono); font-size:12px; background:var(--paper-raised); color:var(--ink);
@@ -571,10 +587,8 @@
   </div>
   <nav class="tabs">
     <button data-tab="guide" class="active">決策首頁</button>
-    <button data-tab="hotspots">熱點總覽</button>
-    <button data-tab="ledger">深度驗證台帳</button>
-    <button data-tab="dashboard">地圖・延伸探索</button>
-    <button data-tab="findings">發現與建言</button>
+    <button data-tab="hotspots">巡查清單與證據</button>
+    <button data-tab="dashboard">空間分析平台</button>
   </nav>
   <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
 </header>
@@ -619,12 +633,38 @@
       </div>
     </div>
 
+    <!-- ── 發現與建言 ───────────────────────────── -->
+    <div id="tab-findings" class="subpanel">
+      <h2>對政府單位的建言</h2>
+      <div class="rec-cols">
+        <div class="rec-col">
+          <h3>政府</h3>
+          <div class="rec-item"><h4>先篩後查</h4><p>對六龜、和平、信義這類人力難以頻繁到達的山區熱點，用歷史影像變化偵測把有限的地面稽查資源導向真正在變化中的地點。</p></div>
+          <div class="rec-item"><h4>依複發年數分級監控</h4><p>複發 ≥5 年的熱點列為高優先，搭配每半年至一年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據。</p></div>
+          <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站的深度驗證台帳就是現成範本——純自動化分數近半數在目視覆核後被判定不可信，任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
+          <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜、松鶴案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
+        </div>
+        <div class="rec-col">
+          <h3>民眾</h3>
+          <div class="rec-item"><h4>可查詢的複發熱點地圖</h4><p>登山、露營、自駕行程規劃時，查詢路線是否經過長期複發地質不穩定地點，強降雨或颱風警報期間據此決定是否延後或改道。</p></div>
+          <div class="rec-item"><h4>更有感的社區溝通素材</h4><p>「這裡是近 6 年內 5 個不同年份都有事件通報的熱點」比「這裡曾經發生過一次土石流」更能促成長期警覺，也可作為申請防災補助的具體依據。</p></div>
+          <div class="rec-item"><h4>結合雨量的區域性提醒</h4><p>已知複發熱點清單在特定降雨強度/延時門檻觸發時，可做比全境廣播式警報更精準的定點提醒。</p></div>
+        </div>
+        <div class="rec-col">
+          <h3>公共政策</h3>
+          <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；衛星歷史影像可回溯十年以上、任意選比對時間窗，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
+          <div class="rec-item"><h4>均質覆蓋</h4><p>現場照片的分佈天生受人力可達性影響；衛星視角是全境等密度覆蓋，能補足偏遠、通報稀少但實際地貌可能已在變化的資料缺口。</p></div>
+          <div class="rec-item"><h4>可量化、可比較</h4><p>SSIM 差異分數＋對位品質指標，提供跨地點、跨年份的統一量化基礎，取代仰賴文字敘述的人工主觀判斷。</p></div>
+        </div>
+      </div>
+    </div>
+
     <div class="explore-more">
-      <h4>延伸探索（支援功能，非本站主線）</h4>
+      <h4>巡查清單與技術底座</h4>
       <div class="explore-links">
-        <button class="explore-link" data-tab="hotspots">📋 100 熱點完整清單與優先級排序</button>
-        <button class="explore-link" data-tab="ledger">🔍 11 個熱點的完整目視覆核紀錄</button>
-        <button class="explore-link" data-tab="dashboard">🗺️ 地圖瀏覽・7 大類真實地點・線上即時分析・3D 檢視</button>
+        <button class="explore-link" data-tab="hotspots">📋 巡查清單：100 熱點優先級排序與匯出</button>
+        <button class="explore-link" data-tab="ledger">🔍 證據與驗證：量化驗證＋11 個熱點目視覆核台帳</button>
+        <button class="explore-link" data-tab="dashboard">🛰️ 空間分析平台：衛星影像變遷偵測・國土測繪中心／中研院底圖・20 m DTM・UAV 自動套合・Cesium 3D</button>
       </div>
       <p class="guide-note">⚠ 即時線上擷取（任意座標的 Google Earth Web 比對）與 3D 立體檢視為輔助探索工具，
         依賴外部服務即時狀況；正式展示以上方已驗證的巡查優先級與三個案例為準——即時功能是否可用可查右上角「系統狀態」。</p>
@@ -633,8 +673,62 @@
 
   <!-- ── 首頁 ───────────────────────────── -->
   <section id="tab-dashboard" class="tabpanel">
-    <div class="dashboard-support-note">支援工具——地圖瀏覽／7 大類真實地點快速索引／任意座標線上分析／3D 檢視。
-      本站核心結論（巡查優先級、三個驗證案例）見「決策首頁」。</div>
+    <h2>空間分析平台——巡查決策背後的技術底座</h2>
+    <p class="sec-sub" style="max-width:82ch;">巡查優先級所用的影像證據、地形與底圖，都來自以下五個模組。巡查清單與證據本身完全離線可用、
+      不依賴本頁；本頁部分功能需要外部服務（Google Earth Web、Sentinel Hub、圖磚服務、CesiumJS CDN），可用性見右上角「系統狀態」。</p>
+
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tc-kicker">01・變遷偵測</div>
+        <h4>🛰️ 衛星影像變遷偵測</h4>
+        <p><strong>Google Earth 歷史影像</strong>（最長回溯 25 期、十年以上）＋ <strong>Sentinel-2</strong>（10 m、約 5 天重訪）補充時間軸；
+          SSIM 像素級比對，並逐對檢查影像對位。</p>
+        <button class="tc-go" data-go="custom">開啟線上分析 →</button>
+      </div>
+      <div class="tech-card">
+        <div class="tc-kicker">02・底圖圖層</div>
+        <h4>🗺️ 國土測繪中心・中研院底圖</h4>
+        <p><strong>國土測繪中心</strong>：1/50000 地形圖、航照正射影像、歷史正射影像（逐年）、通用電子地圖，以及等高線／坡度／土壤液化／國土利用／地籍疊圖。
+          <strong>中研院</strong>：1904 臺灣堡圖、1966 Corona 衛星影像。</p>
+        <button class="tc-go" data-go="map">切換底圖與疊圖 →</button>
+      </div>
+      <div class="tech-card">
+        <div class="tc-kicker">03・地形</div>
+        <h4>🏔️ 臺灣 20 m DTM</h4>
+        <p>內政部 2025 年版全臺 20 m DTM（開放授權、可商用、免 token、離線可用）：等高線疊圖、坡度與 D8 流域分析、地形起伏因子，
+          並作為 Cesium 3D 的地形高程來源。</p>
+        <button class="tc-go" data-go="uav3d">查看 3D 地形 →</button>
+      </div>
+      <div class="tech-card">
+        <div class="tc-kicker">04・影像套合</div>
+        <h4>🚁 UAV × 衛星影像自動套合</h4>
+        <p>水保署通報的 UAV 照片沒有 EXIF／GPS；以 <strong>LoFTR</strong> 學習式特徵匹配＋<strong>MAGSAC</strong> 單應矩陣，
+          純靠影像內容自動對位到衛星底圖，並以保留檢核點 RMSE 量化精度。</p>
+        <button class="tc-go" data-go="uav3d">查看套合成果 →</button>
+      </div>
+      <div class="tech-card">
+        <div class="tc-kicker">05・3D 展示</div>
+        <h4>🌐 Cesium 3D 疊合展示</h4>
+        <p>CesiumJS 以本地 20 m DTM 自訂地形（不需 Cesium ion token），將套合後的 UAV 影像貼附在真實地形上，
+          可調影像透明度與地形誇張倍率。</p>
+        <button class="tc-go" data-go="uav3d">載入 3D 疊合 →</button>
+      </div>
+    </div>
+
+    <div class="uav3d-panel" id="uav3d-panel">
+      <div class="uav3d-head">
+        <h3 style="margin:0;">UAV × 衛星影像 × 20 m DTM 3D 疊合（Cesium）</h3>
+        <a href="/static/uav_cesium.html" target="_blank" rel="noopener" class="export-btn">新分頁開啟 ↗</a>
+      </div>
+      <p class="sec-sub" id="uav3d-meta">載入套合成果中…</p>
+      <div class="uav3d-frame" id="uav3d-frame">
+        <button class="pc-goto" id="uav3d-load">▶ 載入 3D 檢視（需 WebGL；CesiumJS 由 CDN 載入）</button>
+      </div>
+      <p class="governance-note">⚠ 單應矩陣為近似對位，山區地形起伏會造成部分道路數公尺重影；非嚴格正射影像，不可用於公尺級量測。
+        DTM 為正高（TWVD2001），未換算橢球高。</p>
+    </div>
+
+    <h2 style="margin-top:40px;">地圖瀏覽與 7 大類真實地點</h2>
 
     <div class="guide-hero">
       <div class="lead">
@@ -772,7 +866,7 @@
 
   <!-- ── 熱點總覽 ───────────────────────────── -->
   <section id="tab-hotspots" class="tabpanel">
-    <h2>Top 100 熱點總覽</h2>
+    <h2>巡查清單——Top 100 熱點與巡查優先級</h2>
     <p class="sec-sub">點欄名可排序，點一列載入該熱點目前已有的變遷比對面板（優先深度 25 期資料，沒有才用快篩 8 期資料）。「巡查優先級」由複發年數、近期變遷分數、地形起伏與資料信心四項透明規則算出，點一列可看完整拆解（詳見詳情面板頂端的證據卡）。</p>
     <div class="tier-filter" id="tier-filter">
       <span style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase;">依優先級篩選</span>
@@ -802,46 +896,20 @@
         <tbody id="hotspots-tbody"></tbody>
       </table>
     </div>
-  </section>
 
-  <!-- ── 深度驗證台帳 ───────────────────────────── -->
-  <section id="tab-ledger" class="tabpanel">
-    <div class="validation-block">
-      <h2>量化驗證——系統能說清楚自己的資料品質與錯誤模式</h2>
-      <p class="sec-sub" style="max-width:80ch;">以下數字全部由目前的資料檔即時計算，不是寫死的宣稱；算不出來的項目顯示「—」。</p>
-      <div class="vd-grid" id="validation-grid"><div class="vd-cell" style="color:var(--muted);">載入中…</div></div>
-      <p class="vd-sub" id="validation-prov"></p>
-    </div>
+    <!-- ── 深度驗證台帳 ───────────────────────────── -->
+    <div id="tab-ledger" class="subpanel">
+      <div class="validation-block">
+        <h2>量化驗證——系統能說清楚自己的資料品質與錯誤模式</h2>
+        <p class="sec-sub" style="max-width:80ch;">以下數字全部由目前的資料檔即時計算，不是寫死的宣稱；算不出來的項目顯示「—」。</p>
+        <div class="vd-grid" id="validation-grid"><div class="vd-cell" style="color:var(--muted);">載入中…</div></div>
+        <p class="vd-sub" id="validation-prov"></p>
+      </div>
 
-    <h2>深度驗證台帳——為什麼不能只信一個分數</h2>
-    <p class="sec-sub">11 個熱點做完整目視覆核，結果只有 1 個同時「對位成功」且「視覺確認為乾淨集中訊號」。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
-    <div class="ledger-list" id="ledger-list"></div>
-    <p style="margin-top:20px; font-size:13px; color:var(--muted); max-width:70ch;">已知系統性陷阱清單：<strong>瀰漫式雜訊灌水</strong>（季節/紋理差異拉高分數卻無集中訊號）、<strong>對位失敗偽陽性</strong>（兩期框取範圍不一致被誤讀成地貌劇變）、<strong>劣質模糊基準影像</strong>（GE 早期渲染在特定日期會退化成無法使用的模糊佔位圖）、<strong>雲影誤判</strong>、<strong>跨世代影像色調差異灌水</strong>（航照 vs 現代衛星色調不同）。每一項都是在真實資料上發現並記錄下來的，可作為未來任何政府單位導入類似比對工具時的現成 QC 檢查清單。</p>
-  </section>
-
-  <!-- ── 發現與建言 ───────────────────────────── -->
-  <section id="tab-findings" class="tabpanel">
-    <h2>對政府單位的建言</h2>
-    <div class="rec-cols">
-      <div class="rec-col">
-        <h3>政府</h3>
-        <div class="rec-item"><h4>先篩後查</h4><p>對六龜、和平、信義這類人力難以頻繁到達的山區熱點，用歷史影像變化偵測把有限的地面稽查資源導向真正在變化中的地點。</p></div>
-        <div class="rec-item"><h4>依複發年數分級監控</h4><p>複發 ≥5 年的熱點列為高優先，搭配每半年至一年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據。</p></div>
-        <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站的深度驗證台帳就是現成範本——純自動化分數近半數在目視覆核後被判定不可信，任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
-        <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜、松鶴案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
-      </div>
-      <div class="rec-col">
-        <h3>民眾</h3>
-        <div class="rec-item"><h4>可查詢的複發熱點地圖</h4><p>登山、露營、自駕行程規劃時，查詢路線是否經過長期複發地質不穩定地點，強降雨或颱風警報期間據此決定是否延後或改道。</p></div>
-        <div class="rec-item"><h4>更有感的社區溝通素材</h4><p>「這裡是近 6 年內 5 個不同年份都有事件通報的熱點」比「這裡曾經發生過一次土石流」更能促成長期警覺，也可作為申請防災補助的具體依據。</p></div>
-        <div class="rec-item"><h4>結合雨量的區域性提醒</h4><p>已知複發熱點清單在特定降雨強度/延時門檻觸發時，可做比全境廣播式警報更精準的定點提醒。</p></div>
-      </div>
-      <div class="rec-col">
-        <h3>公共政策</h3>
-        <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；衛星歷史影像可回溯十年以上、任意選比對時間窗，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
-        <div class="rec-item"><h4>均質覆蓋</h4><p>現場照片的分佈天生受人力可達性影響；衛星視角是全境等密度覆蓋，能補足偏遠、通報稀少但實際地貌可能已在變化的資料缺口。</p></div>
-        <div class="rec-item"><h4>可量化、可比較</h4><p>SSIM 差異分數＋對位品質指標，提供跨地點、跨年份的統一量化基礎，取代仰賴文字敘述的人工主觀判斷。</p></div>
-      </div>
+      <h2>深度驗證台帳——為什麼不能只信一個分數</h2>
+      <p class="sec-sub">11 個熱點做完整目視覆核，結果只有 1 個同時「對位成功」且「視覺確認為乾淨集中訊號」。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
+      <div class="ledger-list" id="ledger-list"></div>
+      <p style="margin-top:20px; font-size:13px; color:var(--muted); max-width:70ch;">已知系統性陷阱清單：<strong>瀰漫式雜訊灌水</strong>（季節/紋理差異拉高分數卻無集中訊號）、<strong>對位失敗偽陽性</strong>（兩期框取範圍不一致被誤讀成地貌劇變）、<strong>劣質模糊基準影像</strong>（GE 早期渲染在特定日期會退化成無法使用的模糊佔位圖）、<strong>雲影誤判</strong>、<strong>跨世代影像色調差異灌水</strong>（航照 vs 現代衛星色調不同）。每一項都是在真實資料上發現並記錄下來的，可作為未來任何政府單位導入類似比對工具時的現成 QC 檢查清單。</p>
     </div>
   </section>
 
@@ -914,6 +982,43 @@ function updateExportLinks(){
   document.getElementById("export-list-csv").href = `/api/inspection/export?${q}format=csv`;
   document.getElementById("export-list-md").href = `/api/inspection/export?${q}format=md`;
 }
+function flashScroll(el){
+  el.scrollIntoView({behavior:"smooth", block:"start"});
+  el.classList.add("flash-highlight");
+  setTimeout(() => el.classList.remove("flash-highlight"), 2200);
+}
+function loadUav3d(){
+  const f = document.getElementById("uav3d-frame");
+  if(!f.querySelector("iframe")) f.innerHTML = `<iframe src="/static/uav_cesium.html" title="UAV × 衛星影像 × DTM 3D 疊合" allowfullscreen></iframe>`;
+}
+document.querySelectorAll(".tc-go").forEach(btn => {
+  btn.onclick = () => {
+    const go = btn.dataset.go;
+    if(go === "custom"){
+      if(!pickModeActive) document.getElementById("btn-toggle-custom").click();
+      flashScroll(document.getElementById("custom-panel"));
+    } else if(go === "map"){
+      flashScroll(document.getElementById("map-wrap"));
+    } else {
+      flashScroll(document.getElementById("uav3d-panel"));
+      loadUav3d();
+    }
+  };
+});
+document.getElementById("uav3d-load").onclick = loadUav3d;
+(async () => {
+  try{
+    const m = await api("/api/uav_registration/639247251496169680");
+    const q = m.quality || {};
+    document.getElementById("uav3d-meta").innerHTML =
+      `示範案例：<strong>${m.title}</strong>。${m.method}。` +
+      `聯合 inlier ${q.joint_inliers ?? "—"}、擬合 RMSE ${q.fit_rmse_m ?? "—"} m、<strong>保留檢核點 RMSE ${q.holdout_rmse_m ?? "—"} m</strong>` +
+      `（UAV 解析度約 ${q.gsd_m_per_px ?? "—"} m/px）。影像來源：${m.attribution}。`;
+  }catch(e){
+    document.getElementById("uav3d-meta").textContent = "讀不到 UAV 套合成果中繼資料。";
+  }
+})();
+
 async function loadValidation(){
   const g = document.getElementById("validation-grid");
   let v;
@@ -1047,7 +1152,16 @@ async function api(path, opts){
 }
 
 // ── 分頁切換 ──────────────────────────────────────────
+// 2026-09-22 主導覽由 5 頁收斂為 3 頁（決賽審查意見）：原「深度驗證台帳」「發現與建言」成為
+// 其他分頁內的區塊，舊名稱保留為別名，讓既有連結與按鈕照常運作。
+const TAB_ALIAS = { ledger: ["hotspots", "tab-ledger"], findings: ["guide", "tab-findings"] };
 function switchTab(tabName){
+  const alias = TAB_ALIAS[tabName];
+  if(alias){
+    switchTab(alias[0]);
+    setTimeout(() => document.getElementById(alias[1]).scrollIntoView({behavior:"smooth", block:"start"}), 60);
+    return;
+  }
   const btn = document.querySelector(`nav.tabs button[data-tab="${tabName}"]`);
   if(!btn) return;
   document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.remove("active"));
@@ -1061,7 +1175,7 @@ document.querySelectorAll("nav.tabs button").forEach(btn=>{
 });
 
 // ── 深度連結（2026-09-06 追加）：供簡報/外部素材直接連到特定畫面，
-// 例如 ?view=categories 開場即切到「地圖・延伸探索」分頁並捲動到 7 大類地點瀏覽器，
+// 例如 ?view=categories 開場即切到「空間分析平台」分頁並捲動到 7 大類地點瀏覽器，
 // 不需要口頭說明「請點哪個分頁」。純前端路由，不影響一般網址正常開啟行為。
 function handleDeepLink(){
   const view = new URLSearchParams(location.search).get("view");
@@ -1269,10 +1383,10 @@ function renderGuideCards(){
     btn.onclick = () => {
       const catId = btn.dataset.cat, linkTab = btn.dataset.link;
       if(linkTab){
-        document.querySelector(`nav.tabs button[data-tab="${linkTab}"]`).click();
+        switchTab(linkTab);
         return;
       }
-      document.querySelector('nav.tabs button[data-tab="dashboard"]').click();
+      switchTab("dashboard");
       setTimeout(()=>{
         if(!pickModeActive) document.getElementById("btn-toggle-custom").click();
         selectCategory(catId);
@@ -1308,7 +1422,7 @@ function selectCategory(catId){
     search.style.display = "none";
     document.getElementById("cat-list").innerHTML =
       `<div style="padding:14px;"><button class="cat-link-btn" id="cat-goto-hotspots">前往「熱點總覽」瀏覽 100 個熱點 →</button></div>`;
-    document.getElementById("cat-goto-hotspots").onclick = () => document.querySelector('nav.tabs button[data-tab="hotspots"]').click();
+    document.getElementById("cat-goto-hotspots").onclick = () => switchTab("hotspots");
     return;
   }
   search.style.display = cat.locations.length > 8 ? "block" : "none";
@@ -1994,7 +2108,7 @@ function renderPriorityTiers(){
     </div>`).join("");
 }
 document.getElementById("pc-goto-a").onclick = () => {
-  document.querySelector('nav.tabs button[data-tab="hotspots"]').click();
+  switchTab("hotspots");
   const btnA = document.querySelector('#tier-filter button[data-tier="A"]');
   if(btnA) btnA.click();
 };
@@ -2030,13 +2144,13 @@ function renderProofCards(){
   wrap.querySelectorAll(".proof-card").forEach(card => {
     card.onclick = () => {
       const l = LEDGER_BY_RANK[Number(card.dataset.rank)];
-      document.querySelector('nav.tabs button[data-tab="ledger"]').click();
+      switchTab("ledger");
       openDetail(l.rank, l.site, l.date_a, l.date_b);
     };
   });
 }
 document.querySelectorAll(".explore-link[data-tab]").forEach(btn => {
-  btn.onclick = () => document.querySelector(`nav.tabs button[data-tab="${btn.dataset.tab}"]`).click();
+  btn.onclick = () => switchTab(btn.dataset.tab);
 });
 
 // ── 服務健康狀態（2026-09-06 追加，競賽審查意見：現場展示不受外部服務影響）───
