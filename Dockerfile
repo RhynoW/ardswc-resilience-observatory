@@ -13,6 +13,13 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# UAV 影像自動對位（scripts/uav_register，LoFTR + MAGSAC）需要 torch + kornia。HF 是 CPU 硬體：
+# 一律裝 CPU 版 wheel（預設 PyPI 版 torch 會連帶下載數 GB 的 CUDA 套件）。版本與本機驗證版一致。
+# 並預先下載 LoFTR 權重到 TORCH_HOME（切到 appuser 後才讀得到；執行期不必再連外）。
+# 非致命：失敗只影響對位腳本、不影響網站；輸出存 /app/uav_deps.log，/api/health 在未安裝時附上尾段。
+ENV TORCH_HOME=/app/.torch
+RUN (pip install --no-cache-dir torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu      && pip install --no-cache-dir kornia==0.8.3      && python -c "import kornia.feature as KF; KF.LoFTR(pretrained='outdoor'); print('LoFTR weights OK')")     > /app/uav_deps.log 2>&1     || echo "WARN: UAV deps (torch/kornia) install failed; registration scripts unavailable"; tail -n 3 /app/uav_deps.log || true
+
 # 「線上分析（自訂座標）」用 Playwright 內建 Chromium（headless=True，見
 # scripts/ge_web_capture_v2.py 的 --headless-container 分支）驅動 GE Web——2026-09-05 已在
 # HF cpu-basic（2 vCPU、無 GPU、software WebGL）實測驗證可行。PLAYWRIGHT_BROWSERS_PATH 設在

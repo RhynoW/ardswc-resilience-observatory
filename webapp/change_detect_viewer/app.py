@@ -1061,6 +1061,21 @@ def api_health():
         except OSError:
             checks["terrain_dtm20"]["prepare_log_tail"] = None
 
+    import importlib.util as _iu
+    _torch_ok = _iu.find_spec("torch") is not None and _iu.find_spec("kornia") is not None
+    _weights = Path(os.environ.get("TORCH_HOME", str(Path.home() / ".cache" / "torch"))) / "hub" / "checkpoints" / "loftr_outdoor.ckpt"
+    checks["uav_registration_deps"] = {
+        "ok": True,  # 選配：只影響 scripts/uav_register 對位腳本，不影響網站
+        "torch_and_kornia_installed": _torch_ok,   # 只查套件是否存在，不 import（torch 載入很慢）
+        "loftr_weights_cached": _weights.exists(),
+        "note": "UAV 自動對位腳本（LoFTR + MAGSAC）所需；HF 為 CPU 版 torch。",
+    }
+    if not _torch_ok:
+        try:
+            checks["uav_registration_deps"]["install_log_tail"] = (REPO / "uav_deps.log").read_text(encoding="utf-8", errors="replace")[-800:]
+        except OSError:
+            checks["uav_registration_deps"]["install_log_tail"] = None
+
     cesium_token_set = bool(os.environ.get("CESIUM_ION_TOKEN"))
     checks["cesium_terrain_token"] = {
         "ok": True,  # 未設定不算故障——等高線/流域分析本就是選配功能，見 §governance
