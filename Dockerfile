@@ -13,12 +13,22 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# UAV 影像自動對位（scripts/uav_register，LoFTR + MAGSAC）需要 torch + kornia。HF 是 CPU 硬體：
-# 一律裝 CPU 版 wheel（預設 PyPI 版 torch 會連帶下載數 GB 的 CUDA 套件）。版本與本機驗證版一致。
-# 並預先下載 LoFTR 權重到 TORCH_HOME（切到 appuser 後才讀得到；執行期不必再連外）。
+# UAV 影像自動對位（scripts/uav_register，LoFTR + MAGSAC）需要 torch + kornia。
+# TORCH_VARIANT 建置參數決定 torch wheel 來源（預設 cpu，不開 GPU 時行為與之前完全相同）：
+#   cpu    → https://download.pytorch.org/whl/cpu   （HF cpu-basic；預設 PyPI 版會連帶下載數 GB 的 CUDA 套件）
+#   cu128  → https://download.pytorch.org/whl/cu128 （HF GPU 硬體；wheel 自帶 CUDA 執行庫，驅動由主機提供，映像多數 GB）
+# HF Docker Space 會把 Space 的 Variables 當建置參數傳入：Settings → Variables 新增 TORCH_VARIANT=cu128 後重建。
+# 版本與本機驗證版一致。並預先下載 LoFTR 權重到 TORCH_HOME（切到 appuser 後才讀得到；執行期不必再連外）。
 # 非致命：失敗只影響對位腳本、不影響網站；輸出存 /app/uav_deps.log，/api/health 在未安裝時附上尾段。
-ENV TORCH_HOME=/app/.torch
-RUN (pip install --no-cache-dir torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu      && pip install --no-cache-dir kornia==0.8.3      && python -c "import kornia.feature as KF; KF.LoFTR(pretrained='outdoor'); print('LoFTR weights OK')")     > /app/uav_deps.log 2>&1     || echo "WARN: UAV deps (torch/kornia) install failed; registration scripts unavailable"; tail -n 3 /app/uav_deps.log || true
+ARG TORCH_VARIANT=cpu
+ENV TORCH_HOME=/app/.torch \
+    TORCH_VARIANT=${TORCH_VARIANT}
+RUN (pip install --no-cache-dir torch==2.11.0 --index-url https://download.pytorch.org/whl/${TORCH_VARIANT} \
+     && pip install --no-cache-dir kornia==0.8.3 \
+     && python -c "import kornia.feature as KF; KF.LoFTR(pretrained='outdoor'); print('LoFTR weights OK, torch variant: ${TORCH_VARIANT}')") \
+    > /app/uav_deps.log 2>&1 \
+    || echo "WARN: UAV deps (torch/kornia, ${TORCH_VARIANT}) install failed; registration scripts unavailable"; \
+    tail -n 3 /app/uav_deps.log || true
 
 # 「線上分析（自訂座標）」用 Playwright 內建 Chromium（headless=True，見
 # scripts/ge_web_capture_v2.py 的 --headless-container 分支）驅動 GE Web——2026-09-05 已在
@@ -34,7 +44,9 @@ COPY . .
 # 續傳）並轉成 224 MB 的分塊壓縮 GeoTIFF，不放進 git。失敗不擋建置——執行期找不到 DTM 檔時
 # 等高線/流域分析自動退回 Cesium World Terrain（需 CESIUM_ION_TOKEN），兩者皆無則該功能隱藏/回明確錯誤。
 # 輸出存成 /app/data/dtm_prepare.log：建置日誌需登入才看得到，/api/health 在 DTM 不可用時會附上此檔尾段。
-RUN mkdir -p /app/data && (python scripts/prepare_dtm20.py > /app/data/dtm_prepare.log 2>&1     || echo "WARN: DTM prepare failed; falling back to Cesium terrain"); tail -n 5 /app/data/dtm_prepare.log || true
+RUN mkdir -p /app/data && (python scripts/prepare_dtm20.py > /app/data/dtm_prepare.log 2>&1 \
+    || echo "WARN: DTM prepare failed; falling back to Cesium terrain"); \
+    tail -n 5 /app/data/dtm_prepare.log || true
 
 RUN useradd -m -u 1000 appuser \
     && mkdir -p /app/data/cesium_cache /app/data/contour_cache \

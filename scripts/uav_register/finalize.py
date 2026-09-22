@@ -3,7 +3,10 @@ import json, math, sys
 import cv2, numpy as np, torch, kornia.feature as KF
 import register as R
 
-torch.set_num_threads(4)
+dev = R.pick_device()
+if dev == "cpu":
+    torch.set_num_threads(4)
+print("device", dev, flush=True)
 GSD, ROT = float(sys.argv[1]) if len(sys.argv) > 1 else 0.3, int(sys.argv[2]) if len(sys.argv) > 2 else 150
 REF = "esri"; Z = 17
 R.LAT, R.LON = 24.2092479, 121.6600388
@@ -11,13 +14,13 @@ cx, cy = R.tile_xy(R.LAT, R.LON, Z); x0, y0 = int(cx) - 4, int(cy) - 4
 ref = cv2.imread(f"ref17_{REF}.jpg")
 ts_merc = R.px_to_merc(0, 0, x0, y0, Z)[2]                       # z17 每像素 Web Mercator 公尺
 ts = ts_merc * math.cos(math.radians(R.LAT))                     # 地面 m/px
-matcher = KF.LoFTR(pretrained="outdoor").eval()
+matcher = KF.LoFTR(pretrained="outdoor").to(dev).eval()
 clahe = cv2.createCLAHE(2.5, (8, 8))
 prep = lambda im: clahe.apply(cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
 uav = cv2.imread("uav.jpg"); uav_m = uav.copy()
 uav_m[int(uav.shape[0] * 0.93):, :int(uav.shape[1] * 0.46)] = 0
 ref_g = prep(ref)
-to_t = lambda g: torch.from_numpy(g)[None, None].float() / 255.0
+to_t = lambda g: torch.from_numpy(g)[None, None].float().to(dev) / 255.0
 
 s = GSD / ts
 small = cv2.resize(prep(uav_m), None, fx=s, fy=s, interpolation=cv2.INTER_AREA)

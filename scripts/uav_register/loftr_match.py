@@ -4,8 +4,9 @@ import json, math, sys, time
 import cv2, numpy as np, torch, kornia.feature as KF
 import register as R
 
-dev = "cpu"   # GPU 已當機兩次，改 CPU（慢但穩）
-torch.set_num_threads(6)
+dev = R.pick_device()   # UAV_DEVICE=cpu 可強制 CPU；未設定時有 CUDA 就用 GPU
+if dev == "cpu":
+    torch.set_num_threads(6)
 print("device", dev, flush=True)
 matcher = KF.LoFTR(pretrained="outdoor").to(dev).eval()
 

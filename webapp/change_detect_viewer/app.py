@@ -1068,6 +1068,7 @@ def api_health():
         "ok": True,  # 選配：只影響 scripts/uav_register 對位腳本，不影響網站
         "torch_and_kornia_installed": _torch_ok,   # 只查套件是否存在，不 import（torch 載入很慢）
         "loftr_weights_cached": _weights.exists(),
+        "torch_variant": os.environ.get("TORCH_VARIANT", "cpu"),   # 建置參數：cpu 或 cu128（GPU 硬體）
         "note": "UAV 自動對位腳本（LoFTR + MAGSAC）所需；HF 為 CPU 版 torch。",
     }
     if not _torch_ok:

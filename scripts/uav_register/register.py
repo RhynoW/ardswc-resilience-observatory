@@ -113,6 +113,19 @@ def rectify(uav_bgr, H, z, x0, y0, ref_bgr, tag, out_ppm=None):
     return {"corners_lonlat": [[round(a, 6), round(b, 6)] for a, b in ll], "center_lonlat": [round(cll[0], 6), round(cll[1], 6)],
             "gsd_m_per_px_center": round(gsd, 3), "out_size_px": [ow, oh], "pixel_size_merc_m": round(ts, 4)}
 
+def pick_device():
+    """運算裝置：環境變數 UAV_DEVICE（cpu / cuda / cuda:0）優先；未設定時有 CUDA 就用 GPU，否則 CPU。
+    本機 GPU 若不穩（曾當機），設 UAV_DEVICE=cpu 即可強制 CPU。"""
+    import os
+    import torch
+    want = os.environ.get("UAV_DEVICE", "").strip().lower()
+    if want:
+        if want.startswith("cuda") and not torch.cuda.is_available():
+            raise RuntimeError(f"UAV_DEVICE={want} 但此環境沒有可用的 CUDA")
+        return want
+    return "cuda" if torch.cuda.is_available() else "cpu"
+
+
 def hav(lon1, lat1, lon2, lat2):
     p = math.pi / 180
     a = math.sin((lat2 - lat1) * p / 2) ** 2 + math.cos(lat1 * p) * math.cos(lat2 * p) * math.sin((lon2 - lon1) * p / 2) ** 2

@@ -41,7 +41,11 @@
                      ├─ dtm20.py／cesium_terrain.py（地形資料：等高線疊圖／坡度流域分析；DTM 為主、Cesium 備援）
                      ├─ watershed_analysis.py（D8 流向＋流量累積，積水候選提示）
                      ├─ ardswc_photo_search.py（水保署歷史影像庫真實查詢）
-                     └─ gmaps_tiles.py（Apple／國土測繪中心底圖圖磚代理）
+                     ├─ sentinel_assist.py（Sentinel-2 補充時間軸，選配）
+                     ├─ gmaps_tiles.py（Apple／國土測繪中心底圖圖磚代理）
+                     └─ static/uav_cesium.html + /api/dtm_heights（UAV 對位成果 3D 疊合，見 §8.1）
+
+離線研究腳本（不在請求路徑上）：scripts/uav_register/（UAV 影像 LoFTR + MAGSAC 自動對位）
 ```
 
 ## 3. 五個分頁
@@ -56,6 +60,10 @@
 | 3 | **深度驗證台帳** | 11 個熱點的完整人工目視覆核紀錄——刻意記錄「哪裡失準」而非只秀成功案例 |
 | 4 | **地圖・延伸探索** | 支援工具：7 大類真實地點瀏覽器（§6）＋統計總覽/熱點地圖＋線上分析（§5）＋3D 立體檢視 |
 | 5 | **發現與建言** | 政府/民眾/公共政策三方向的靜態建言內容 |
+
+**深連結**：外部資料（競賽簡報、文件）可直接連到特定畫面，不必描述「請點哪個分頁」。
+目前支援 `?view=categories`：開場即切到「地圖・延伸探索」分頁、捲動到 7 大類地點瀏覽器並短暫
+高亮。UAV 3D 疊合頁（§8.1）為獨立頁面，以 `/static/uav_cesium.html?id=<事件 id>` 直接連結。
 
 第 4 分頁（原名「觀測站首頁」）在改版前是預設開場分頁；現在降為支援工具，理由是這些功能
 （即時線上擷取、7 大類分類瀏覽器、3D 檢視）依賴外部服務即時狀況或屬於探索性瀏覽，不適合
@@ -135,6 +143,12 @@
 自動對位不確定 > 無資料）。任一因子為「未知」時，分級結果明確標示「資料待確認」，不
 假裝有把握。此分級結果即為 §4 決策首頁的核心呈現內容。
 
+**資料範圍**：資料信心因子讀取每個熱點的 `_change_detect/*.json`（時間軸＋對位資訊）。
+公開部署已隨附**全部 100 個熱點**的這些 JSON 摘要（約 12 MB），而非只有 11 個深度驗證熱點——
+早期只附 11 個時，其餘 89 個一律落入「無資料 → D 級」，線上分級（僅 1 個 A 級）遠比實際
+（A:17／B:36／C:12／D:35）貧乏。多 GB 的影像面板仍不隨附，因此非深度驗證熱點的
+`/api/hotspot_sites` 照常回傳無日期（不會出現破圖），只有分級計算受益。
+
 ## 8. 其他功能模組（支援功能）
 
 - **坡度與流域分析**：全臺灣 20 m DTM（內政部地政司；無本地檔時退回 Cesium World Terrain）→ D8 流向＋流量累積，提示「可能
@@ -150,6 +164,27 @@
 - **等高線疊圖**：全臺灣 20 m DTM（可商用）；無本地 DTM 檔時退回 Cesium World Terrain
   （免費層級，非商用，需 `CESIUM_ION_TOKEN`）；兩者皆無時自動隱藏開關。等高線/流域快取依地形來源
   分目錄存放（`data/*_cache/dtm20|cesium/`），換來源不會讀到舊來源的結果。
+
+### 8.1 UAV 影像自動對位與 3D 疊合
+
+把水保署歷史影像平台上**沒有 EXIF/GPS** 的 UAV 空拍照，純靠影像內容對位到衛星底圖，再
+貼到真實地形上以 3D 檢視——示範「現場通報影像」與「衛星歷史影像」可以落在同一個座標框架比對。
+
+- **對位（離線研究腳本，`scripts/uav_register/`）**：`register.py`（圖磚/座標工具、糾正輸出、
+  `pick_device()`）、`loftr_match.py`（LoFTR 學習式特徵匹配，掃描 GSD/旋轉）、`finalize.py`
+  （以最佳參數做 MAGSAC 單應矩陣估計，輸出 `rect.png` 與 `meta.json`）。底圖為 ESRI World
+  Imagery z17。運算裝置由 `UAV_DEVICE`（`cpu`／`cuda`／`cuda:0`）指定，未設定時有 CUDA 就用
+  GPU、否則 CPU。**不在網站請求路徑上**：網站只讀取已產出的成果檔。
+- **成果檔**：`static/uav/<事件 id>/`（`meta.json` + `rect.png`），`meta.json` 記錄四角經緯度、
+  方法、授權標示與品質指標。目前公開的示範案例：花蓮秀林石公溪小清水溪（2026/08/29，
+  成大 CC-BY），聯合 inlier 77、擬合 RMSE 2.04 m、**保留檢核點 RMSE 2.24 m**（底圖 1.09 m/px）。
+- **3D 檢視（`static/uav_cesium.html?id=<事件 id>`）**：CesiumJS（jsDelivr CDN）+
+  `CustomHeightmapTerrainProvider`，逐 tile 向 `/api/dtm_heights` 取本地 20 m DTM 的 float32
+  高程——**不需要 Cesium ion token**。底圖 Esri World Imagery，UAV 影像以 `SingleTileImageryProvider`
+  貼在地形上，可調不透明度與地形誇張倍率（1–3×）。
+- **誠實標示的限制**：單應矩陣無法完全吸收山區地形起伏，部分道路有數公尺重影；**非嚴格
+  正射**（需 DSM + 相機姿態才能做真正正射糾正）。DTM 為正高（TWVD2001）原樣使用、未換算橢球高
+  （臺灣兩者差約 20 m），貼圖視覺上不受影響，但與 GNSS 橢球高資料疊合時需另行換算。
 
 ## 9. API 一覽
 
@@ -167,6 +202,8 @@
 | `/api/watershed/<rank>`、`/api/watershed_custom` | GET | 坡度與流域分析 |
 | `/ardswc_search` | GET | 水保署歷史影像庫真實查詢（獨立 HTML 頁） |
 | `/api/contours/<z>/<x>/<y>`、`/api/contours_status` | GET | 等高線疊圖 |
+| `/api/dtm_heights` | GET | `west/south/east/north` + `n`（2–257）→ n×n float32 小端序高程（北→南、西→東），供 3D 疊合頁的 Cesium 地形；範圍上限 4°×4°，無本地 DTM 時回 503 |
+| `/api/uav_registration/<id>` | GET | UAV 對位成果中繼資料（`static/uav/<id>/meta.json`）；id 僅允許數字，擋路徑穿越 |
 | `/api/tile/apple\|nlsc_topo\|nlsc_photo/<z>/<x>/<y>` | GET | 底圖圖磚代理（Google/ESRI/Bing/OSM 前端直連） |
 | `/api/ge_trace` | GET | 依座標＋日期組出對應歷史日期的 GE Web 直連 URL |
 | `/image/<relpath>` | GET | 靜態影像服務（`safe_join` 擋路徑穿越） |
@@ -176,6 +213,15 @@
 `Dockerfile`：`python:3.11-slim-bookworm`（明確釘 Debian 版本——未釘版本的 `slim` 標籤
 會隨時間滾動到新的 Debian 版本，曾導致 Playwright 依賴安裝失敗）+
 `playwright install --with-deps chromium`。
+
+**UAV 對位相依套件**（§8.1）：`torch==2.11.0` + `kornia==0.8.3`，建置時預先下載 LoFTR `outdoor`
+權重到 `TORCH_HOME=/app/.torch`（執行期不必連外）。建置參數 `TORCH_VARIANT` 決定 torch wheel
+來源：`cpu`（預設，HF `cpu-basic`；避免預設 PyPI 版連帶下載數 GB 的 CUDA 套件）或 `cu128`
+（HF GPU 硬體，在 Space Settings → Variables 設定後重建）。**非致命**：安裝失敗只影響對位腳本、
+不影響網站，輸出存於 `/app/uav_deps.log`。
+
+**DTM 整備**：建置時執行 `scripts/prepare_dtm20.py`，失敗不擋建置；輸出存於
+`/app/data/dtm_prepare.log`（HF 建置日誌需登入才看得到，因此改由 `/api/health` 對外揭露）。
 
 環境變數（皆有安全預設值，未設定不影響核心功能）：
 
@@ -188,6 +234,8 @@
 | `DEMO_MODE` | `0` | **離線展示模式**（2026-09-06 追加）：設為 `1` 時停用線上即時擷取（不受
 Google Earth Web 現場狀況影響），只保留完全依賴本機快取資料的核心內容，首頁與頁首會
 顯示明顯提示。現場展示前建議主動開啟；平常對外服務維持關閉以提供完整功能。 |
+| `TORCH_VARIANT` | `cpu` | 建置參數：UAV 對位用 torch wheel 版本（`cpu`／`cu128`），見上方 |
+| `UAV_DEVICE` | 未設定 | 對位腳本運算裝置（`cpu`／`cuda`／`cuda:0`）；未設定時自動偵測。本機 GPU 不穩時設 `cpu` 強制 CPU |
 | `GE_CAPTURE_CONTAINER_MODE` | `1`（此部署明確設定） | 切換擷取後端為容器安全模式（§5） |
 | `GMAPS_DEMO_APPLE_AUTO` | `0`（此部署明確設定） | 關閉 Apple 底圖 token 自動換發（此容器連外部網站常逾時） |
 
@@ -196,6 +244,11 @@ Google Earth Web 現場狀況影響），只保留完全依賴本機快取資料
 不是行銷宣稱；點擊可展開詳細清單。動機：開發過程中真實發生過 HF Space 被切到暫停、
 Cesium 地形 token 靜默過期兩次事故，皆非現場能立即排除的問題，因此需要一個不依賴外部
 網路（避免健康檢查本身被同一個外部故障拖垮）的自我檢查機制。
+
+`/api/health` 也包含兩項建置期產物的檢查：`terrain_dtm20`（DTM 不可用時附上
+`dtm_prepare.log` 尾段，便於不登入 HF 就能判斷整備失敗原因）與 `uav_registration_deps`
+（torch/kornia 是否安裝、LoFTR 權重是否已快取、`torch_variant`；未安裝時附上
+`uav_deps.log` 尾段）。後者為選配項目，永遠標示 `ok`，不會讓整體狀態顯示為降級。
 
 ## 11. 資料治理原則
 
@@ -207,14 +260,18 @@ Cesium 地形 token 靜默過期兩次事故，皆非現場能立即排除的問
 - 線上分析（§5）擷取的座標/日期為自動化幾何流程，非人工驗證的地面真相；產出的比對
   結果供快速排序參考，不取代現場複核。
 - 坡度與流域分析（§8）為地形幾何篩選，非水文水利模型，不可用於估計實際淹水機率/深度。
+- UAV 對位成果（§8.1）為單應矩陣近似，附保留檢核點 RMSE 作為可驗證的品質指標；非正射
+  影像，不可用於公尺級量測。影像授權依原始來源標示（例：成大 CC-BY）。
 - 服務健康狀態（§10）回報的是系統元件可用性事實，不是資料本身的正確性——資料正確性
   判斷見「深度驗證台帳」分頁與各案例的候選排序/證據鏈說明。
 
 ## 12. 已知限制
 
 - 本部署硬體無 GPU；線上分析每個歷史日期需 35–45 秒，多期擷取需耐心等候。
-- 100 個熱點中僅 11 個有完整多期比對面板，其餘 89 個僅提供中繼資料與巡查優先級（點開
-  會誠實顯示「尚無擷取資料」）。
+- 100 個熱點中僅 11 個有完整多期比對面板，其餘 89 個僅提供比對中繼資料與巡查優先級（點開
+  會誠實顯示「尚無擷取資料」；巡查優先級仍依其真實比對結果計算，見 §7）。
+- UAV 自動對位（§8.1）目前只公開 1 個示範案例；對位腳本為研究用途，在 HF `cpu-basic` 上雖可
+  執行但很慢，尚未提供網頁端即時對位。3D 疊合頁尚未從主頁分頁連入，需以網址直接開啟。
 - 分類地點清單非窮舉——例如海岸侵蝕熱點官方劃定 13 處，但僅 2 處找得到可交叉查證的
   精確座標；大規模崩塌潛勢區使用者常引用的「103」實為規劃篩選目標數，目前正式公告、
   有座標資料的是 94 處。
