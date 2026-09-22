@@ -391,6 +391,10 @@
   @media (max-width:760px){ .tech-grid{ grid-template-columns:1fr; } }
   @media (max-width:700px){ .uav3d-frame{ height:420px; } }
   .flash-highlight{ outline:3px solid var(--accent); outline-offset:3px; transition:outline-color .6s; }
+  .decision-flow{ font-family:var(--font-mono); font-size:12.5px; color:var(--accent); margin:10px 0 6px; letter-spacing:.02em; }
+  .decision-meta{ font-size:12.5px; color:var(--muted); max-width:86ch; line-height:1.6; margin:0; }
+  .ext-details > summary{ cursor:pointer; font-size:13px; color:var(--muted); padding:10px 0; }
+  .ext-details[open] > summary{ margin-bottom:10px; }
   .pc-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .export-btn{
     font-family:var(--font-mono); font-size:12px; background:var(--paper-raised); color:var(--ink);
@@ -603,9 +607,13 @@
       <div class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026</div>
       <h2>具有真實導入潛力的空間情報國家韌性決策原型</h2>
       <p class="sec-sub decision-lead">這不是「AI 自動判定災害」的黑箱系統，而是一套<strong>候選排序＋證據鏈</strong>的決策
-      輔助原型：把水保署影像平台 76,773 筆有座標的歷史影像紀錄（其中災害事件 29,991 筆），收斂成 100 個長期複發熱點，再用透明規則排出
-      <strong>巡查優先級</strong>，讓有限的地面稽查人力知道「下一步該先去哪裡」——每一個排序背後都附上
-      可回溯、可驗證的證據鏈，而不是一個要人盲目相信的分數。</p>
+      輔助原型：從水保署影像平台（2026-09-22 共 105,131 筆）中只取真正的災害紀錄——<strong>災害事件＋媒體報導</strong>
+      的災情地點，把同一災害的後續追蹤與重複拍攝合併成<strong>獨立災害事件</strong>，找出 100 個長期複發地點，再以近期
+      衛星影像變化與人工確認排出<strong>巡查優先級</strong>，協助決定哪些地方值得優先巡查。</p>
+      <p class="decision-flow">真正災害資料清理 → 獨立事件去重 → 複發熱點辨識 → 近期影像變化 → 人工確認 → 巡查優先建議</p>
+      <p class="decision-meta"><strong>主要使用者：</strong>水保署、各分署及地方政府的巡查與判讀人員（不作為民眾安全判斷工具）。
+      <strong>已知限制：</strong>歷史通報有密度偏差——道路可達地點、特定年度或單位較常拍攝，紀錄多不必然代表災害多；
+      高排名熱點須經人工查證。</p>
     </div>
 
     <div class="priority-cta">
@@ -624,35 +632,27 @@
     </div>
 
     <div class="proof-section">
-      <h3>為什麼不能只看分數？——兩個真實案例</h3>
-      <p class="sec-sub" style="max-width:78ch;">11 個熱點做過完整人工目視覆核，我們不是只挑好看的結果展示。
-      以下兩個案例的自動分數都很高：一個「分數最高、但需要人工複核才能定案」，一個「分數也很高、但其實是
-      系統性錯誤」的誤報——這正是巡查優先級必須搭配證據鏈與人工覆核的原因。點卡片可看完整的原始影像與判斷依據。</p>
-      <div class="proof-grid" id="proof-grid">
-        <div style="padding:20px; color:var(--muted); font-size:13px;">載入案例中…</div>
-      </div>
+      <h3>人工覆核狀態——新資料集待覆核</h3>
+      <p class="sec-sub" style="max-width:80ch;">100 個熱點與影像證據已於 <strong>2026-09-22</strong> 依水保署平台即時資料全面重建，
+      並以 <strong>Sentinel-2 每年一期</strong>（2017 起、乾季雲量最低場景）覆驗。舊版 11 筆人工目視覆核屬於舊熱點位置，
+      已全部清空；目前 100 個熱點<strong>皆尚未人工覆核</strong>，資料信心最高只到「中」。A 級代表「優先確認候選」，
+      不是災害已確認——人工覆核完成後，覆核結論會優先於自動分數並直接改變分級。</p>
+      <div class="proof-grid" id="proof-grid"></div>
     </div>
 
-    <!-- ── 發現與建言 ───────────────────────────── -->
     <div id="tab-findings" class="subpanel">
-      <h2>對政府單位的建言</h2>
+      <h2>對巡查與判讀單位的建言</h2>
       <div class="rec-cols">
         <div class="rec-col">
           <h3>政府</h3>
           <div class="rec-item"><h4>先篩後查</h4><p>對六龜、和平、信義這類人力難以頻繁到達的山區熱點，用歷史影像變化偵測把有限的地面稽查資源導向真正在變化中的地點。</p></div>
-          <div class="rec-item"><h4>依複發年數分級監控</h4><p>複發 ≥5 年的熱點列為高優先，搭配每半年至一年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據。</p></div>
-          <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站的深度驗證台帳就是現成範本——純自動化分數近半數在目視覆核後被判定不可信，任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
+          <div class="rec-item"><h4>依獨立災害事件數分級監控</h4><p>獨立災害事件 ≥6 件的熱點列為高優先，搭配每年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據；已完成治理且現況改善者改列持續監測。</p></div>
+          <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站舊版 11 個覆核熱點中，沒有一個能在影像上明確指認為乾淨命中——任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
           <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
         </div>
         <div class="rec-col">
-          <h3>民眾</h3>
-          <div class="rec-item"><h4>可查詢的複發熱點地圖</h4><p>登山、露營、自駕行程規劃時，查詢路線是否經過長期複發地質不穩定地點，強降雨或颱風警報期間據此決定是否延後或改道。</p></div>
-          <div class="rec-item"><h4>更有感的社區溝通素材</h4><p>「這裡是近 6 年內 5 個不同年份都有事件通報的熱點」比「這裡曾經發生過一次土石流」更能促成長期警覺，也可作為申請防災補助的具體依據。</p></div>
-          <div class="rec-item"><h4>結合雨量的區域性提醒</h4><p>已知複發熱點清單在特定降雨強度/延時門檻觸發時，可做比全境廣播式警報更精準的定點提醒。</p></div>
-        </div>
-        <div class="rec-col">
           <h3>公共政策</h3>
-          <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；衛星歷史影像可回溯十年以上、任意選比對時間窗，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
+          <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；Sentinel-2 自 2017 年起每年可取得一期、Google Earth 歷史影像可回溯更久，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
           <div class="rec-item"><h4>均質覆蓋</h4><p>現場照片的分佈天生受人力可達性影響；衛星視角是全境等密度覆蓋，能補足偏遠、通報稀少但實際地貌可能已在變化的資料缺口。</p></div>
           <div class="rec-item"><h4>可量化、可比較</h4><p>SSIM 差異分數＋對位品質指標，提供跨地點、跨年份的統一量化基礎，取代仰賴文字敘述的人工主觀判斷。</p></div>
         </div>
@@ -663,7 +663,7 @@
       <h4>巡查清單與技術底座</h4>
       <div class="explore-links">
         <button class="explore-link" data-tab="hotspots">📋 巡查清單：100 熱點優先級排序與匯出</button>
-        <button class="explore-link" data-tab="ledger">🔍 證據與驗證：量化驗證＋11 個熱點目視覆核台帳</button>
+        <button class="explore-link" data-tab="ledger">🔍 證據與驗證：量化驗證＋人工覆核台帳</button>
         <button class="explore-link" data-tab="dashboard">🛰️ 空間分析平台：衛星影像變遷偵測・國土測繪中心／中研院底圖・20 m DTM・UAV 自動套合・Cesium 3D</button>
       </div>
       <p class="guide-note">⚠ 即時線上擷取（任意座標的 Google Earth Web 比對）與 3D 立體檢視為輔助探索工具，
@@ -681,8 +681,7 @@
       <div class="tech-card">
         <div class="tc-kicker">01・變遷偵測</div>
         <h4>🛰️ 衛星影像變遷偵測</h4>
-        <p><strong>Google Earth 歷史影像</strong>（最長回溯 25 期、十年以上）＋ <strong>Sentinel-2</strong>（10 m、約 5 天重訪）補充時間軸；
-          SSIM 像素級比對，並逐對檢查影像對位。</p>
+        <p><strong>Sentinel-2</strong>（WMTS 512 圖磚、10 m）每年一期覆驗全部 100 個熱點（2017 起、乾季雲量最低場景）；<strong>Google Earth 歷史影像</strong>僅作概念驗證與輔助（任意座標線上分析），正式導入可替換為授權明確的政府航照或衛星影像。SSIM 變化只是<strong>候選訊號</strong>，不等於災害或風險。</p>
         <button class="tc-go" data-go="custom">開啟線上分析 →</button>
       </div>
       <div class="tech-card">
@@ -728,18 +727,20 @@
         DTM 為正高（TWVD2001），未換算橢球高。</p>
     </div>
 
-    <h2 style="margin-top:40px;">地圖瀏覽與 7 大類真實地點</h2>
+    <h2 style="margin-top:40px;">地圖瀏覽</h2>
 
+    <details class="ext-details" id="ext-categories">
+    <summary>延伸應用：7 大類真實地點（土石流觀測站、大規模崩塌潛勢區等）——非本案主軸，展開查看</summary>
     <div class="guide-hero">
       <div class="lead">
         <h3 style="margin:0 0 8px;">7 大類真實地點快速索引</h3>
-        <p class="sec-sub">從水保署影像平台 76,773 筆有座標歷史紀錄整理出的長期複發熱點出發，延伸到土石流觀測站、
+        <p class="sec-sub">從水保署影像平台 30,196 筆有座標災害事件整理出的長期複發熱點出發，延伸到土石流觀測站、
         大規模崩塌潛勢區、海岸/河川侵蝕案例、都市開發示範區與捷運工程——以下 7 大類、共
         <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入下方「線上分析」，
         即時擷取 Google Earth Web 歷史影像做前後期比對。</p>
       </div>
       <div class="stats">
-        <div class="guide-stat"><div class="n">76,773</div><div class="l">全台去重影像紀錄（有座標；災害事件 29,991）</div></div>
+        <div class="guide-stat"><div class="n">30,196</div><div class="l">有座標災害事件（平台共 105,131 筆，2026-09-22）</div></div>
         <div class="guide-stat"><div class="n">100</div><div class="l">複發熱點（Top 100）</div></div>
         <div class="guide-stat"><div class="n" id="guide-other-n">—</div><div class="l">其餘 6 大類真實地點總數</div></div>
       </div>
@@ -747,29 +748,30 @@
     <div class="guide-grid" id="guide-grid"><div style="padding:20px; color:var(--muted); font-size:13px;">載入分類清單中…</div></div>
     <p class="guide-note">⚠ 每一筆座標皆有真實來源（官方 PDF／政府開放資料／維基百科），無法找到精確座標的地點
       一律標註「概略／未驗證」而非編造座標湊數——詳見各分類卡片與「線上分析」面板內每個地點的來源連結。</p>
+    </details>
 
-    <h2 style="margin-top:36px;">從 7 萬 6 千筆通報到 100 個真正複發的地點</h2>
-    <p class="sec-sub">依「不同年份出現次數」而非照片總數，從水保署全台災害影像通報中篩出長期地質不穩定熱點，再用十年以上衛星歷史影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
+    <h2 style="margin-top:36px;">從 3 萬筆災害紀錄到 100 個真正複發的地點</h2>
+    <p class="sec-sub">依「獨立災害事件數」而非照片總數，以 250 m 網格從水保署災害事件與媒體報導中篩出長期地質不穩定熱點，再用 Sentinel-2 年度影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
 
     <div class="statgrid">
-      <div><div class="stat-num">76,773</div><div class="stat-label">全台去重影像紀錄（有座標，2026-09-05 快照；其中災害事件 29,991 筆；自建網格掃描突破 API 500 筆上限）</div></div>
-      <div><div class="stat-num">100</div><div class="stat-label">依複發年數重新排序後的長期不穩定熱點</div></div>
-      <div><div class="stat-num" id="stat-ledger-n">—</div><div class="stat-label">已完成完整人工目視覆核的熱點（深度驗證台帳）</div></div>
-      <div><div class="stat-num" id="stat-ok-n">—</div><div class="stat-label">同時「對位成功＋熱區集中」乾淨通過的熱點</div></div>
+      <div><div class="stat-num">105,131</div><div class="stat-label">水保署影像平台紀錄總數（2026-09-22 即時查詢；有座標 80,597 筆，其中災害事件 30,196 筆）</div></div>
+      <div><div class="stat-num">100</div><div class="stat-label">依獨立災害事件數排序後的長期複發熱點</div></div>
+      <div><div class="stat-num" id="stat-ledger-n">—</div><div class="stat-label">已完成人工目視覆核的熱點（新資料集）</div></div>
+      <div><div class="stat-num" id="stat-ok-n">—</div><div class="stat-label">人工覆核確認可信的熱點</div></div>
       <div><div class="stat-num" id="stat-tier-a-n" style="color:var(--accent);">—</div><div class="stat-label">巡查優先級 <strong>A 級（優先現勘）</strong>——依複發性／近期變遷／地形起伏／資料信心自動分級</div></div>
     </div>
     <div class="data-status" id="data-status"></div>
     <p class="disclaimer-line">此站所有自動化分數皆為<strong>影像變遷候選排序</strong>用途，不代表災害已確定發生或其嚴重程度——僅
-      11 個熱點經過完整人工目視覆核（見「深度驗證台帳」），其餘 89 個熱點僅有自動篩選分數，尚待覆核。</p>
+      目前 100 個熱點皆尚未人工覆核（2026-09-22 資料重建後台帳已清空），自動分數僅供候選排序。</p>
 
     <div class="eventstats">
       <div class="eventstats-head">
-        <h3 style="margin:0;">76,773 筆影像紀錄統計與分類</h3>
+        <h3 style="margin:0;">80,597 筆有座標紀錄統計與分類</h3>
         <span class="note" id="events-note"></span>
       </div>
       <div class="stat-bars">
         <div><div style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">依事件分類（PhotoType）</div><div id="bars-phototype"></div></div>
-        <div><div style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">依資料建檔年份</div><div id="bars-year"></div></div>
+        <div><div style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">依災害年份（DisasterYear）</div><div id="bars-year"></div></div>
       </div>
     </div>
 
@@ -836,10 +838,10 @@
       </div>
     </div>
     <div class="map-legend">
-      <span><span class="dot" style="background:#3E7A5C;"></span>已深度驗證・可信</span>
-      <span><span class="dot" style="background:#9C7A1E;"></span>已深度驗證・需複查</span>
-      <span><span class="dot" style="background:#7A3A38;"></span>已深度驗證・偽陽性/不可信</span>
-      <span><span class="dot" style="background:#B85C1E;"></span>僅完成快篩，尚未深度驗證</span>
+      <span><span class="dot" style="background:#3E7A5C;"></span>已人工覆核・可信</span>
+      <span><span class="dot" style="background:#9C7A1E;"></span>已人工覆核・需複查</span>
+      <span><span class="dot" style="background:#7A3A38;"></span>已人工覆核・偽陽性/不可信</span>
+      <span><span class="dot" style="background:#B85C1E;"></span>尚未人工覆核（Sentinel-2 自動比對）</span>
       <span id="events-truncate-note" style="margin-left:auto;"></span>
     </div>
 
@@ -867,7 +869,7 @@
   <!-- ── 熱點總覽 ───────────────────────────── -->
   <section id="tab-hotspots" class="tabpanel">
     <h2>巡查清單——Top 100 熱點與巡查優先級</h2>
-    <p class="sec-sub">點欄名可排序，點一列載入該熱點目前已有的變遷比對面板（優先深度 25 期資料，沒有才用快篩 8 期資料）。「巡查優先級」由複發年數、近期變遷分數、地形起伏與資料信心四項透明規則算出，點一列可看完整拆解（詳見詳情面板頂端的證據卡）。</p>
+    <p class="sec-sub">點欄名可排序，點一列載入該熱點的 Sentinel-2 年度比對面板（2017 起每年一期）。「巡查優先級」由複發年數、近期變遷分數、地形起伏與資料信心四項透明規則算出，點一列可看完整拆解（詳見詳情面板頂端的證據卡）。</p>
     <div class="tier-filter" id="tier-filter">
       <span style="font-family:var(--font-mono); font-size:11px; color:var(--muted); text-transform:uppercase;">依優先級篩選</span>
       <button data-tier="" class="active">全部</button>
@@ -886,7 +888,7 @@
           <tr>
             <th class="num" data-key="rank">名次</th>
             <th data-key="location">地點</th>
-            <th class="num" data-key="n_distinct_years">複發年數</th>
+            <th class="num" data-key="n_independent_events" title="同一災害的後續追蹤與重複拍攝已合併">獨立事件數</th>
             <th data-key="method">比對方法</th>
             <th class="num" data-key="change_score" title="自動篩選/排序用分數，非人工驗證結果——僅供排序，不代表災害確定性或嚴重度">自動篩選分數</th>
             <th data-key="tier">巡查優先級</th>
@@ -906,8 +908,8 @@
         <p class="vd-sub" id="validation-prov"></p>
       </div>
 
-      <h2>深度驗證台帳——為什麼不能只信一個分數</h2>
-      <p class="sec-sub">11 個熱點做完整目視覆核，目前沒有一個能在影像上明確指認為乾淨的真實命中（原列「可信」的 #44 松鶴已於 2026-09-22 撤回判定、改列需複查）。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
+      <h2>人工覆核台帳——為什麼不能只信一個分數</h2>
+      <p class="sec-sub">台帳記錄每個熱點的人工目視覆核結論。2026-09-22 資料重建後已清空，新熱點待覆核；下方「已知系統性陷阱清單」是舊版 11 筆覆核累積的教訓，覆核新熱點時請逐項檢查。</p>
       <div class="ledger-list" id="ledger-list"></div>
       <p style="margin-top:20px; font-size:13px; color:var(--muted); max-width:70ch;">已知系統性陷阱清單：<strong>瀰漫式雜訊灌水</strong>（季節/紋理差異拉高分數卻無集中訊號）、<strong>對位失敗偽陽性</strong>（兩期框取範圍不一致被誤讀成地貌劇變）、<strong>劣質模糊基準影像</strong>（GE 早期渲染在特定日期會退化成無法使用的模糊佔位圖）、<strong>雲影誤判</strong>、<strong>跨世代影像色調差異灌水</strong>（航照 vs 現代衛星色調不同）。每一項都是在真實資料上發現並記錄下來的，可作為未來任何政府單位導入類似比對工具時的現成 QC 檢查清單。</p>
     </div>
@@ -954,7 +956,7 @@
 
 <footer>
   <span>地景複發熱點觀測站 · 台灣專用 · 所有排序皆為候選建議與證據鏈，非 AI 自動判定災害結果</span>
-  <span>資料截至 2026-09-04 · 公開展示版：11 個熱點含完整比對面板，其餘 89 個熱點提供中繼資料與巡查優先級</span>
+  <span>資料截至 2026-09-22 · 100 個熱點皆附 Sentinel-2 年度比對面板與巡查優先級</span>
 </footer>
 
 <script>
@@ -971,7 +973,7 @@ let tierFilter = "";
 
 const TIER_ACTION = { A: "優先現勘", B: "建議複核", C: "持續監測", D: "資料待確認" };
 const TIER_EXPLAIN = {
-  A: "歷史複發次數高、近期有明顯且可信的變遷證據——建議優先派工現勘或無人機複核。",
+  A: "獨立災害事件多、近期影像有明顯變化候選訊號且資料品質足以支持——列為優先確認候選：先人工覆核，確認後派工現勘或無人機複核。",
   B: "有變遷候選，但資料信心不足以直接判定（尚未人工覆核、或自動對位不確定）——建議先補人工判讀再決定是否派工。",
   C: "歷史複發次數高，但近期影像未見可靠的變遷證據——建議維持定期監測，暫不需優先派工。",
   D: "自動篩選分數或對位資訊不足，無法支持任何判斷——不代表風險較低，只代表目前資料不足以判讀。",
@@ -1025,22 +1027,27 @@ async function loadValidation(){
   try{ v = await api("/api/validation"); }
   catch(e){ g.innerHTML = `<div class="vd-cell">量化驗證載入失敗：${e.message}</div>`; return; }
   const n = x => (x === null || x === undefined) ? "—" : (typeof x === "number" ? x.toLocaleString() : x);
-  const rec = Object.entries(v.hotspots.recurrence_years_distribution).map(([k,c]) => `${k} 年 ×${c}`).join("、");
+  const pct = x => (x === null || x === undefined) ? "—" : (x * 100).toFixed(0) + "%";
+  const rec = Object.entries(v.hotspots.recurrence_years_distribution).map(([k,c]) => `${k} 件 ×${c}`).join("、");
   const bad = Object.entries(v.human_review.verdicts).filter(([k]) => !["可信","需複查"].includes(k)).map(([k,c]) => `${k} ${c}`).join("、");
   const t = v.decision.tiers;
   g.innerHTML = `
     <div class="vd-cell"><h4>事件資料處理</h4><div class="vd-big">${n(v.events.deduped_events)}</div>
       <div class="vd-sub">筆去重影像紀錄（${v.events.raw_photos_note}）<br>${v.events.dedup_rule}</div></div>
     <div class="vd-cell"><h4>熱點生成</h4><div class="vd-big">${n(v.hotspots.n)}</div>
-      <div class="vd-sub">個複發熱點；${v.hotspots.rule}<br>複發年數分布：${rec}</div></div>
+      <div class="vd-sub">個複發熱點；${v.hotspots.rule}<br>原始 ${n(v.hotspots.records_before_dedup)} 筆紀錄 → ${n(v.hotspots.independent_events)} 件獨立事件；獨立事件數分布：${rec}</div></div>
     <div class="vd-cell"><h4>影像資料</h4><div class="vd-big">${n(v.imagery.with_multi_period)} / ${n(v.imagery.n)}</div>
       <div class="vd-sub">熱點具多期歷史影像；每點 ${n(v.imagery.periods_min)}–${n(v.imagery.periods_max)} 期（中位數 ${n(v.imagery.periods_median)}），
       時間跨度中位數 ${n(v.imagery.span_years_median)} 年、最長 ${n(v.imagery.span_years_max)} 年</div></div>
     <div class="vd-cell"><h4>對位品質</h4><div class="vd-big">${n(v.alignment.ok)} / ${n(v.alignment.uncertain)} / ${n(v.alignment.no_data)}</div>
       <div class="vd-sub">成功／不確定／無資料（${v.alignment.basis}）；未經人工覆核且對位不確定者，資料信心判為「低」、落 D 級</div></div>
     <div class="vd-cell"><h4>人工覆核</h4><div class="vd-big">${n(v.human_review.reviewed)}</div>
-      <div class="vd-sub">個熱點完成目視覆核<br>可信 ${v.human_review.trusted}、需複查 ${v.human_review.needs_recheck}、誤報／不可信 ${v.human_review.false_or_untrusted}（${bad}）</div></div>
-    <div class="vd-cell"><h4>決策輸出</h4><div class="vd-big" style="font-size:20px;">A ${t.A}・B ${t.B}・C ${t.C}・D ${t.D}</div>
+      <div class="vd-sub">個熱點完成目視覆核<br>${v.human_review.reviewed ? `可信 ${v.human_review.trusted}、需複查 ${v.human_review.needs_recheck}、誤報／不可信 ${v.human_review.false_or_untrusted}${bad ? `（${bad}）` : ""}` : "2026-09-22 資料重建後台帳已清空，新熱點待人工覆核；未覆核熱點的資料信心最高為「中」"}</div></div>
+    <div class="vd-cell"><h4>覆核成效（評審關注）</h4><div class="vd-big">${n(v.review_effect.a_candidates_reviewed)} / ${n(v.review_effect.a_candidates_auto)}</div>
+      <div class="vd-sub">自動 A 級候選已人工覆核數。覆核後降級 ${n(v.review_effect.downgraded_after_review)}、升級 ${n(v.review_effect.upgraded_after_review)}；
+      A 級精確率 ${pct(v.review_effect.precision_auto_a)}、誤報率 ${pct(v.review_effect.false_positive_auto_a)}；
+      只依複發排序的基準精確率 ${pct(v.review_effect.precision_baseline)}（覆核不足時顯示「—」）</div></div>
+    <div class="vd-cell" style="grid-column:span 2;"><h4>決策輸出</h4><div class="vd-big" style="font-size:20px;">A ${t.A}・B ${t.B}・C ${t.C}・D ${t.D}</div>
       <div class="vd-sub">可匯出巡查任務 ${v.decision.exportable_tasks} 處（${v.decision.exportable_note}）</div></div>
     <div class="vd-cell" style="grid-column:1/-1;"><h4>系統可靠性</h4>
       <div class="vd-sub">完全離線可用：${v.reliability.offline_core.join("、")}${v.reliability.demo_mode ? "（目前為離線展示模式）" : ""}</div>
@@ -1073,7 +1080,7 @@ function renderEvidenceCard(rank){
         <span class="ec-action">${TIER_EXPLAIN[p.tier]}</span>
       </div>
       <div class="ec-factors">
-        <div class="ec-factor"><div class="ec-flabel">複發年數</div><div class="ec-fvalue">${f.recurrence.value ?? "—"}</div><div class="ec-fband ${RISK_BAND_CLASS[f.recurrence.band]}">${f.recurrence.band}</div></div>
+        <div class="ec-factor"><div class="ec-flabel">獨立災害事件</div><div class="ec-fvalue">${f.recurrence.value ?? "—"}<span style="font-size:11px; color:var(--muted);"> 件（${f.recurrence.n_distinct_years ?? "—"} 個年份、原始 ${f.recurrence.n_records ?? "—"} 筆）</span></div><div class="ec-fband ${RISK_BAND_CLASS[f.recurrence.band]}">${f.recurrence.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">近期變遷分數</div><div class="ec-fvalue">${score}</div><div class="ec-fband ${RISK_BAND_CLASS[f.recent_change.band]}">${f.recent_change.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">地形起伏（0.3km 內）</div><div class="ec-fvalue">${relief}</div><div class="ec-fband ${RISK_BAND_CLASS[f.terrain_relief_m.band]}">${f.terrain_relief_m.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">資料信心</div><div class="ec-fvalue" style="font-size:12px;">${confSourceLabel}</div><div class="ec-fband ${CONF_BAND_CLASS[f.confidence.band]}">${f.confidence.band}</div></div>
@@ -1181,6 +1188,7 @@ function handleDeepLink(){
   const view = new URLSearchParams(location.search).get("view");
   if(view === "categories"){
     switchTab("dashboard");
+    document.getElementById("ext-categories").open = true;
     setTimeout(() => {
       const el = document.getElementById("guide-grid");
       if(!el) return;
@@ -2047,7 +2055,7 @@ function makeHotspotPopup(h){
   const box = document.createElement("div");
   box.className = "hotspot-popup";
   const info = document.createElement("div");
-  info.innerHTML = `<strong>#${h.rank} ${h.county||""}${h.district||""}</strong><br>複發 ${h.n_distinct_years||"?"} 年 · 自動篩選分數 ${h.change_score ?? "—"}`;
+  info.innerHTML = `<strong>#${h.rank} ${h.county||""}${h.district||""}</strong><br>獨立災害事件 ${h.n_independent_events ?? h.n_distinct_years ?? "?"} 件 · 自動篩選分數 ${h.change_score ?? "—"}`;
   box.appendChild(info);
 
   const actions = document.createElement("div");
@@ -2085,14 +2093,14 @@ function renderMap(){
 
 function renderStats(){
   document.getElementById("stat-ledger-n").textContent = LEDGER.length;
-  document.getElementById("stat-ok-n").textContent = LEDGER.filter(l=>l.verdict==="ok").length + "/" + LEDGER.length;
+  document.getElementById("stat-ok-n").textContent = LEDGER.filter(l=>l.verdict==="ok").length;
   const nA = Object.values(PRIORITY_BY_RANK).filter(p=>p.tier==="A").length;
   document.getElementById("stat-tier-a-n").textContent = nA;
 }
 
 // ── 決策首頁：巡查優先級總覽（2026-09-06 改版）───────────────────────────
 const PC_TIER_DESC = {
-  A: "複發性高＋近期有可信變遷證據", B: "有候選訊號，信心不足需人工複核",
+  A: "複發性高＋近期明顯變化候選（待人工確認）", B: "有候選訊號，信心不足需人工複核",
   C: "複發性高但近期無可靠變遷證據", D: "資料不足，無法支持任何判斷",
 };
 function renderPriorityTiers(){
@@ -2113,20 +2121,13 @@ document.getElementById("pc-goto-a").onclick = () => {
   if(btnA) btnA.click();
 };
 
-// ── 決策首頁：兩個真實案例（候選排序＋證據鏈的具體示範，非精心挑選的好結果）──
-// 選案準則（誠實記錄）：原案例一 #44 松鶴（「真實命中」）於 2026-09-22 再次目視覆核時，影像上
-// 看不出可明確指認的變化，已撤回判定、改列需複查並自首頁移除——不以無法在影像上指認的案例宣稱命中。
-// 80＝全部 100 熱點中自動分數最高（0.978），但目視覆核後誠實標示「熱區近乎滿版，可信度存疑」
-//   ——刻意選它是要示範「分數最高≠最可信」，這正是「候選排序≠AI自動判定」的核心論點；
-// 48＝分數也很高（0.906）但目視覆核後確認是對位失敗造成的偽陽性（老漁港不可能 7 年城市化）。
-const PROOF_CASES = [
-  { rank: 80, kicker: "案例一・分數最高≠最可信", cls: "pf-warn",
-    explain: "自動分數 0.978，是全部 100 個熱點中最高分——但目視覆核發現熱區幾乎佈滿整張畫面，不是集中訊號，可信度存疑。分數本身不能直接採信，需搭配熱區集中度一起判讀。" },
-  { rank: 48, kicker: "案例二・真實誤報", cls: "pf-bad",
-    explain: "自動分數高達 0.906，但宜蘭蘇澳的老漁港不可能在 7 年內完成城市化——目視覆核確認是兩期影像框取範圍不一致造成的偽陽性，非真實地貌變化。" },
-];
+// ── 決策首頁：人工覆核案例（候選排序＋證據鏈的具體示範）──
+// 案例必須以人工覆核結論為依據。2026-09-22 熱點依平台即時資料重建、台帳清空後尚無覆核結論，
+// 因此清單為空、首頁案例區自動隱藏；覆核完成後在此加入 { rank, kicker, cls, explain }。
+const PROOF_CASES = [];
 function renderProofCards(){
   const wrap = document.getElementById("proof-grid");
+  wrap.style.display = PROOF_CASES.length ? "" : "none";
   wrap.innerHTML = PROOF_CASES.map(pc => {
     const l = LEDGER_BY_RANK[pc.rank];
     if(!l) return "";
@@ -2196,7 +2197,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ── 熱點總覽表格 ──────────────────────────────────────
-function methodLabel(m){ return m === "deephist25" ? "深度 25 期" : m === "quickscan8" ? "快篩 8 期" : (m||"—"); }
+function methodLabel(m){ return m === "sentinel2" ? "Sentinel-2 年度" : m === "deephist25" ? "GE 深度 25 期" : m === "quickscan8" ? "GE 快篩 8 期" : (m||"—"); }
 
 function sortedHotspots(){
   let arr = [...HOTSPOTS];
@@ -2223,7 +2224,7 @@ function renderHotspotsTable(){
     tr.innerHTML = `
       <td class="rank num">${h.rank}</td>
       <td>${h.county||""}${h.district||""}</td>
-      <td class="num">${h.n_distinct_years ?? "—"}</td>
+      <td class="num">${h.n_independent_events ?? h.n_distinct_years ?? "—"}</td>
       <td>${methodLabel(h.method)}</td>
       <td class="num"><span class="score-cell"><span class="score-track"><span class="score-fill" style="width:${scorePct}%"></span></span>${h.change_score != null ? h.change_score.toFixed(3) : "—"}</span></td>
       <td>${tierBadgeHtml(h.rank)}</td>
@@ -2257,7 +2258,9 @@ document.querySelectorAll("#tier-filter button").forEach(btn=>{
 // ── 深度驗證台帳 ──────────────────────────────────────
 function renderLedger(){
   const list = document.getElementById("ledger-list");
-  list.innerHTML = "";
+  list.innerHTML = LEDGER.length ? "" :
+    `<div class="ledger-row" style="cursor:default;"><div class="note">2026-09-22 熱點依平台即時資料重建後，舊版 11 筆覆核（屬舊熱點位置）已全部清空；
+     新的 100 個熱點尚未人工覆核。覆核完成的熱點會列在這裡，覆核結論優先於自動分數。</div></div>`;
   for(const l of LEDGER){
     const row = document.createElement("div");
     row.className = "ledger-row";
@@ -2511,7 +2514,7 @@ async function renderDataStatus(){
   };
   box.innerHTML = [
     row("100 熱點清單", s.top100_consolidated),
-    row("深度驗證台帳", s.ledger),
+    row("人工覆核台帳", s.ledger),
     row("原始事件", s.events_trimmed),
   ].join("");
 }

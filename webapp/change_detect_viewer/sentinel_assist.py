@@ -106,7 +106,7 @@ def search_scenes(lat, lon, start, end, max_cloud=40.0, half_m=2500.0):
     url = STAC_SEARCH + "?" + urlencode(params)
     best = {}
     for _ in range(15):  # 分頁上限（每頁 100，3 年區間單一 tile 約 200 筆）
-        body, _ct = _http_get(url, timeout=45)
+        body, _ct = _http_get(url, timeout=90)   # 目錄服務偶爾很慢（實測單窗口 10 秒以上）
         doc = json.loads(body)
         for f in doc.get("features", []):
             p = f.get("properties", {})
@@ -135,10 +135,10 @@ def select_dates(scenes, n):
 
 
 # ── 取像與品質檢查 ────────────────────────────────────────────────────────
-def _fetch_tile(iid, ymd, layer, row, col):
+def _fetch_tile(iid, ymd, layer, row, col, matrix=TILE_MATRIX):
     d = f"{ymd[:4]}-{ymd[4:6]}-{ymd[6:]}"
     q = {"service": "WMTS", "request": "GetTile", "version": "1.0.0", "style": "default",
-         "format": "image/jpeg", "tilematrixset": "PopularWebMercator512", "tilematrix": TILE_MATRIX,
+         "format": "image/jpeg", "tilematrixset": "PopularWebMercator512", "tilematrix": matrix,
          "tilerow": row, "tilecol": col, "time": f"{d}/{d}", "layer": layer,
          # 不帶 maxcc 時此服務套用預設雲量上限，超過的日期整張回黑圖（實測 2025-10-11）；
          # 雲量篩選改由 STAC 場景雲量 + AOI 內亮雲/離群檢查負責
@@ -172,10 +172,40 @@ def mask_watermark(tile):
     return tile
 
 
-def fetch_image(lat, lon, half_m, ymd, layer="TRUE_COLOR"):
+def _fill_watermark(iid, ymd, layer, r, c, tile, max_up=3):
+    """用上層（較粗）圖磚補回本圖磚左下角被浮水印遮住的像素。本層 tile(r,c) 是 matrix 14−k 層
+    tile(r>>k, c>>k) 的一個子區塊；上層的浮水印也在「它自己」的左下角，只有子區塊剛好位於上層左下角
+    時才會重疊，否則就能用上層放大 2^k 倍的像素補上（z13 為 19 m/px、z12 為 38 m/px）。
+    補法只取決於圖磚位置、與日期無關，各期同一處永遠用同一層補，SSIM 不會因此產生假變化。
+    回傳仍未補到的像素比例（0 = 全部補上）。"""
+    bw, bh = WATERMARK_BOX_PX
+    y0, x1 = TILE_PX - bh, bw
+    todo = np.ones((bh, bw), bool)
+    ys, xs = np.mgrid[y0:TILE_PX, 0:x1]
+    for k in range(1, max_up + 1):
+        s = 2 ** k
+        oy, ox = (r % s) * TILE_PX, (c % s) * TILE_PX
+        py, px = (oy + ys) // s, (ox + xs) // s                    # 對應到上層圖磚的像素
+        ok = todo & ~((py >= y0) & (px < x1))                        # 上層浮水印範圍內不能用
+        if not ok.any():
+            continue
+        parent = _fetch_tile(iid, ymd, layer, r // s, c // s, TILE_MATRIX - k)
+        up = cv2.resize(parent, None, fx=s, fy=s, interpolation=cv2.INTER_LINEAR)
+        patch = up[oy + y0:oy + TILE_PX, ox:ox + x1]
+        region = tile[y0:, :x1]
+        region[ok] = patch[ok]
+        todo &= ~ok
+        if not todo.any():
+            break
+    return float(todo.mean())
+
+
+def fetch_image(lat, lon, half_m, ymd, layer="TRUE_COLOR", fill_watermark=False):
     """取回單日影像：拼接 WMTS 512 圖磚並裁成目標範圍。回傳 (BGR uint8, bounds_3857)，
     bounds 為實際裁切後的 (minx, miny, maxx, maxy)——以整數像素對齊，供世界檔使用。
-    同一座標的各期日期結果範圍完全相同（只取決於 lat/lon/half_m）。"""
+    同一座標的各期日期結果範圍完全相同（只取決於 lat/lon/half_m）。
+    fill_watermark=True 時，浮水印遮罩區改用上層圖磚補回（見 _fill_watermark），代價是每張受影響
+    圖磚多 1–2 個請求；補回區的解析度較粗（19–38 m/px），但各期一致。"""
     if layer not in LAYERS:
         raise ValueError(f"layer 必須是 {LAYERS}")
     iid = instance_id()
@@ -194,6 +224,8 @@ def fetch_image(lat, lon, half_m, ymd, layer="TRUE_COLOR"):
     for r in range(r0, r1 + 1):
         for c in range(c0, c1 + 1):
             t = mask_watermark(_fetch_tile(iid, ymd, layer, r, c))
+            if fill_watermark:
+                _fill_watermark(iid, ymd, layer, r, c, t)
             mosaic[(r - r0) * TILE_PX:(r - r0 + 1) * TILE_PX, (c - c0) * TILE_PX:(c - c0 + 1) * TILE_PX] = t
     crop = mosaic[iy0 - r0 * TILE_PX:iy1 - r0 * TILE_PX, ix0 - c0 * TILE_PX:ix1 - c0 * TILE_PX]
     bounds = (ix0 * p - world / 2, world / 2 - iy1 * p, ix1 * p - world / 2, world / 2 - iy0 * p)

@@ -12,3 +12,7 @@ tile_cache/
 # 本機專用憑證（不進 repo；HF 用 Space secret）
 .sentinel_instance_id
 data/dtm/
+
+# Sentinel-2 覆驗的原始影格與四聯合成圖（大檔）；公開版只帶 JSON、世界檔與網頁用小面板
+data/ge_captures/ardswc_top*/*.png
+data/ge_captures/ardswc_top*/_change_detect/*.png

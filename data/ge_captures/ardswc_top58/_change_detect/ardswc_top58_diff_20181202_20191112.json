@@ -1,0 +1,223 @@
+{
+  "site": "ardswc_top58",
+  "date_a": "20181202",
+  "date_b": "20191112",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top58\\ardswc_top58_gmap_20181202.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top58\\ardswc_top58_gmap_20191112.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 346,
+    "height": 344
+  },
+  "panels": {
+    "before": "ardswc_top58_diff_20181202_20191112_before.jpg",
+    "after": "ardswc_top58_diff_20181202_20191112_after.jpg",
+    "overlay": "ardswc_top58_diff_20181202_20191112_overlay.jpg",
+    "heat": "ardswc_top58_diff_20181202_20191112_heat.jpg",
+    "combo": "ardswc_top58_diff_20181202_20191112.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.21,
+      0.15
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.9665
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.9405,
+  "overall_change_fraction": 0.0052,
+  "n_regions": 5,
+  "regions": [
+    {
+      "bbox_px": [
+        146,
+        44,
+        19,
+        16
+      ],
+      "area_px": 218,
+      "mean_change_score": 0.6137,
+      "centroid_px": [
+        154.9,
+        51.2
+      ],
+      "centroid_lonlat": [
+        120.7778313,
+        23.716694
+      ],
+      "bbox_lonlat": [
+        [
+          120.7774472,
+          23.716977
+        ],
+        [
+          120.7782626,
+          23.716977
+        ],
+        [
+          120.7782626,
+          23.7163483
+        ],
+        [
+          120.7774472,
+          23.7163483
+        ]
+      ]
+    },
+    {
+      "bbox_px": [
+        91,
+        121,
+        13,
+        13
+      ],
+      "area_px": 118,
+      "mean_change_score": 0.8734,
+      "centroid_px": [
+        96.7,
+        127.5
+      ],
+      "centroid_lonlat": [
+        120.7753295,
+        23.7136972
+      ],
+      "bbox_lonlat": [
+        [
+          120.7750869,
+          23.7139516
+        ],
+        [
+          120.7756448,
+          23.7139516
+        ],
+        [
+          120.7756448,
+          23.7134408
+        ],
+        [
+          120.7750869,
+          23.7134408
+        ]
+      ]
+    },
+    {
+      "bbox_px": [
+        136,
+        23,
+        11,
+        9
+      ],
+      "area_px": 86,
+      "mean_change_score": 0.8331,
+      "centroid_px": [
+        141.0,
+        26.9
+      ],
+      "centroid_lonlat": [
+        120.7772331,
+        23.7176491
+      ],
+      "bbox_lonlat": [
+        [
+          120.7770181,
+          23.7178021
+        ],
+        [
+          120.7774901,
+          23.7178021
+        ],
+        [
+          120.7774901,
+          23.7174485
+        ],
+        [
+          120.7770181,
+          23.7174485
+        ]
+      ]
+    },
+    {
+      "bbox_px": [
+        57,
+        190,
+        9,
+        10
+      ],
+      "area_px": 62,
+      "mean_change_score": 0.5127,
+      "centroid_px": [
+        61.6,
+        194.3
+      ],
+      "centroid_lonlat": [
+        120.7738236,
+        23.7110712
+      ],
+      "bbox_lonlat": [
+        [
+          120.7736278,
+          23.7112404
+        ],
+        [
+          120.774014,
+          23.7112404
+        ],
+        [
+          120.774014,
+          23.7108475
+        ],
+        [
+          120.7736278,
+          23.7108475
+        ]
+      ]
+    },
+    {
+      "bbox_px": [
+        187,
+        72,
+        8,
+        8
+      ],
+      "area_px": 54,
+      "mean_change_score": 0.6766,
+      "centroid_px": [
+        190.8,
+        75.6
+      ],
+      "centroid_lonlat": [
+        120.7793705,
+        23.7157335
+      ],
+      "bbox_lonlat": [
+        [
+          120.7792068,
+          23.7158769
+        ],
+        [
+          120.7795501,
+          23.7158769
+        ],
+        [
+          120.7795501,
+          23.7155625
+        ],
+        [
+          120.7792068,
+          23.7155625
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

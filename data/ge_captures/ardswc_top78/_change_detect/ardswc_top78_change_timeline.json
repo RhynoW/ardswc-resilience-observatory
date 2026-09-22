@@ -1,54 +1,73 @@
 {
   "site": "ardswc_top78",
+  "source": "sentinel-2",
+  "resolution_m": 10.0,
+  "half_m": 750.0,
+  "date_rule": "每年一期：乾季窗口（前一年 11/1–當年 3/31）雲量最低場景，無則同年 4–10 月",
+  "outliers_dropped": [],
   "pairs": [
     {
-      "date_a": "20200502",
-      "date_b": "20210302",
-      "overall_change_fraction": 0.7771,
-      "mean_ssim": 0.448,
-      "n_regions": 30
+      "date_a": "20170215",
+      "date_b": "20180312",
+      "overall_change_fraction": 0.055,
+      "mean_ssim": 0.8364,
+      "n_regions": 14
     },
     {
-      "date_a": "20210302",
-      "date_b": "20210707",
-      "overall_change_fraction": 0.8743,
-      "mean_ssim": 0.3675,
-      "n_regions": 30
+      "date_a": "20180312",
+      "date_b": "20181202",
+      "overall_change_fraction": 0.0477,
+      "mean_ssim": 0.8278,
+      "n_regions": 13
     },
     {
-      "date_a": "20210707",
-      "date_b": "20210714",
-      "overall_change_fraction": 0.7261,
-      "mean_ssim": 0.4972,
-      "n_regions": 30
+      "date_a": "20181202",
+      "date_b": "20200225",
+      "overall_change_fraction": 0.0705,
+      "mean_ssim": 0.8627,
+      "n_regions": 11
     },
     {
-      "date_a": "20210714",
-      "date_b": "20211106",
-      "overall_change_fraction": 0.8716,
-      "mean_ssim": 0.371,
-      "n_regions": 30
+      "date_a": "20200225",
+      "date_b": "20210115",
+      "overall_change_fraction": 0.0312,
+      "mean_ssim": 0.8999,
+      "n_regions": 10
     },
     {
-      "date_a": "20211106",
-      "date_b": "20220822",
-      "overall_change_fraction": 0.0,
-      "mean_ssim": 1.0,
-      "n_regions": 0
+      "date_a": "20210115",
+      "date_b": "20220311",
+      "overall_change_fraction": 0.0646,
+      "mean_ssim": 0.8385,
+      "n_regions": 12
     },
     {
-      "date_a": "20220822",
-      "date_b": "20230224",
-      "overall_change_fraction": 0.4956,
-      "mean_ssim": 0.2953,
-      "n_regions": 30
+      "date_a": "20220311",
+      "date_b": "20230301",
+      "overall_change_fraction": 0.1669,
+      "mean_ssim": 0.7011,
+      "n_regions": 4
     },
     {
-      "date_a": "20230224",
-      "date_b": "20250101",
-      "overall_change_fraction": 0.0442,
-      "mean_ssim": 0.7554,
-      "n_regions": 30
+      "date_a": "20230301",
+      "date_b": "20240214",
+      "overall_change_fraction": 0.1832,
+      "mean_ssim": 0.6819,
+      "n_regions": 4
+    },
+    {
+      "date_a": "20240214",
+      "date_b": "20250325",
+      "overall_change_fraction": 0.1393,
+      "mean_ssim": 0.7449,
+      "n_regions": 8
+    },
+    {
+      "date_a": "20250325",
+      "date_b": "20260119",
+      "overall_change_fraction": 0.0594,
+      "mean_ssim": 0.8306,
+      "n_regions": 8
     }
   ]
 }

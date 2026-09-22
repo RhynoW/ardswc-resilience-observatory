@@ -1,0 +1,79 @@
+{
+  "site": "ardswc_top65",
+  "date_a": "20191117",
+  "date_b": "20210115",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top65\\ardswc_top65_gmap_20191117.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top65\\ardswc_top65_gmap_20210115.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 344,
+    "height": 344
+  },
+  "panels": {
+    "before": "ardswc_top65_diff_20191117_20210115_before.jpg",
+    "after": "ardswc_top65_diff_20191117_20210115_after.jpg",
+    "overlay": "ardswc_top65_diff_20191117_20210115_overlay.jpg",
+    "heat": "ardswc_top65_diff_20191117_20210115_heat.jpg",
+    "combo": "ardswc_top65_diff_20191117_20210115.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.28,
+      -0.37
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.9028
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.928,
+  "overall_change_fraction": 0.01,
+  "n_regions": 1,
+  "regions": [
+    {
+      "bbox_px": [
+        125,
+        132,
+        50,
+        45
+      ],
+      "area_px": 1136,
+      "mean_change_score": 0.6635,
+      "centroid_px": [
+        148.0,
+        152.7
+      ],
+      "centroid_lonlat": [
+        121.0026683,
+        23.23988
+      ],
+      "bbox_lonlat": [
+        [
+          121.0016799,
+          23.2406955
+        ],
+        [
+          121.0038257,
+          23.2406955
+        ],
+        [
+          121.0038257,
+          23.238921
+        ],
+        [
+          121.0016799,
+          23.238921
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

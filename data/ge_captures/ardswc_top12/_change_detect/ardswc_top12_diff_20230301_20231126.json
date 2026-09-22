@@ -1,0 +1,79 @@
+{
+  "site": "ardswc_top12",
+  "date_a": "20230301",
+  "date_b": "20231126",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top12\\ardswc_top12_gmap_20230301.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top12\\ardswc_top12_gmap_20231126.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 344,
+    "height": 344
+  },
+  "panels": {
+    "before": "ardswc_top12_diff_20230301_20231126_before.jpg",
+    "after": "ardswc_top12_diff_20230301_20231126_after.jpg",
+    "overlay": "ardswc_top12_diff_20230301_20231126_overlay.jpg",
+    "heat": "ardswc_top12_diff_20230301_20231126_heat.jpg",
+    "combo": "ardswc_top12_diff_20230301_20231126.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.15,
+      0.08
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.8047
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.9075,
+  "overall_change_fraction": 0.0014,
+  "n_regions": 1,
+  "regions": [
+    {
+      "bbox_px": [
+        158,
+        129,
+        11,
+        5
+      ],
+      "area_px": 53,
+      "mean_change_score": 0.4761,
+      "centroid_px": [
+        163.2,
+        131.0
+      ],
+      "centroid_lonlat": [
+        120.6136475,
+        23.0977534
+      ],
+      "bbox_lonlat": [
+        [
+          120.6134248,
+          23.0978323
+        ],
+        [
+          120.6138968,
+          23.0978323
+        ],
+        [
+          120.6138968,
+          23.0976349
+        ],
+        [
+          120.6134248,
+          23.0976349
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

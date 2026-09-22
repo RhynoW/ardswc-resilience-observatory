@@ -1,902 +1,1100 @@
 [
-  {
-    "rank": 1,
-    "relief_m": 64.4,
-    "span_km": 0.3,
-    "lat": 23.73311,
-    "lon": 120.8551,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 2,
-    "relief_m": 47.4,
-    "span_km": 0.3,
-    "lat": 24.00314,
-    "lon": 121.08589,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 3,
-    "relief_m": 110.5,
-    "span_km": 0.3,
-    "lat": 23.0113,
-    "lon": 120.67108,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 4,
-    "relief_m": 65.5,
-    "span_km": 0.3,
-    "lat": 23.37296,
-    "lon": 120.5638,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 5,
-    "relief_m": 68.3,
-    "span_km": 0.3,
-    "lat": 24.02258,
-    "lon": 121.18713,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 6,
-    "relief_m": 50.3,
-    "span_km": 0.3,
-    "lat": 24.02226,
-    "lon": 121.18704,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 7,
-    "relief_m": 15.8,
-    "span_km": 0.3,
-    "lat": 22.98223,
-    "lon": 120.65003,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 8,
-    "relief_m": 41.9,
-    "span_km": 0.3,
-    "lat": 23.06271,
-    "lon": 120.59204,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 9,
-    "relief_m": 71.8,
-    "span_km": 0.3,
-    "lat": 23.575,
-    "lon": 120.87677,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 10,
-    "relief_m": 120.7,
-    "span_km": 0.3,
-    "lat": 22.90997,
-    "lon": 120.67988,
-    "computed_at": "2026-09-04 15:08 UTC",
-    "error": null
-  },
-  {
-    "rank": 11,
-    "relief_m": 31.1,
-    "span_km": 0.3,
-    "lat": 24.00376,
-    "lon": 121.086,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 12,
-    "relief_m": 84.4,
-    "span_km": 0.3,
-    "lat": 23.01091,
-    "lon": 120.66902,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 13,
-    "relief_m": 59.1,
-    "span_km": 0.3,
-    "lat": 23.73318,
-    "lon": 120.85604,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 14,
-    "relief_m": 30.4,
-    "span_km": 0.3,
-    "lat": 22.03911,
-    "lon": 120.81507,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 15,
-    "relief_m": 53.5,
-    "span_km": 0.3,
-    "lat": 22.98213,
-    "lon": 120.65403,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 16,
-    "relief_m": 59.7,
-    "span_km": 0.3,
-    "lat": 24.17697,
-    "lon": 120.97784,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 17,
-    "relief_m": 73.7,
-    "span_km": 0.3,
-    "lat": 24.02203,
-    "lon": 121.18409,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 18,
-    "relief_m": 53.4,
-    "span_km": 0.3,
-    "lat": 25.09235,
-    "lon": 121.64682,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 19,
-    "relief_m": 13.3,
-    "span_km": 0.3,
-    "lat": 22.98129,
-    "lon": 120.64879,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 20,
-    "relief_m": 61.3,
-    "span_km": 0.3,
-    "lat": 25.09232,
-    "lon": 121.64625,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 21,
-    "relief_m": 12.0,
-    "span_km": 0.3,
-    "lat": 24.04209,
-    "lon": 120.69982,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 22,
-    "relief_m": 63.9,
-    "span_km": 0.3,
-    "lat": 24.02197,
-    "lon": 121.18489,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 23,
-    "relief_m": 35.3,
-    "span_km": 0.3,
-    "lat": 23.5272,
-    "lon": 120.85581,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 24,
-    "relief_m": 45.9,
-    "span_km": 0.3,
-    "lat": 24.00301,
-    "lon": 121.08528,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 25,
-    "relief_m": 44.6,
-    "span_km": 0.3,
-    "lat": 23.56215,
-    "lon": 120.86774,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 26,
-    "relief_m": 77.8,
-    "span_km": 0.3,
-    "lat": 24.0232,
-    "lon": 121.18787,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 27,
-    "relief_m": 50.1,
-    "span_km": 0.3,
-    "lat": 23.56223,
-    "lon": 120.86728,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 28,
-    "relief_m": 109.4,
-    "span_km": 0.3,
-    "lat": 23.0102,
-    "lon": 120.66914,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 29,
-    "relief_m": 48.8,
-    "span_km": 0.3,
-    "lat": 23.75396,
-    "lon": 120.63816,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 30,
-    "relief_m": 94.1,
-    "span_km": 0.3,
-    "lat": 24.00613,
-    "lon": 121.09402,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 31,
-    "relief_m": 21.4,
-    "span_km": 0.3,
-    "lat": 22.982,
-    "lon": 120.65107,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 32,
-    "relief_m": 43.2,
-    "span_km": 0.3,
-    "lat": 23.69081,
-    "lon": 120.78482,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 33,
-    "relief_m": 58.8,
-    "span_km": 0.3,
-    "lat": 22.90377,
-    "lon": 120.64906,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 34,
-    "relief_m": 84.6,
-    "span_km": 0.3,
-    "lat": 23.71212,
-    "lon": 120.77886,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 35,
-    "relief_m": 130.3,
-    "span_km": 0.3,
-    "lat": 22.69093,
-    "lon": 120.70986,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 36,
-    "relief_m": 60.1,
-    "span_km": 0.3,
-    "lat": 23.52783,
-    "lon": 120.85506,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 37,
-    "relief_m": 14.4,
-    "span_km": 0.3,
-    "lat": 23.70822,
-    "lon": 120.85315,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 38,
-    "relief_m": 77.2,
-    "span_km": 0.3,
-    "lat": 24.91885,
-    "lon": 121.54908,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 39,
-    "relief_m": 106.6,
-    "span_km": 0.3,
-    "lat": 24.00589,
-    "lon": 121.09482,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 40,
-    "relief_m": 39.7,
-    "span_km": 0.3,
-    "lat": 24.00558,
-    "lon": 121.08782,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 41,
-    "relief_m": 40.9,
-    "span_km": 0.3,
-    "lat": 23.07371,
-    "lon": 120.53518,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 42,
-    "relief_m": 44.6,
-    "span_km": 0.3,
-    "lat": 23.01411,
-    "lon": 120.66599,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 43,
-    "relief_m": 30.9,
-    "span_km": 0.3,
-    "lat": 23.66671,
-    "lon": 120.8752,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 44,
-    "relief_m": 80.3,
-    "span_km": 0.3,
-    "lat": 24.17702,
-    "lon": 120.97708,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 45,
-    "relief_m": 68.3,
-    "span_km": 0.3,
-    "lat": 24.02132,
-    "lon": 121.18097,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 46,
-    "relief_m": 62.8,
-    "span_km": 0.3,
-    "lat": 23.0121,
-    "lon": 120.57716,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 47,
-    "relief_m": 52.7,
-    "span_km": 0.3,
-    "lat": 23.21711,
-    "lon": 120.6929,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 48,
-    "relief_m": 107.9,
-    "span_km": 0.3,
-    "lat": 24.60103,
-    "lon": 121.84923,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 49,
-    "relief_m": 84.8,
-    "span_km": 0.3,
-    "lat": 22.52695,
-    "lon": 120.68429,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 50,
-    "relief_m": 51.4,
-    "span_km": 0.3,
-    "lat": 23.7636,
-    "lon": 120.72387,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 51,
-    "relief_m": 10.1,
-    "span_km": 0.3,
-    "lat": 23.77587,
-    "lon": 120.70992,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 52,
-    "relief_m": 63.8,
-    "span_km": 0.3,
-    "lat": 24.17911,
-    "lon": 120.98003,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 53,
-    "relief_m": 127.3,
-    "span_km": 0.3,
-    "lat": 24.02289,
-    "lon": 121.18383,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 54,
-    "relief_m": 23.4,
-    "span_km": 0.3,
-    "lat": 21.98935,
-    "lon": 120.84274,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 55,
-    "relief_m": 37.6,
-    "span_km": 0.3,
-    "lat": 23.0142,
-    "lon": 120.66695,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 56,
-    "relief_m": 29.7,
-    "span_km": 0.3,
-    "lat": 23.76314,
-    "lon": 120.72315,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 57,
-    "relief_m": 80.8,
-    "span_km": 0.3,
-    "lat": 24.00625,
-    "lon": 121.09326,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 58,
-    "relief_m": 128.0,
-    "span_km": 0.3,
-    "lat": 22.52694,
-    "lon": 120.67386,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 59,
-    "relief_m": 40.7,
-    "span_km": 0.3,
-    "lat": 22.97305,
-    "lon": 120.65121,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 60,
-    "relief_m": 84.2,
-    "span_km": 0.3,
-    "lat": 23.57476,
-    "lon": 120.87632,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 61,
-    "relief_m": 78.3,
-    "span_km": 0.3,
-    "lat": 24.57482,
-    "lon": 121.10574,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 62,
-    "relief_m": 52.7,
-    "span_km": 0.3,
-    "lat": 23.74095,
-    "lon": 120.8562,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 63,
-    "relief_m": 47.4,
-    "span_km": 0.3,
-    "lat": 23.56283,
-    "lon": 120.86779,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 64,
-    "relief_m": 73.7,
-    "span_km": 0.3,
-    "lat": 23.60474,
-    "lon": 120.60598,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 65,
-    "relief_m": 69.8,
-    "span_km": 0.3,
-    "lat": 23.56981,
-    "lon": 120.91484,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 66,
-    "relief_m": 63.5,
-    "span_km": 0.3,
-    "lat": 23.66929,
-    "lon": 120.87394,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 67,
-    "relief_m": 47.2,
-    "span_km": 0.3,
-    "lat": 23.10723,
-    "lon": 120.69661,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 68,
-    "relief_m": 67.9,
-    "span_km": 0.3,
-    "lat": 23.37309,
-    "lon": 120.56309,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 69,
-    "relief_m": 37.4,
-    "span_km": 0.3,
-    "lat": 23.08621,
-    "lon": 120.67924,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 70,
-    "relief_m": 66.9,
-    "span_km": 0.3,
-    "lat": 24.0067,
-    "lon": 121.09381,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 71,
-    "relief_m": 102.3,
-    "span_km": 0.3,
-    "lat": 22.69286,
-    "lon": 121.02084,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 72,
-    "relief_m": 71.7,
-    "span_km": 0.3,
-    "lat": 23.70109,
-    "lon": 120.85408,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 73,
-    "relief_m": 55.4,
-    "span_km": 0.3,
-    "lat": 23.34726,
-    "lon": 121.29398,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 74,
-    "relief_m": 32.7,
-    "span_km": 0.3,
-    "lat": 24.17809,
-    "lon": 120.98094,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 75,
-    "relief_m": 53.7,
-    "span_km": 0.3,
-    "lat": 24.02144,
-    "lon": 121.18313,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 76,
-    "relief_m": 106.2,
-    "span_km": 0.3,
-    "lat": 24.00227,
-    "lon": 121.08663,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 77,
-    "relief_m": 103.3,
-    "span_km": 0.3,
-    "lat": 22.45109,
-    "lon": 120.92319,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 78,
-    "relief_m": 76.1,
-    "span_km": 0.3,
-    "lat": 22.91312,
-    "lon": 120.64866,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 79,
-    "relief_m": 82.5,
-    "span_km": 0.3,
-    "lat": 23.6682,
-    "lon": 120.87701,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 80,
-    "relief_m": 33.0,
-    "span_km": 0.3,
-    "lat": 23.05404,
-    "lon": 120.54982,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 81,
-    "relief_m": 65.4,
-    "span_km": 0.3,
-    "lat": 22.52686,
-    "lon": 120.66229,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 82,
-    "relief_m": 67.0,
-    "span_km": 0.3,
-    "lat": 23.09484,
-    "lon": 120.67994,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 83,
-    "relief_m": 65.9,
-    "span_km": 0.3,
-    "lat": 22.97004,
-    "lon": 120.65177,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 84,
-    "relief_m": 77.5,
-    "span_km": 0.3,
-    "lat": 24.24713,
-    "lon": 121.71829,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 85,
-    "relief_m": 72.6,
-    "span_km": 0.3,
-    "lat": 22.69099,
-    "lon": 120.70919,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 86,
-    "relief_m": 34.7,
-    "span_km": 0.3,
-    "lat": 23.06233,
-    "lon": 120.59178,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 87,
-    "relief_m": 60.3,
-    "span_km": 0.3,
-    "lat": 23.34768,
-    "lon": 121.29375,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 88,
-    "relief_m": 98.4,
-    "span_km": 0.3,
-    "lat": 24.02796,
-    "lon": 121.14984,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 89,
-    "relief_m": 59.6,
-    "span_km": 0.3,
-    "lat": 24.02189,
-    "lon": 121.18594,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 90,
-    "relief_m": 60.8,
-    "span_km": 0.3,
-    "lat": 23.09605,
-    "lon": 120.61395,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 91,
-    "relief_m": 12.9,
-    "span_km": 0.3,
-    "lat": 23.34507,
-    "lon": 121.29512,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 92,
-    "relief_m": 146.8,
-    "span_km": 0.3,
-    "lat": 23.91106,
-    "lon": 121.02912,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 93,
-    "relief_m": 87.0,
-    "span_km": 0.3,
-    "lat": 24.57886,
-    "lon": 121.86423,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 94,
-    "relief_m": 75.2,
-    "span_km": 0.3,
-    "lat": 22.6904,
-    "lon": 120.70984,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 95,
-    "relief_m": 75.8,
-    "span_km": 0.3,
-    "lat": 24.01189,
-    "lon": 121.10216,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 96,
-    "relief_m": 122.6,
-    "span_km": 0.3,
-    "lat": 24.56308,
-    "lon": 121.08932,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 97,
-    "relief_m": 92.4,
-    "span_km": 0.3,
-    "lat": 24.58118,
-    "lon": 121.85483,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 98,
-    "relief_m": 52.8,
-    "span_km": 0.3,
-    "lat": 22.89425,
-    "lon": 120.64717,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 99,
-    "relief_m": 67.6,
-    "span_km": 0.3,
-    "lat": 23.16318,
-    "lon": 120.53387,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  },
-  {
-    "rank": 100,
-    "relief_m": 68.5,
-    "span_km": 0.3,
-    "lat": 23.64118,
-    "lon": 121.38101,
-    "computed_at": "2026-09-04 15:09 UTC",
-    "error": null
-  }
+ {
+  "rank": 1,
+  "span_km": 0.3,
+  "lat": 24.24734,
+  "lon": 121.23589,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 177.8,
+  "elev_m": 1875.7,
+  "error": null
+ },
+ {
+  "rank": 2,
+  "span_km": 0.3,
+  "lat": 23.52792,
+  "lon": 120.85504,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 42.4,
+  "elev_m": 1175.6,
+  "error": null
+ },
+ {
+  "rank": 3,
+  "span_km": 0.3,
+  "lat": 23.37265,
+  "lon": 120.56302,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 76.7,
+  "elev_m": 385.0,
+  "error": null
+ },
+ {
+  "rank": 4,
+  "span_km": 0.3,
+  "lat": 23.5696,
+  "lon": 120.9149,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 71.6,
+  "elev_m": 934.3,
+  "error": null
+ },
+ {
+  "rank": 5,
+  "span_km": 0.3,
+  "lat": 23.7539,
+  "lon": 120.63822,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 56.4,
+  "elev_m": 300.4,
+  "error": null
+ },
+ {
+  "rank": 6,
+  "span_km": 0.3,
+  "lat": 24.02272,
+  "lon": 121.18322,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 120.5,
+  "elev_m": 1112.9,
+  "error": null
+ },
+ {
+  "rank": 7,
+  "span_km": 0.3,
+  "lat": 23.64152,
+  "lon": 121.37973,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 66.3,
+  "elev_m": 237.8,
+  "error": null
+ },
+ {
+  "rank": 8,
+  "span_km": 0.3,
+  "lat": 22.45184,
+  "lon": 120.92271,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 52.0,
+  "elev_m": 103.1,
+  "error": null
+ },
+ {
+  "rank": 9,
+  "span_km": 0.3,
+  "lat": 23.95588,
+  "lon": 120.68743,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 10.5,
+  "elev_m": 99.8,
+  "error": null
+ },
+ {
+  "rank": 10,
+  "span_km": 0.3,
+  "lat": 22.90398,
+  "lon": 120.64882,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 31.6,
+  "elev_m": 162.3,
+  "error": null
+ },
+ {
+  "rank": 11,
+  "span_km": 0.3,
+  "lat": 23.59343,
+  "lon": 120.60928,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 70.2,
+  "elev_m": 558.9,
+  "error": null
+ },
+ {
+  "rank": 12,
+  "span_km": 0.3,
+  "lat": 23.09617,
+  "lon": 120.61399,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 53.6,
+  "elev_m": 329.1,
+  "error": null
+ },
+ {
+  "rank": 13,
+  "span_km": 0.3,
+  "lat": 23.95793,
+  "lon": 121.15602,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 155.9,
+  "elev_m": 1187.4,
+  "error": null
+ },
+ {
+  "rank": 14,
+  "span_km": 0.3,
+  "lat": 24.02278,
+  "lon": 121.18746,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 72.1,
+  "elev_m": 1093.5,
+  "error": null
+ },
+ {
+  "rank": 15,
+  "span_km": 0.3,
+  "lat": 24.01182,
+  "lon": 121.10199,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 87.8,
+  "elev_m": 772.7,
+  "error": null
+ },
+ {
+  "rank": 16,
+  "span_km": 0.3,
+  "lat": 23.51847,
+  "lon": 120.85173,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 150.8,
+  "elev_m": 1310.6,
+  "error": null
+ },
+ {
+  "rank": 17,
+  "span_km": 0.3,
+  "lat": 22.52659,
+  "lon": 120.67536,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 75.4,
+  "elev_m": 175.3,
+  "error": null
+ },
+ {
+  "rank": 18,
+  "span_km": 0.3,
+  "lat": 24.11392,
+  "lon": 121.18325,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 140.4,
+  "elev_m": 1461.8,
+  "error": null
+ },
+ {
+  "rank": 19,
+  "span_km": 0.3,
+  "lat": 22.52668,
+  "lon": 120.68488,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 70.5,
+  "elev_m": 200.3,
+  "error": null
+ },
+ {
+  "rank": 20,
+  "span_km": 0.3,
+  "lat": 24.19276,
+  "lon": 121.66158,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 255.3,
+  "elev_m": 71.8,
+  "error": null
+ },
+ {
+  "rank": 21,
+  "span_km": 0.3,
+  "lat": 24.49527,
+  "lon": 121.13959,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 185.3,
+  "elev_m": 1968.9,
+  "error": null
+ },
+ {
+  "rank": 22,
+  "span_km": 0.3,
+  "lat": 24.21173,
+  "lon": 121.68119,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 245.0,
+  "elev_m": 155.8,
+  "error": null
+ },
+ {
+  "rank": 23,
+  "span_km": 0.3,
+  "lat": 22.91326,
+  "lon": 120.64847,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 68.9,
+  "elev_m": 171.9,
+  "error": null
+ },
+ {
+  "rank": 24,
+  "span_km": 0.3,
+  "lat": 22.98178,
+  "lon": 120.65334,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 33.8,
+  "elev_m": 285.3,
+  "error": null
+ },
+ {
+  "rank": 25,
+  "span_km": 0.3,
+  "lat": 23.06484,
+  "lon": 120.68308,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 54.1,
+  "elev_m": 365.8,
+  "error": null
+ },
+ {
+  "rank": 26,
+  "span_km": 0.3,
+  "lat": 23.70837,
+  "lon": 120.85367,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 24.4,
+  "elev_m": 458.1,
+  "error": null
+ },
+ {
+  "rank": 27,
+  "span_km": 0.3,
+  "lat": 24.00318,
+  "lon": 121.0857,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 37.3,
+  "elev_m": 709.9,
+  "error": null
+ },
+ {
+  "rank": 28,
+  "span_km": 0.3,
+  "lat": 23.94933,
+  "lon": 120.85414,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 79.8,
+  "elev_m": 541.1,
+  "error": null
+ },
+ {
+  "rank": 29,
+  "span_km": 0.3,
+  "lat": 22.31234,
+  "lon": 120.64592,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 40.7,
+  "elev_m": 18.6,
+  "error": null
+ },
+ {
+  "rank": 30,
+  "span_km": 0.3,
+  "lat": 24.54844,
+  "lon": 121.02864,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": null,
+  "error": "窗口內有效高程不足一半（海域或 DTM 範圍外）"
+ },
+ {
+  "rank": 31,
+  "span_km": 0.3,
+  "lat": 22.97299,
+  "lon": 120.6511,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 40.1,
+  "elev_m": 243.1,
+  "error": null
+ },
+ {
+  "rank": 32,
+  "span_km": 0.3,
+  "lat": 23.01087,
+  "lon": 120.67035,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 115.5,
+  "elev_m": 363.5,
+  "error": null
+ },
+ {
+  "rank": 33,
+  "span_km": 0.3,
+  "lat": 23.18901,
+  "lon": 120.78767,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 20.2,
+  "elev_m": 643.9,
+  "error": null
+ },
+ {
+  "rank": 34,
+  "span_km": 0.3,
+  "lat": 23.51712,
+  "lon": 120.74679,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 68.4,
+  "elev_m": 880.6,
+  "error": null
+ },
+ {
+  "rank": 35,
+  "span_km": 0.3,
+  "lat": 22.69115,
+  "lon": 120.70946,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 77.8,
+  "elev_m": 238.3,
+  "error": null
+ },
+ {
+  "rank": 36,
+  "span_km": 0.3,
+  "lat": 23.59327,
+  "lon": 120.60403,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 77.4,
+  "elev_m": 490.9,
+  "error": null
+ },
+ {
+  "rank": 37,
+  "span_km": 0.3,
+  "lat": 24.17706,
+  "lon": 120.97742,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 62.9,
+  "elev_m": 651.3,
+  "error": null
+ },
+ {
+  "rank": 38,
+  "span_km": 0.3,
+  "lat": 24.60056,
+  "lon": 121.03289,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 168.3,
+  "elev_m": 338.4,
+  "error": null
+ },
+ {
+  "rank": 39,
+  "span_km": 0.3,
+  "lat": 24.45761,
+  "lon": 120.91325,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 154.3,
+  "elev_m": 329.3,
+  "error": null
+ },
+ {
+  "rank": 40,
+  "span_km": 0.3,
+  "lat": 24.01475,
+  "lon": 121.12147,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 119.5,
+  "elev_m": 947.9,
+  "error": null
+ },
+ {
+  "rank": 41,
+  "span_km": 0.3,
+  "lat": 24.46606,
+  "lon": 120.91892,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 175.2,
+  "elev_m": 375.1,
+  "error": null
+ },
+ {
+  "rank": 42,
+  "span_km": 0.3,
+  "lat": 23.10727,
+  "lon": 120.69672,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 24.0,
+  "elev_m": 386.9,
+  "error": null
+ },
+ {
+  "rank": 43,
+  "span_km": 0.3,
+  "lat": 23.06484,
+  "lon": 120.74633,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 155.6,
+  "elev_m": 1453.1,
+  "error": null
+ },
+ {
+  "rank": 44,
+  "span_km": 0.3,
+  "lat": 23.70095,
+  "lon": 120.85453,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 88.8,
+  "elev_m": 480.0,
+  "error": null
+ },
+ {
+  "rank": 45,
+  "span_km": 0.3,
+  "lat": 23.56235,
+  "lon": 120.86826,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 37.0,
+  "elev_m": 912.0,
+  "error": null
+ },
+ {
+  "rank": 46,
+  "span_km": 0.3,
+  "lat": 23.01414,
+  "lon": 120.66605,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 54.5,
+  "elev_m": 292.9,
+  "error": null
+ },
+ {
+  "rank": 47,
+  "span_km": 0.3,
+  "lat": 23.52847,
+  "lon": 120.73883,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 56.5,
+  "elev_m": 785.8,
+  "error": null
+ },
+ {
+  "rank": 48,
+  "span_km": 0.3,
+  "lat": 22.9813,
+  "lon": 120.64865,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 13.2,
+  "elev_m": 252.3,
+  "error": null
+ },
+ {
+  "rank": 49,
+  "span_km": 0.3,
+  "lat": 23.22112,
+  "lon": 120.80313,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 21.2,
+  "elev_m": 690.6,
+  "error": null
+ },
+ {
+  "rank": 50,
+  "span_km": 0.3,
+  "lat": 23.66829,
+  "lon": 120.87687,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 80.0,
+  "elev_m": 635.3,
+  "error": null
+ },
+ {
+  "rank": 51,
+  "span_km": 0.3,
+  "lat": 23.53064,
+  "lon": 120.73412,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 69.4,
+  "elev_m": 755.0,
+  "error": null
+ },
+ {
+  "rank": 52,
+  "span_km": 0.3,
+  "lat": 23.57529,
+  "lon": 120.87871,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 45.3,
+  "elev_m": 835.3,
+  "error": null
+ },
+ {
+  "rank": 53,
+  "span_km": 0.3,
+  "lat": 23.08607,
+  "lon": 120.67953,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 35.0,
+  "elev_m": 440.2,
+  "error": null
+ },
+ {
+  "rank": 54,
+  "span_km": 0.3,
+  "lat": 23.65937,
+  "lon": 120.882,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 42.5,
+  "elev_m": 623.9,
+  "error": null
+ },
+ {
+  "rank": 55,
+  "span_km": 0.3,
+  "lat": 24.00524,
+  "lon": 121.08956,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 78.9,
+  "elev_m": 722.1,
+  "error": null
+ },
+ {
+  "rank": 56,
+  "span_km": 0.3,
+  "lat": 23.96708,
+  "lon": 120.78502,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 94.0,
+  "elev_m": 305.5,
+  "error": null
+ },
+ {
+  "rank": 57,
+  "span_km": 0.3,
+  "lat": 23.65561,
+  "lon": 121.02135,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 197.7,
+  "elev_m": 1076.3,
+  "error": null
+ },
+ {
+  "rank": 58,
+  "span_km": 0.3,
+  "lat": 23.71198,
+  "lon": 120.7786,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 76.5,
+  "elev_m": 648.4,
+  "error": null
+ },
+ {
+  "rank": 59,
+  "span_km": 0.3,
+  "lat": 22.69236,
+  "lon": 120.70545,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 53.8,
+  "elev_m": 224.2,
+  "error": null
+ },
+ {
+  "rank": 60,
+  "span_km": 0.3,
+  "lat": 23.58477,
+  "lon": 120.76532,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 175.8,
+  "elev_m": 1072.4,
+  "error": null
+ },
+ {
+  "rank": 61,
+  "span_km": 0.3,
+  "lat": 23.18311,
+  "lon": 121.03173,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 261.7,
+  "elev_m": 1049.9,
+  "error": null
+ },
+ {
+  "rank": 62,
+  "span_km": 0.3,
+  "lat": 24.41211,
+  "lon": 121.78898,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 316.6,
+  "elev_m": 208.7,
+  "error": null
+ },
+ {
+  "rank": 63,
+  "span_km": 0.3,
+  "lat": 23.71571,
+  "lon": 120.86204,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 55.1,
+  "elev_m": 534.7,
+  "error": null
+ },
+ {
+  "rank": 64,
+  "span_km": 0.3,
+  "lat": 23.1375,
+  "lon": 121.11241,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 253.9,
+  "elev_m": 449.1,
+  "error": null
+ },
+ {
+  "rank": 65,
+  "span_km": 0.3,
+  "lat": 23.23916,
+  "lon": 121.00365,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 342.5,
+  "elev_m": 1989.9,
+  "error": null
+ },
+ {
+  "rank": 66,
+  "span_km": 0.3,
+  "lat": 23.59147,
+  "lon": 120.74622,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 59.7,
+  "elev_m": 905.2,
+  "error": null
+ },
+ {
+  "rank": 67,
+  "span_km": 0.3,
+  "lat": 24.47381,
+  "lon": 121.78704,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 21.0,
+  "elev_m": 38.3,
+  "error": null
+ },
+ {
+  "rank": 68,
+  "span_km": 0.3,
+  "lat": 24.00331,
+  "lon": 121.09642,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 132.8,
+  "elev_m": 879.8,
+  "error": null
+ },
+ {
+  "rank": 69,
+  "span_km": 0.3,
+  "lat": 23.96425,
+  "lon": 121.49959,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 110.3,
+  "elev_m": 141.7,
+  "error": null
+ },
+ {
+  "rank": 70,
+  "span_km": 0.3,
+  "lat": 22.42059,
+  "lon": 120.93019,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 81.2,
+  "elev_m": 29.5,
+  "error": null
+ },
+ {
+  "rank": 71,
+  "span_km": 0.3,
+  "lat": 24.17269,
+  "lon": 120.96978,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 91.9,
+  "elev_m": 648.8,
+  "error": null
+ },
+ {
+  "rank": 72,
+  "span_km": 0.3,
+  "lat": 24.849,
+  "lon": 121.55074,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 140.3,
+  "elev_m": 219.5,
+  "error": null
+ },
+ {
+  "rank": 73,
+  "span_km": 0.3,
+  "lat": 25.07937,
+  "lon": 121.67083,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 8.8,
+  "elev_m": 10.5,
+  "error": null
+ },
+ {
+  "rank": 74,
+  "span_km": 0.3,
+  "lat": 24.20659,
+  "lon": 121.01913,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 107.3,
+  "elev_m": 863.0,
+  "error": null
+ },
+ {
+  "rank": 75,
+  "span_km": 0.3,
+  "lat": 24.40733,
+  "lon": 120.86523,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 73.5,
+  "elev_m": 265.6,
+  "error": null
+ },
+ {
+  "rank": 76,
+  "span_km": 0.3,
+  "lat": 24.20691,
+  "lon": 121.66648,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 116.5,
+  "elev_m": 96.8,
+  "error": null
+ },
+ {
+  "rank": 77,
+  "span_km": 0.3,
+  "lat": 22.91066,
+  "lon": 120.67981,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 113.6,
+  "elev_m": 364.0,
+  "error": null
+ },
+ {
+  "rank": 78,
+  "span_km": 0.3,
+  "lat": 24.24722,
+  "lon": 121.71832,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 69.0,
+  "elev_m": 32.0,
+  "error": null
+ },
+ {
+  "rank": 79,
+  "span_km": 0.3,
+  "lat": 24.25011,
+  "lon": 121.13112,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 299.8,
+  "elev_m": 1281.0,
+  "error": null
+ },
+ {
+  "rank": 80,
+  "span_km": 0.3,
+  "lat": 24.53145,
+  "lon": 121.45126,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 87.3,
+  "elev_m": 586.8,
+  "error": null
+ },
+ {
+  "rank": 81,
+  "span_km": 0.3,
+  "lat": 22.70631,
+  "lon": 120.65774,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 158.8,
+  "elev_m": 182.0,
+  "error": null
+ },
+ {
+  "rank": 82,
+  "span_km": 0.3,
+  "lat": 25.1368,
+  "lon": 121.47431,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 71.1,
+  "elev_m": 77.0,
+  "error": null
+ },
+ {
+  "rank": 83,
+  "span_km": 0.3,
+  "lat": 24.53897,
+  "lon": 121.45583,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 93.3,
+  "elev_m": 569.1,
+  "error": null
+ },
+ {
+  "rank": 84,
+  "span_km": 0.3,
+  "lat": 24.53939,
+  "lon": 121.03165,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": null,
+  "error": "窗口內有效高程不足一半（海域或 DTM 範圍外）"
+ },
+ {
+  "rank": 85,
+  "span_km": 0.3,
+  "lat": 24.13872,
+  "lon": 121.1858,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 204.1,
+  "elev_m": 1255.2,
+  "error": null
+ },
+ {
+  "rank": 86,
+  "span_km": 0.3,
+  "lat": 24.67401,
+  "lon": 121.4065,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 198.5,
+  "elev_m": 704.7,
+  "error": null
+ },
+ {
+  "rank": 87,
+  "span_km": 0.3,
+  "lat": 23.14633,
+  "lon": 120.75384,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 172.2,
+  "elev_m": 562.2,
+  "error": null
+ },
+ {
+  "rank": 88,
+  "span_km": 0.3,
+  "lat": 24.4445,
+  "lon": 120.88681,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 99.8,
+  "elev_m": 281.7,
+  "error": null
+ },
+ {
+  "rank": 89,
+  "span_km": 0.3,
+  "lat": 23.37189,
+  "lon": 120.56978,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 125.6,
+  "elev_m": 535.8,
+  "error": null
+ },
+ {
+  "rank": 90,
+  "span_km": 0.3,
+  "lat": 23.16902,
+  "lon": 120.77606,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 47.4,
+  "elev_m": 579.2,
+  "error": null
+ },
+ {
+  "rank": 91,
+  "span_km": 0.3,
+  "lat": 23.06906,
+  "lon": 120.68548,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 58.1,
+  "elev_m": 352.6,
+  "error": null
+ },
+ {
+  "rank": 92,
+  "span_km": 0.3,
+  "lat": 24.49277,
+  "lon": 121.83286,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 183.2,
+  "elev_m": 285.4,
+  "error": null
+ },
+ {
+  "rank": 93,
+  "span_km": 0.3,
+  "lat": 24.17083,
+  "lon": 121.20983,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 183.3,
+  "elev_m": 1866.2,
+  "error": null
+ },
+ {
+  "rank": 94,
+  "span_km": 0.3,
+  "lat": 24.61991,
+  "lon": 121.28573,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 139.5,
+  "elev_m": 856.3,
+  "error": null
+ },
+ {
+  "rank": 95,
+  "span_km": 0.3,
+  "lat": 23.82087,
+  "lon": 120.85442,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 78.1,
+  "elev_m": 320.2,
+  "error": null
+ },
+ {
+  "rank": 96,
+  "span_km": 0.3,
+  "lat": 23.12578,
+  "lon": 120.70915,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 88.7,
+  "elev_m": 528.4,
+  "error": null
+ },
+ {
+  "rank": 97,
+  "span_km": 0.3,
+  "lat": 22.66537,
+  "lon": 121.01066,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 110.5,
+  "elev_m": 297.8,
+  "error": null
+ },
+ {
+  "rank": 98,
+  "span_km": 0.3,
+  "lat": 23.57616,
+  "lon": 120.74605,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 35.8,
+  "elev_m": 726.3,
+  "error": null
+ },
+ {
+  "rank": 99,
+  "span_km": 0.3,
+  "lat": 23.22793,
+  "lon": 120.69533,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 50.5,
+  "elev_m": 558.7,
+  "error": null
+ },
+ {
+  "rank": 100,
+  "span_km": 0.3,
+  "lat": 23.1197,
+  "lon": 120.70931,
+  "computed_at": "2026-09-22 06:28 UTC",
+  "source": "MOI 20 m DTM (2025)",
+  "relief_m": 59.8,
+  "elev_m": 529.7,
+  "error": null
+ }
 ]

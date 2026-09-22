@@ -1,0 +1,115 @@
+{
+  "site": "ardswc_top07",
+  "date_a": "20181202",
+  "date_b": "20200225",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top07\\ardswc_top07_gmap_20181202.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top07\\ardswc_top07_gmap_20200225.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 346,
+    "height": 344
+  },
+  "panels": {
+    "before": "ardswc_top07_diff_20181202_20200225_before.jpg",
+    "after": "ardswc_top07_diff_20181202_20200225_after.jpg",
+    "overlay": "ardswc_top07_diff_20181202_20200225_overlay.jpg",
+    "heat": "ardswc_top07_diff_20181202_20200225_heat.jpg",
+    "combo": "ardswc_top07_diff_20181202_20200225.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.33,
+      0.5
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.9777
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.9372,
+  "overall_change_fraction": 0.0047,
+  "n_regions": 2,
+  "regions": [
+    {
+      "bbox_px": [
+        282,
+        176,
+        41,
+        31
+      ],
+      "area_px": 417,
+      "mean_change_score": 0.5954,
+      "centroid_px": [
+        300.0,
+        189.6
+      ],
+      "centroid_lonlat": [
+        121.3852156,
+        23.6408235
+      ],
+      "bbox_lonlat": [
+        [
+          121.3844419,
+          23.6413595
+        ],
+        [
+          121.3862014,
+          23.6413595
+        ],
+        [
+          121.3862014,
+          23.6401408
+        ],
+        [
+          121.3844419,
+          23.6401408
+        ]
+      ]
+    },
+    {
+      "bbox_px": [
+        325,
+        210,
+        11,
+        11
+      ],
+      "area_px": 91,
+      "mean_change_score": 0.5178,
+      "centroid_px": [
+        330.4,
+        215.1
+      ],
+      "centroid_lonlat": [
+        121.3865192,
+        23.6398228
+      ],
+      "bbox_lonlat": [
+        [
+          121.3862872,
+          23.6400228
+        ],
+        [
+          121.3867593,
+          23.6400228
+        ],
+        [
+          121.3867593,
+          23.6395904
+        ],
+        [
+          121.3862872,
+          23.6395904
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

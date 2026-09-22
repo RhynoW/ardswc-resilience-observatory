@@ -1,0 +1,35 @@
+{
+ "source": "https://photo.ardswc.gov.tw/api/v1/rest/dataset/metadata",
+ "fetched": "2026-09-22",
+ "platform_total_records": 105131,
+ "geolocated_records": 80597,
+ "geolocated_by_type": {
+  "災害事件": 30196,
+  "重要地景": 47839,
+  "媒體報導": 2404,
+  "出版品照片": 158
+ },
+ "hotspot_basis_types": [
+  "災害事件",
+  "媒體報導"
+ ],
+ "hotspot_basis_records": 32600,
+ "same_event_rule": "同網格：具名災害依『災害年份＋名稱』合併；泛稱/空白依拍攝日期 ≤30 天串接",
+ "grid_cells": 7891,
+ "cell_m": 250.0,
+ "min_separation_m": 400.0,
+ "ranking": "n_independent_events desc, n_distinct_years desc, latest year desc",
+ "independent_events_distribution_top100": {
+  "3": 17,
+  "4": 45,
+  "5": 17,
+  "6": 12,
+  "7": 4,
+  "8": 1,
+  "9": 2,
+  "10": 1,
+  "11": 1
+ },
+ "records_before_dedup_top100": 1871,
+ "independent_events_top100": 463
+}

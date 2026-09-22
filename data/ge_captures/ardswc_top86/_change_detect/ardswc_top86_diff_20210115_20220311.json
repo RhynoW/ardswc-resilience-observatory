@@ -1,0 +1,79 @@
+{
+  "site": "ardswc_top86",
+  "date_a": "20210115",
+  "date_b": "20220311",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top86\\ardswc_top86_gmap_20210115.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top86\\ardswc_top86_gmap_20220311.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 348,
+    "height": 348
+  },
+  "panels": {
+    "before": "ardswc_top86_diff_20210115_20220311_before.jpg",
+    "after": "ardswc_top86_diff_20210115_20220311_after.jpg",
+    "overlay": "ardswc_top86_diff_20210115_20220311_overlay.jpg",
+    "heat": "ardswc_top86_diff_20210115_20220311_heat.jpg",
+    "combo": "ardswc_top86_diff_20210115_20220311.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.05,
+      1.06
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.9763
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.8889,
+  "overall_change_fraction": 0.0017,
+  "n_regions": 1,
+  "regions": [
+    {
+      "bbox_px": [
+        104,
+        122,
+        22,
+        13
+      ],
+      "area_px": 194,
+      "mean_change_score": 0.5777,
+      "centroid_px": [
+        114.8,
+        127.1
+      ],
+      "centroid_lonlat": [
+        121.4039595,
+        24.6758172
+      ],
+      "bbox_lonlat": [
+        [
+          121.4034963,
+          24.6760144
+        ],
+        [
+          121.4044404,
+          24.6760144
+        ],
+        [
+          121.4044404,
+          24.6755074
+        ],
+        [
+          121.4034963,
+          24.6755074
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

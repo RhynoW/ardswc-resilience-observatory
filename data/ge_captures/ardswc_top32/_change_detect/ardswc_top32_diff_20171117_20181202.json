@@ -1,0 +1,79 @@
+{
+  "site": "ardswc_top32",
+  "date_a": "20171117",
+  "date_b": "20181202",
+  "image_a": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top32\\ardswc_top32_gmap_20171117.png",
+  "image_b": "F:\\GitHub\\ardswc-resilience-observatory\\data\\ge_captures\\ardswc_top32\\ardswc_top32_gmap_20181202.png",
+  "roi": {
+    "ui_top": 0,
+    "ui_bottom": 0,
+    "ui_top_auto": false,
+    "width": 342,
+    "height": 344
+  },
+  "panels": {
+    "before": "ardswc_top32_diff_20171117_20181202_before.jpg",
+    "after": "ardswc_top32_diff_20171117_20181202_after.jpg",
+    "overlay": "ardswc_top32_diff_20171117_20181202_overlay.jpg",
+    "heat": "ardswc_top32_diff_20171117_20181202_heat.jpg",
+    "combo": "ardswc_top32_diff_20171117_20181202.png"
+  },
+  "alignment": {
+    "checked": true,
+    "applied": true,
+    "uncertain": false,
+    "shift_px": [
+      -0.15,
+      -0.18
+    ]
+  },
+  "water_suppress": {
+    "applied": true,
+    "both_water_fraction": 0.9229
+  },
+  "ssim_thresh": 0.45,
+  "min_region_px": 48,
+  "win_size": 11,
+  "mean_ssim": 0.9409,
+  "overall_change_fraction": 0.0022,
+  "n_regions": 1,
+  "regions": [
+    {
+      "bbox_px": [
+        27,
+        130,
+        10,
+        31
+      ],
+      "area_px": 166,
+      "mean_change_score": 0.5973,
+      "centroid_px": [
+        31.1,
+        146.5
+      ],
+      "centroid_lonlat": [
+        120.6643681,
+        23.0118497
+      ],
+      "bbox_lonlat": [
+        [
+          120.6641936,
+          23.0124996
+        ],
+        [
+          120.6646228,
+          23.0124996
+        ],
+        [
+          120.6646228,
+          23.0112751
+        ],
+        [
+          120.6641936,
+          23.0112751
+        ]
+      ]
+    }
+  ],
+  "governance_note": "regions are automated candidate change areas requiring human visual confirmation via GE Web (use centroid_lonlat); not verified change facts -- clouds/shadows/seasonal light/compression can trigger false positives"
+}

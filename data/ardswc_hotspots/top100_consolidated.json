@@ -1,1102 +1,7646 @@
 [
  {
   "rank": 1,
-  "county": "南投縣",
-  "district": "水里鄉",
-  "lat": 23.73311,
-  "lon": 120.8551,
-  "n_distinct_years": 7,
-  "method": "quickscan8",
-  "change_score": 0.638,
+  "county": "臺中市",
+  "district": "和平區",
+  "lat": 24.24734,
+  "lon": 121.23589,
+  "n_independent_events": 11,
+  "n_distinct_years": 6,
+  "years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2024,
+   2025
+  ],
+  "n_events": 24,
+  "n_by_type": {
+   "災害事件": 10,
+   "媒體報導": 14
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0611豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-06-12",
+    "last_date": "2019-06-12",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2020,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-06-01",
+    "last_date": "2020-06-01",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-06-25",
+    "last_date": "2021-06-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-06",
+    "last_date": "2021-08-06",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 1,
+    "first_date": "2022-03-28",
+    "last_date": "2022-03-28",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 2,
+    "first_date": "2022-07-31",
+    "last_date": "2022-08-10",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "0918地震",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2022-09-17",
+    "last_date": "2022-09-29",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 10,
+    "first_date": "2022-10-27",
+    "last_date": "2022-10-27",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-07-25",
+    "last_date": "2024-07-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-10-31",
+    "last_date": "2024-10-31",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 2,
+    "first_date": "2025-05-12",
+    "last_date": "2025-05-28",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1447,
   "deep_verify_caveat": null
  },
  {
   "rank": 2,
   "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00314,
-  "lon": 121.08589,
-  "n_distinct_years": 6,
-  "method": "deephist25",
-  "change_score": 0.5169,
+  "district": "信義鄉",
+  "lat": 23.52792,
+  "lon": 120.85504,
+  "n_independent_events": 10,
+  "n_distinct_years": 9,
+  "years": [
+   1996,
+   1998,
+   2001,
+   2006,
+   2009,
+   2011,
+   2012,
+   2017,
+   2022
+  ],
+  "n_events": 22,
+  "n_by_type": {
+   "災害事件": 22
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 9,
+    "first_date": "1996-08-14",
+    "last_date": "1996-08-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 1998,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "豪雨"
+    ],
+    "n_records": 1,
+    "first_date": "1998-05-09",
+    "last_date": "1998-05-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-08-01",
+    "last_date": "2001-08-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "經典案例"
+    ],
+    "n_records": 1,
+    "first_date": "2001-11-29",
+    "last_date": "2001-11-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2006,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 1,
+    "first_date": "2006-09-14",
+    "last_date": "2006-09-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2011,
+    "name": "0719豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2011-07-16",
+    "last_date": "2011-07-26",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0504豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-05-09",
+    "last_date": "2012-05-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-06-08",
+    "last_date": "2017-06-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 1,
+    "first_date": "2022-10-16",
+    "last_date": "2022-10-16",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0685,
   "deep_verify_caveat": null
  },
  {
   "rank": 3,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.0113,
-  "lon": 120.67108,
-  "n_distinct_years": 6,
-  "method": "deephist25",
-  "change_score": 0.3291,
+  "county": "嘉義縣",
+  "district": "中埔鄉",
+  "lat": 23.37265,
+  "lon": 120.56302,
+  "n_independent_events": 9,
+  "n_distinct_years": 5,
+  "years": [
+   2008,
+   2009,
+   2019,
+   2023,
+   2024
+  ],
+  "n_events": 106,
+  "n_by_type": {
+   "災害事件": 102,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "鳳凰颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-07-29",
+    "last_date": "2008-07-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-09",
+    "last_date": "2009-08-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "利奇馬颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2019-08-13",
+    "last_date": "2019-08-26",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 54,
+    "first_date": "2019-08-23",
+    "last_date": "2019-08-26",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-09-10",
+    "last_date": "2023-09-12",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-06-07",
+    "last_date": "2024-06-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 19,
+    "first_date": "2024-09-05",
+    "last_date": "2024-09-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 20,
+    "first_date": "2024-11-02",
+    "last_date": "2024-11-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-11-25",
+    "last_date": "2024-11-25",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0556,
   "deep_verify_caveat": null
  },
  {
   "rank": 4,
-  "county": "嘉義縣",
-  "district": "中埔鄉",
-  "lat": 23.37296,
-  "lon": 120.5638,
-  "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.9451,
+  "county": "南投縣",
+  "district": "信義鄉",
+  "lat": 23.5696,
+  "lon": 120.9149,
+  "n_independent_events": 9,
+  "n_distinct_years": 4,
+  "years": [
+   2009,
+   2023,
+   2024,
+   2025
+  ],
+  "n_events": 61,
+  "n_by_type": {
+   "災害事件": 50,
+   "媒體報導": 11
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-23",
+    "last_date": "2009-08-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "0823",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2023-08-23",
+    "last_date": "2023-09-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 19,
+    "first_date": "2023-08-25",
+    "last_date": "2023-08-25",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "海葵颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-09-03",
+    "last_date": "2023-09-03",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-05-28",
+    "last_date": "2024-05-28",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [
+     "2024年其他災害"
+    ],
+    "n_records": 31,
+    "first_date": "2024-07-25",
+    "last_date": "2024-09-04",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-10-31",
+    "last_date": "2024-10-31",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-06-27",
+    "last_date": "2025-06-27",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-31",
+    "last_date": "2025-07-31",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2124,
   "deep_verify_caveat": null
  },
  {
   "rank": 5,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02258,
-  "lon": 121.18713,
+  "county": "雲林縣",
+  "district": "林內鄉",
+  "lat": 23.7539,
+  "lon": 120.63822,
+  "n_independent_events": 8,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.5198,
+  "years": [
+   2004,
+   2006,
+   2007,
+   2012,
+   2015
+  ],
+  "n_events": 21,
+  "n_by_type": {
+   "災害事件": 21
+  },
+  "events": [
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2004-07-13",
+    "last_date": "2004-07-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "艾利颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2005-05-23",
+    "last_date": "2005-05-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2006,
+    "name": "碧利斯颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2006-01-01",
+    "last_date": "2006-09-04",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2006,
+    "name": "0609豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2006-06-09",
+    "last_date": "2007-03-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "0604豪雨",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 5,
+    "first_date": "2007-01-01",
+    "last_date": "2007-01-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "96其他雲林林內001"
+    ],
+    "n_records": 3,
+    "first_date": "2007-05-22",
+    "last_date": "2007-05-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-08-03",
+    "last_date": "2012-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-01-01",
+    "last_date": "2015-01-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0769,
   "deep_verify_caveat": null
  },
  {
   "rank": 6,
   "county": "南投縣",
   "district": "仁愛鄉",
-  "lat": 24.02226,
-  "lon": 121.18704,
-  "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.7651,
+  "lat": 24.02272,
+  "lon": 121.18322,
+  "n_independent_events": 7,
+  "n_distinct_years": 7,
+  "years": [
+   1994,
+   2006,
+   2008,
+   2012,
+   2017,
+   2023,
+   2024
+  ],
+  "n_events": 25,
+  "n_by_type": {
+   "災害事件": 24,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 1994,
+    "name": "道格颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "1994-08-15",
+    "last_date": "1994-08-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2006,
+    "name": "0609豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2006-09-14",
+    "last_date": "2006-09-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2008-09-17",
+    "last_date": "2008-09-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-08-03",
+    "last_date": "2012-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-06-09",
+    "last_date": "2017-06-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-08-04",
+    "last_date": "2023-08-04",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "0403花蓮地震",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2024-05-21",
+    "last_date": "2024-05-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1686,
   "deep_verify_caveat": null
  },
  {
   "rank": 7,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.98223,
-  "lon": 120.65003,
-  "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.9263,
+  "county": "花蓮縣",
+  "district": "光復鄉",
+  "lat": 23.64152,
+  "lon": 121.37973,
+  "n_independent_events": 7,
+  "n_distinct_years": 7,
+  "years": [
+   1990,
+   2001,
+   2008,
+   2011,
+   2015,
+   2019,
+   2024
+  ],
+  "n_events": 25,
+  "n_by_type": {
+   "災害事件": 25
+  },
+  "events": [
+   {
+    "year": 1990,
+    "name": "歐菲莉颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1990-06-25",
+    "last_date": "1990-06-25",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2001-07-31",
+    "last_date": "2001-08-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "鳳凰颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2008-01-01",
+    "last_date": "2008-08-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2011,
+    "name": "1001豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2011-10-03",
+    "last_date": "2011-10-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-01-01",
+    "last_date": "2015-01-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "米塔颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2019-08-24",
+    "last_date": "2019-08-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "0403花蓮地震",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2024-05-10",
+    "last_date": "2024-05-10",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1182,
   "deep_verify_caveat": null
  },
  {
   "rank": 8,
-  "county": "高雄市",
-  "district": "甲仙區",
-  "lat": 23.06271,
-  "lon": 120.59204,
-  "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.8306,
+  "county": "臺東縣",
+  "district": "大武鄉",
+  "lat": 22.45184,
+  "lon": 120.92271,
+  "n_independent_events": 7,
+  "n_distinct_years": 6,
+  "years": [
+   2009,
+   2010,
+   2013,
+   2014,
+   2016,
+   2018
+  ],
+  "n_events": 46,
+  "n_by_type": {
+   "災害事件": 46
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2009-11-19",
+    "last_date": "2009-12-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "萊羅克颱風",
+    "aliases": [
+     "99萊羅克台東大武001"
+    ],
+    "n_records": 9,
+    "first_date": "2010-09-01",
+    "last_date": "2010-09-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "蘇力颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2013-07-13",
+    "last_date": "2013-07-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2014,
+    "name": "哈吉貝颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2014-06-14",
+    "last_date": "2014-06-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2016,
+    "name": "莫蘭蒂颱風",
+    "aliases": [],
+    "n_records": 17,
+    "first_date": "2016-09-15",
+    "last_date": "2017-04-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2016,
+    "name": "梅姬颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2016-09-28",
+    "last_date": "2016-09-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2018,
+    "name": "0823熱帶低壓",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2018-08-26",
+    "last_date": "2018-08-26",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0447,
   "deep_verify_caveat": null
  },
  {
   "rank": 9,
   "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.575,
-  "lon": 120.87677,
+  "district": "南投市",
+  "lat": 23.95588,
+  "lon": 120.68743,
+  "n_independent_events": 7,
   "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.4486,
+  "years": [
+   1999,
+   2019,
+   2021,
+   2022,
+   2023
+  ],
+  "n_events": 12,
+  "n_by_type": {
+   "災害事件": 1,
+   "媒體報導": 11
+  },
+  "events": [
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1999-09-26",
+    "last_date": "1999-09-26",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "丹娜絲颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-07-18",
+    "last_date": "2019-07-18",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "利奇馬颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-08-12",
+    "last_date": "2019-08-12",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2021-04-08",
+    "last_date": "2021-04-08",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風",
+    "aliases": [
+     "盧碧颱風暨0806西南氣流"
+    ],
+    "n_records": 5,
+    "first_date": "2021-08-04",
+    "last_date": "2021-08-06",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-03-29",
+    "last_date": "2022-03-29",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-07-22",
+    "last_date": "2023-07-22",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.5544,
   "deep_verify_caveat": null
  },
  {
   "rank": 10,
   "county": "高雄市",
-  "district": "茂林區",
-  "lat": 22.90997,
-  "lon": 120.67988,
-  "n_distinct_years": 5,
-  "method": "deephist25",
-  "change_score": 0.9414,
+  "district": "六龜區",
+  "lat": 22.90398,
+  "lon": 120.64882,
+  "n_independent_events": 6,
+  "n_distinct_years": 6,
+  "years": [
+   2006,
+   2008,
+   2009,
+   2010,
+   2022,
+   2025
+  ],
+  "n_events": 29,
+  "n_by_type": {
+   "災害事件": 28,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2006,
+    "name": "0609豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2006-06-09",
+    "last_date": "2006-06-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "薔蜜颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-09-29",
+    "last_date": "2008-09-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-27",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2010-09-19",
+    "last_date": "2010-09-21",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2022-10-17",
+    "last_date": "2022-10-17",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2025-08-09",
+    "last_date": "2025-08-10",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1122,
   "deep_verify_caveat": null
  },
  {
   "rank": 11,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00376,
-  "lon": 121.086,
-  "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.475,
+  "county": "雲林縣",
+  "district": "古坑鄉",
+  "lat": 23.59343,
+  "lon": 120.60928,
+  "n_independent_events": 6,
+  "n_distinct_years": 6,
+  "years": [
+   2000,
+   2001,
+   2007,
+   2009,
+   2015,
+   2016
+  ],
+  "n_events": 23,
+  "n_by_type": {
+   "災害事件": 23
+  },
+  "events": [
+   {
+    "year": 2000,
+    "name": "6月豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2000-09-11",
+    "last_date": "2000-09-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "納莉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2001-10-18",
+    "last_date": "2003-10-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2007-12-04",
+    "last_date": "2007-12-04",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 16,
+    "first_date": "2009-08-10",
+    "last_date": "2009-09-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-01-01",
+    "last_date": "2015-01-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2016,
+    "name": "尼伯特颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2016-07-07",
+    "last_date": "2016-07-07",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0298,
   "deep_verify_caveat": null
  },
  {
   "rank": 12,
   "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.01091,
-  "lon": 120.66902,
+  "district": "甲仙區",
+  "lat": 23.09617,
+  "lon": 120.61399,
+  "n_independent_events": 6,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.9068,
+  "years": [
+   2008,
+   2009,
+   2024,
+   2025,
+   2026
+  ],
+  "n_events": 24,
+  "n_by_type": {
+   "災害事件": 22,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2008-07-17",
+    "last_date": "2008-07-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-10-08",
+    "last_date": "2008-10-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 11,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2024-09-10",
+    "last_date": "2024-09-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-07-28",
+    "last_date": "2025-07-28",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "0822豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-09-06",
+    "last_date": "2026-09-06",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0709,
   "deep_verify_caveat": null
  },
  {
   "rank": 13,
   "county": "南投縣",
-  "district": "水里鄉",
-  "lat": 23.73318,
-  "lon": 120.85604,
+  "district": "仁愛鄉",
+  "lat": 23.95793,
+  "lon": 121.15602,
+  "n_independent_events": 6,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.6415,
+  "years": [
+   2000,
+   2019,
+   2023,
+   2024,
+   2025
+  ],
+  "n_events": 15,
+  "n_by_type": {
+   "災害事件": 11,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2000,
+    "name": "象神颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2000-11-11",
+    "last_date": "2000-11-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0518豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-05-18",
+    "last_date": "2019-05-18",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-08-08",
+    "last_date": "2023-08-08",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-06-07",
+    "last_date": "2024-06-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2024-07-19",
+    "last_date": "2024-07-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-10",
+    "last_date": "2025-05-10",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1604,
   "deep_verify_caveat": null
  },
  {
   "rank": 14,
-  "county": "屏東縣",
-  "district": "滿州鄉",
-  "lat": 22.03911,
-  "lon": 120.81507,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.02278,
+  "lon": 121.18746,
+  "n_independent_events": 6,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.9363,
-  "deep_verify_caveat": "對位失敗(shift 28.8,26.5px)+可能雲影混淆，不可信"
+  "years": [
+   1994,
+   2008,
+   2009,
+   2023,
+   2024
+  ],
+  "n_events": 76,
+  "n_by_type": {
+   "災害事件": 75,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 1994,
+    "name": "道格颱風",
+    "aliases": [],
+    "n_records": 11,
+    "first_date": "1994-08-12",
+    "last_date": "2009-08-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 30,
+    "first_date": "2008-01-01",
+    "last_date": "2008-10-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "薔蜜颱風",
+    "aliases": [],
+    "n_records": 25,
+    "first_date": "2008-09-26",
+    "last_date": "2008-09-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "小犬颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-10-05",
+    "last_date": "2023-10-05",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "0403花蓮地震",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2024-05-21",
+    "last_date": "2024-05-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1457,
+  "deep_verify_caveat": null
  },
  {
   "rank": 15,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.98213,
-  "lon": 120.65403,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.01182,
+  "lon": 121.10199,
+  "n_independent_events": 6,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.9006,
+  "years": [
+   2008,
+   2009,
+   2012,
+   2019,
+   2023
+  ],
+  "n_events": 19,
+  "n_by_type": {
+   "災害事件": 16,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 9,
+    "first_date": "2008-09-15",
+    "last_date": "2008-10-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-09",
+    "last_date": "2009-08-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-06-11",
+    "last_date": "2012-06-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0611豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-06-12",
+    "last_date": "2019-06-12",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-07-29",
+    "last_date": "2019-07-29",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-08-06",
+    "last_date": "2023-08-07",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0376,
   "deep_verify_caveat": null
  },
  {
   "rank": 16,
-  "county": "臺中市",
-  "district": "和平區",
-  "lat": 24.17697,
-  "lon": 120.97784,
+  "county": "南投縣",
+  "district": "信義鄉",
+  "lat": 23.51847,
+  "lon": 120.85173,
+  "n_independent_events": 6,
   "n_distinct_years": 5,
-  "method": "quickscan8",
-  "change_score": 0.5978,
+  "years": [
+   1996,
+   2012,
+   2013,
+   2014,
+   2017
+  ],
+  "n_events": 23,
+  "n_by_type": {
+   "災害事件": 23
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 13,
+    "first_date": "1996-01-01",
+    "last_date": "1996-09-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0504豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-01-01",
+    "last_date": "2012-05-04",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2012-01-01",
+    "last_date": "2012-06-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "蘇力颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2013-07-13",
+    "last_date": "2013-07-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2014,
+    "name": "0520豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2014-05-20",
+    "last_date": "2014-05-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-06-01",
+    "last_date": "2017-06-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0692,
   "deep_verify_caveat": null
  },
  {
   "rank": 17,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02203,
-  "lon": 121.18409,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6997,
+  "county": "屏東縣",
+  "district": "來義鄉",
+  "lat": 22.52659,
+  "lon": 120.67536,
+  "n_independent_events": 6,
+  "n_distinct_years": 5,
+  "years": [
+   2009,
+   2010,
+   2011,
+   2012,
+   2015
+  ],
+  "n_events": 10,
+  "n_by_type": {
+   "災害事件": 10
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-14",
+    "last_date": "2009-08-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2010-09-19",
+    "last_date": "2010-09-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2011,
+    "name": "南瑪都颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2011-08-29",
+    "last_date": "2011-08-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2011,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 1,
+    "first_date": "2011-11-04",
+    "last_date": "2011-11-04",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-06-18",
+    "last_date": "2012-06-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-01-01",
+    "last_date": "2015-01-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0473,
   "deep_verify_caveat": null
  },
  {
   "rank": 18,
-  "county": "新北市",
-  "district": "汐止區",
-  "lat": 25.09235,
-  "lon": 121.64682,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.11392,
+  "lon": 121.18325,
+  "n_independent_events": 6,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7879,
+  "years": [
+   2021,
+   2022,
+   2025,
+   2026
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "媒體報導": 6
+  },
+  "events": [
+   {
+    "year": 2021,
+    "name": "0731豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-01",
+    "last_date": "2021-08-01",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-02-22",
+    "last_date": "2022-02-22",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-03-27",
+    "last_date": "2022-03-27",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-04-14",
+    "last_date": "2025-04-14",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-06-16",
+    "last_date": "2026-06-16",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "0822豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-08-26",
+    "last_date": "2026-08-26",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0764,
   "deep_verify_caveat": null
  },
  {
   "rank": 19,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.98129,
-  "lon": 120.64879,
+  "county": "屏東縣",
+  "district": "來義鄉",
+  "lat": 22.52668,
+  "lon": 120.68488,
+  "n_independent_events": 6,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9194,
+  "years": [
+   2009,
+   2010,
+   2011,
+   2012
+  ],
+  "n_events": 30,
+  "n_by_type": {
+   "災害事件": 30
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 14,
+    "first_date": "2009-01-01",
+    "last_date": "2009-09-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "98年",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-09-30",
+    "last_date": "2009-09-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2010-09-28",
+    "last_date": "2010-09-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2011,
+    "name": "南瑪都颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2011-08-29",
+    "last_date": "2011-08-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2012-06-10",
+    "last_date": "2012-06-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "天秤颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2012-09-10",
+    "last_date": "2012-09-10",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1027,
   "deep_verify_caveat": null
  },
  {
   "rank": 20,
-  "county": "新北市",
-  "district": "汐止區",
-  "lat": 25.09232,
-  "lon": 121.64625,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8057,
-  "deep_verify_caveat": "對位成功但熱區呈全畫面瀰漫式雜訊，非集中訊號；高分可能被季節/紋理雜訊灌水"
+  "county": "花蓮縣",
+  "district": "秀林鄉",
+  "lat": 24.19276,
+  "lon": 121.66158,
+  "n_independent_events": 6,
+  "n_distinct_years": 3,
+  "years": [
+   2022,
+   2024,
+   2025
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "媒體報導": 6
+  },
+  "events": [
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-02-24",
+    "last_date": "2022-02-24",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-09-30",
+    "last_date": "2024-09-30",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-03-04",
+    "last_date": "2025-03-04",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-10",
+    "last_date": "2025-05-10",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "薇帕颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-19",
+    "last_date": "2025-07-19",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "樺加沙颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-09-23",
+    "last_date": "2025-09-23",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2682,
+  "deep_verify_caveat": null
  },
  {
   "rank": 21,
-  "county": "臺中市",
-  "district": "霧峰區",
-  "lat": 24.04209,
-  "lon": 120.69982,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8471,
+  "county": "苗栗縣",
+  "district": "泰安鄉",
+  "lat": 24.49527,
+  "lon": 121.13959,
+  "n_independent_events": 6,
+  "n_distinct_years": 2,
+  "years": [
+   2024,
+   2025
+  ],
+  "n_events": 8,
+  "n_by_type": {
+   "媒體報導": 8
+  },
+  "events": [
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-04-24",
+    "last_date": "2024-05-02",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-06-04",
+    "last_date": "2024-06-04",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-03-15",
+    "last_date": "2025-03-15",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-31",
+    "last_date": "2025-05-31",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "丹娜絲颱風",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 2,
+    "first_date": "2025-07-11",
+    "last_date": "2025-07-23",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "薇帕颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-23",
+    "last_date": "2025-07-23",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0078,
   "deep_verify_caveat": null
  },
  {
   "rank": 22,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02197,
-  "lon": 121.18489,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6875,
+  "county": "花蓮縣",
+  "district": "秀林鄉",
+  "lat": 24.21173,
+  "lon": 121.68119,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   2019,
+   2023,
+   2024,
+   2025,
+   2026
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "媒體報導": 5
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0525豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-05-24",
+    "last_date": "2019-05-24",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-01-11",
+    "last_date": "2023-01-11",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-04-22",
+    "last_date": "2024-04-22",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "樺加沙颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-09-23",
+    "last_date": "2025-09-23",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-04-27",
+    "last_date": "2026-04-27",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2577,
   "deep_verify_caveat": null
  },
  {
   "rank": 23,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.5272,
-  "lon": 120.85581,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": null,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 22.91326,
+  "lon": 120.64847,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   2009,
+   2010,
+   2019,
+   2024,
+   2025
+  ],
+  "n_events": 49,
+  "n_by_type": {
+   "災害事件": 46,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "2009-08-22",
+    "last_date": "2009-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2010-09-19",
+    "last_date": "2010-09-21",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-08-15",
+    "last_date": "2019-08-15",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 17,
+    "first_date": "2024-08-08",
+    "last_date": "2024-09-09",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 16,
+    "first_date": "2025-07-30",
+    "last_date": "2025-08-12",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1671,
   "deep_verify_caveat": null
  },
  {
   "rank": 24,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00301,
-  "lon": 121.08528,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.2383,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 22.98178,
+  "lon": 120.65334,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   2008,
+   2009,
+   2019,
+   2024,
+   2025
+  ],
+  "n_events": 33,
+  "n_by_type": {
+   "災害事件": 32,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-07-24",
+    "last_date": "2008-07-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2009-08-25",
+    "last_date": "2009-08-27",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2019-08-19",
+    "last_date": "2019-08-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 9,
+    "first_date": "2024-07-25",
+    "last_date": "2024-07-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 12,
+    "first_date": "2025-08-05",
+    "last_date": "2025-08-06",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.083,
   "deep_verify_caveat": null
  },
  {
   "rank": 25,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.56215,
-  "lon": 120.86774,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.3148,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 23.06484,
+  "lon": 120.68308,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   2009,
+   2012,
+   2013,
+   2021,
+   2024
+  ],
+  "n_events": 22,
+  "n_by_type": {
+   "災害事件": 21,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2009-08-18",
+    "last_date": "2009-08-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "泰利颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2012-06-15",
+    "last_date": "2012-06-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2013-08-30",
+    "last_date": "2013-08-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-07",
+    "last_date": "2021-08-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2024-09-11",
+    "last_date": "2024-09-11",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1754,
   "deep_verify_caveat": null
  },
  {
   "rank": 26,
   "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.0232,
-  "lon": 121.18787,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.4195,
+  "district": "信義鄉",
+  "lat": 23.70837,
+  "lon": 120.85367,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   2001,
+   2008,
+   2013,
+   2017,
+   2024
+  ],
+  "n_events": 14,
+  "n_by_type": {
+   "災害事件": 14
+  },
+  "events": [
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-08-07",
+    "last_date": "2001-08-07",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-09-18",
+    "last_date": "2008-09-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "蘇力颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2013-07-15",
+    "last_date": "2013-07-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2017-06-06",
+    "last_date": "2017-06-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2024-07-27",
+    "last_date": "2024-07-27",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1685,
   "deep_verify_caveat": null
  },
  {
   "rank": 27,
   "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.56223,
-  "lon": 120.86728,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.2668,
+  "district": "仁愛鄉",
+  "lat": 24.00318,
+  "lon": 121.0857,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   1999,
+   2004,
+   2008,
+   2009,
+   2023
+  ],
+  "n_events": 121,
+  "n_by_type": {
+   "災害事件": 120,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [
+     "921集集大地震",
+     "豪雨"
+    ],
+    "n_records": 4,
+    "first_date": "2000-02-23",
+    "last_date": "2000-02-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2004-07-05",
+    "last_date": "2004-07-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 15,
+    "first_date": "2008-01-01",
+    "last_date": "2008-09-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-08-11",
+    "last_date": "2009-08-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 96,
+    "first_date": "2023-01-01",
+    "last_date": "2024-06-06",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.026,
   "deep_verify_caveat": null
  },
  {
   "rank": 28,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.0102,
-  "lon": 120.66914,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9471,
-  "deep_verify_caveat": "對位失敗(shift 11.7,16.6px)，quick-batch尖峰(0.9471)應來自中間某日期對、非頭尾對"
+  "county": "南投縣",
+  "district": "國姓鄉",
+  "lat": 23.94933,
+  "lon": 120.85414,
+  "n_independent_events": 5,
+  "n_distinct_years": 5,
+  "years": [
+   1999,
+   2004,
+   2008,
+   2009,
+   2015
+  ],
+  "n_events": 12,
+  "n_by_type": {
+   "災害事件": 12
+  },
+  "events": [
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "1999-09-27",
+    "last_date": "1999-10-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2004-07-06",
+    "last_date": "2004-07-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2008-09-15",
+    "last_date": "2008-09-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-17",
+    "last_date": "2009-08-17",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-01-01",
+    "last_date": "2015-01-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.164,
+  "deep_verify_caveat": null
  },
  {
   "rank": 29,
-  "county": "雲林縣",
-  "district": "林內鄉",
-  "lat": 23.75396,
-  "lon": 120.63816,
+  "county": "屏東縣",
+  "district": "獅子鄉",
+  "lat": 22.31234,
+  "lon": 120.64592,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8897,
+  "years": [
+   2009,
+   2010,
+   2012,
+   2026
+  ],
+  "n_events": 18,
+  "n_by_type": {
+   "災害事件": 17,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2009-08-12",
+    "last_date": "2009-08-12",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2010-09-21",
+    "last_date": "2010-09-21",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-06-16",
+    "last_date": "2012-06-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "天秤颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2012-08-27",
+    "last_date": "2012-08-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "0822豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-08-23",
+    "last_date": "2026-08-23",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1151,
   "deep_verify_caveat": null
  },
  {
   "rank": 30,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00613,
-  "lon": 121.09402,
+  "county": "苗栗縣",
+  "district": "南庄鄉",
+  "lat": 24.54844,
+  "lon": 121.02864,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.4186,
+  "years": [
+   2019,
+   2022,
+   2024,
+   2026
+  ],
+  "n_events": 7,
+  "n_by_type": {
+   "媒體報導": 7
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "利奇馬颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-08-10",
+    "last_date": "2019-08-10",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-07-03",
+    "last_date": "2022-07-03",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-09-07",
+    "last_date": "2022-09-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [
+     "2024年其他災害"
+    ],
+    "n_records": 3,
+    "first_date": "2024-10-31",
+    "last_date": "2024-11-20",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "萬里溪堰塞湖暨0625豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-07-06",
+    "last_date": "2026-07-06",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0117,
   "deep_verify_caveat": null
  },
  {
   "rank": 31,
   "county": "高雄市",
   "district": "六龜區",
-  "lat": 22.982,
-  "lon": 120.65107,
+  "lat": 22.97299,
+  "lon": 120.6511,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9415,
+  "years": [
+   2019,
+   2021,
+   2024,
+   2025
+  ],
+  "n_events": 12,
+  "n_by_type": {
+   "災害事件": 11,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2019-08-20",
+    "last_date": "2019-08-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "0731豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2021-08-04",
+    "last_date": "2022-10-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-05",
+    "last_date": "2021-08-05",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2024-07-29",
+    "last_date": "2024-07-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2025-08-05",
+    "last_date": "2025-08-05",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1309,
   "deep_verify_caveat": null
  },
  {
   "rank": 32,
-  "county": "南投縣",
-  "district": "鹿谷鄉",
-  "lat": 23.69081,
-  "lon": 120.78482,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 23.01087,
+  "lon": 120.67035,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6646,
+  "years": [
+   2009,
+   2012,
+   2017,
+   2024
+  ],
+  "n_events": 57,
+  "n_by_type": {
+   "災害事件": 57
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 37,
+    "first_date": "2009-01-01",
+    "last_date": "2009-09-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2012-06-10",
+    "last_date": "2012-06-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "尼莎暨海棠颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2017-07-31",
+    "last_date": "2017-07-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-07-19",
+    "last_date": "2024-10-17",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2024-08-15",
+    "last_date": "2024-08-15",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0471,
   "deep_verify_caveat": null
  },
  {
   "rank": 33,
   "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.90377,
-  "lon": 120.64906,
+  "district": "桃源區",
+  "lat": 23.18901,
+  "lon": 120.78767,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.944,
+  "years": [
+   2017,
+   2021,
+   2023,
+   2024
+  ],
+  "n_events": 11,
+  "n_by_type": {
+   "災害事件": 8,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2017,
+    "name": "尼莎&海棠颱風事件─桃源區荖濃溪與玉穗溪匯流口",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-08-14",
+    "last_date": "2017-08-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-13",
+    "last_date": "2021-08-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-08-09",
+    "last_date": "2023-08-22",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2024-07-26",
+    "last_date": "2024-08-14",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-10-03",
+    "last_date": "2024-10-03",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2188,
   "deep_verify_caveat": null
  },
  {
   "rank": 34,
-  "county": "南投縣",
-  "district": "鹿谷鄉",
-  "lat": 23.71212,
-  "lon": 120.77886,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.51712,
+  "lon": 120.74679,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.758,
+  "years": [
+   1996,
+   2001,
+   2009,
+   2012
+  ],
+  "n_events": 20,
+  "n_by_type": {
+   "災害事件": 20
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "1996-08-03",
+    "last_date": "1996-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-08-06",
+    "last_date": "2001-08-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "2009年災害",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-09",
+    "last_date": "2009-08-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2009-08-20",
+    "last_date": "2009-10-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2012-06-13",
+    "last_date": "2012-06-13",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1123,
   "deep_verify_caveat": null
  },
  {
   "rank": 35,
   "county": "屏東縣",
   "district": "霧臺鄉",
-  "lat": 22.69093,
-  "lon": 120.70986,
+  "lat": 22.69115,
+  "lon": 120.70946,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9074,
+  "years": [
+   1996,
+   2003,
+   2007,
+   2009
+  ],
+  "n_events": 29,
+  "n_by_type": {
+   "災害事件": 29
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 11,
+    "first_date": "1996-08-03",
+    "last_date": "1997-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2003,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 5,
+    "first_date": "2003-08-01",
+    "last_date": "2003-08-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "0809豪雨",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2007-10-24",
+    "last_date": "2007-10-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "809豪雨"
+    ],
+    "n_records": 1,
+    "first_date": "2008-01-30",
+    "last_date": "2008-01-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-11-19",
+    "last_date": "2018-03-24",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0582,
   "deep_verify_caveat": null
  },
  {
   "rank": 36,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.52783,
-  "lon": 120.85506,
+  "county": "雲林縣",
+  "district": "古坑鄉",
+  "lat": 23.59327,
+  "lon": 120.60403,
+  "n_independent_events": 5,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.01,
+  "years": [
+   1999,
+   2000,
+   2001,
+   2009
+  ],
+  "n_events": 12,
+  "n_by_type": {
+   "災害事件": 12
+  },
+  "events": [
+   {
+    "year": 1999,
+    "name": "921集集大地震",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2000-02-28",
+    "last_date": "2000-02-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2000,
+    "name": "6月豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2000-09-11",
+    "last_date": "2000-09-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "納莉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2003-02-28",
+    "last_date": "2004-07-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2009-08-19",
+    "last_date": "2009-09-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "芭瑪颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-10-08",
+    "last_date": "2009-10-08",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.062,
   "deep_verify_caveat": null
  },
  {
   "rank": 37,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.70822,
-  "lon": 120.85315,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": null,
+  "county": "臺中市",
+  "district": "和平區",
+  "lat": 24.17706,
+  "lon": 120.97742,
+  "n_independent_events": 5,
+  "n_distinct_years": 3,
+  "years": [
+   2001,
+   2004,
+   2005
+  ],
+  "n_events": 28,
+  "n_by_type": {
+   "災害事件": 28
+  },
+  "events": [
+   {
+    "year": 2001,
+    "name": "工程設施",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-07-29",
+    "last_date": "2001-07-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 9,
+    "first_date": "2004-07-04",
+    "last_date": "2004-07-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "工程設施",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2004-07-21",
+    "last_date": "2004-07-21",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "艾利颱風",
+    "aliases": [],
+    "n_records": 12,
+    "first_date": "2004-08-30",
+    "last_date": "2005-02-27",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2005,
+    "name": "海棠颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2005-07-22",
+    "last_date": "2005-07-22",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1211,
   "deep_verify_caveat": null
  },
  {
   "rank": 38,
-  "county": "新北市",
-  "district": "新店區",
-  "lat": 24.91885,
-  "lon": 121.54908,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7666,
+  "county": "苗栗縣",
+  "district": "南庄鄉",
+  "lat": 24.60056,
+  "lon": 121.03289,
+  "n_independent_events": 5,
+  "n_distinct_years": 2,
+  "years": [
+   2022,
+   2023
+  ],
+  "n_events": 16,
+  "n_by_type": {
+   "災害事件": 12,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-05-17",
+    "last_date": "2022-05-17",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-07-30",
+    "last_date": "2022-07-30",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "軒嵐諾颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2022-09-03",
+    "last_date": "2022-09-03",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 10,
+    "first_date": "2022-10-24",
+    "last_date": "2022-10-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "0519鋒面",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-04-19",
+    "last_date": "2023-05-19",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0145,
   "deep_verify_caveat": null
  },
  {
   "rank": 39,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00589,
-  "lon": 121.09482,
+  "county": "苗栗縣",
+  "district": "泰安鄉",
+  "lat": 24.45761,
+  "lon": 120.91325,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.4755,
+  "years": [
+   2019,
+   2021,
+   2022,
+   2026
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 2,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0314豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-03-14",
+    "last_date": "2019-03-14",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2021-08-07",
+    "last_date": "2021-08-07",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-05-27",
+    "last_date": "2022-05-27",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "白海豚颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-08-09",
+    "last_date": "2026-08-09",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.058,
   "deep_verify_caveat": null
  },
  {
   "rank": 40,
   "county": "南投縣",
   "district": "仁愛鄉",
-  "lat": 24.00558,
-  "lon": 121.08782,
+  "lat": 24.01475,
+  "lon": 121.12147,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.3883,
+  "years": [
+   2017,
+   2023,
+   2025,
+   2026
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 1,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-06-09",
+    "last_date": "2017-06-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-08-04",
+    "last_date": "2023-08-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-07-14",
+    "last_date": "2025-07-14",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "沙德爾颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-08-28",
+    "last_date": "2026-08-28",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0164,
   "deep_verify_caveat": null
  },
  {
   "rank": 41,
-  "county": "臺南市",
-  "district": "南化區",
-  "lat": 23.07371,
-  "lon": 120.53518,
+  "county": "苗栗縣",
+  "district": "泰安鄉",
+  "lat": 24.46606,
+  "lon": 120.91892,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9434,
-  "deep_verify_caveat": "2010基準影像嚴重模糊(舊渲染陷阱)，基準不可用需換日期重測"
+  "years": [
+   2022,
+   2023,
+   2025,
+   2026
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-02-18",
+    "last_date": "2022-02-18",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-07-31",
+    "last_date": "2023-07-31",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "丹娜絲颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-11",
+    "last_date": "2025-07-11",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-07-24",
+    "last_date": "2026-07-24",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0708,
+  "deep_verify_caveat": null
  },
  {
   "rank": 42,
   "county": "高雄市",
   "district": "六龜區",
-  "lat": 23.01411,
-  "lon": 120.66599,
+  "lat": 23.10727,
+  "lon": 120.69672,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9373,
+  "years": [
+   1996,
+   2007,
+   2008,
+   2025
+  ],
+  "n_events": 28,
+  "n_by_type": {
+   "災害事件": 28
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-02",
+    "last_date": "2021-08-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "聖帕颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "2007-08-20",
+    "last_date": "2007-09-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-10-03",
+    "last_date": "2008-10-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 19,
+    "first_date": "2025-10-02",
+    "last_date": "2025-10-02",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.286,
   "deep_verify_caveat": null
  },
  {
   "rank": 43,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.66671,
-  "lon": 120.8752,
+  "county": "高雄市",
+  "district": "桃源區",
+  "lat": 23.06484,
+  "lon": 120.74633,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6805,
+  "years": [
+   2009,
+   2018,
+   2021,
+   2025
+  ],
+  "n_events": 17,
+  "n_by_type": {
+   "災害事件": 16,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2018,
+    "name": "0823熱帶低壓",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2018-08-25",
+    "last_date": "2018-08-25",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-08",
+    "last_date": "2021-08-08",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2025-08-05",
+    "last_date": "2025-08-05",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0559,
   "deep_verify_caveat": null
  },
  {
   "rank": 44,
-  "county": "臺中市",
-  "district": "和平區",
-  "lat": 24.17702,
-  "lon": 120.97708,
+  "county": "南投縣",
+  "district": "信義鄉",
+  "lat": 23.70095,
+  "lon": 120.85453,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9384,
-  "deep_verify_caveat": "對位成功；2026-09-22 再次目視覆核影像上看不出明確變化，撤回原「可信」判定，改列需複查"
+  "years": [
+   2012,
+   2017,
+   2024,
+   2025
+  ],
+  "n_events": 29,
+  "n_by_type": {
+   "災害事件": 28,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-08-03",
+    "last_date": "2012-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2017-06-04",
+    "last_date": "2017-06-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 21,
+    "first_date": "2024-07-25",
+    "last_date": "2024-09-04",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2025-08-01",
+    "last_date": "2025-08-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2039,
+  "deep_verify_caveat": null
  },
  {
   "rank": 45,
   "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02132,
-  "lon": 121.18097,
+  "district": "信義鄉",
+  "lat": 23.56235,
+  "lon": 120.86826,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.4727,
+  "years": [
+   1996,
+   2001,
+   2009,
+   2024
+  ],
+  "n_events": 12,
+  "n_by_type": {
+   "災害事件": 12
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "1996-08-03",
+    "last_date": "2001-06-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "經典案例"
+    ],
+    "n_records": 1,
+    "first_date": "2001-11-29",
+    "last_date": "2001-11-29",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2009-08-15",
+    "last_date": "2009-08-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2024-10-03",
+    "last_date": "2024-10-03",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2018,
   "deep_verify_caveat": null
  },
  {
   "rank": 46,
   "county": "高雄市",
-  "district": "杉林區",
-  "lat": 23.0121,
-  "lon": 120.57716,
+  "district": "六龜區",
+  "lat": 23.01414,
+  "lon": 120.66605,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8633,
+  "years": [
+   2008,
+   2009,
+   2021,
+   2024
+  ],
+  "n_events": 15,
+  "n_by_type": {
+   "災害事件": 15
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2008-07-19",
+    "last_date": "2008-10-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2021-08-10",
+    "last_date": "2022-10-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2024-09-11",
+    "last_date": "2024-09-11",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0843,
   "deep_verify_caveat": null
  },
  {
   "rank": 47,
-  "county": "高雄市",
-  "district": "那瑪夏區",
-  "lat": 23.21711,
-  "lon": 120.6929,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.52847,
+  "lon": 120.73883,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7235,
+  "years": [
+   2009,
+   2010,
+   2012,
+   2024
+  ],
+  "n_events": 8,
+  "n_by_type": {
+   "災害事件": 8
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-21",
+    "last_date": "2009-08-21",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "歷史時刻",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2010-06-01",
+    "last_date": "2010-06-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-06-19",
+    "last_date": "2012-06-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2024-09-06",
+    "last_date": "2024-09-06",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0892,
   "deep_verify_caveat": null
  },
  {
   "rank": 48,
-  "county": "宜蘭縣",
-  "district": "蘇澳鎮",
-  "lat": 24.60103,
-  "lon": 121.84923,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 22.9813,
+  "lon": 120.64865,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9448,
-  "deep_verify_caveat": "對位失敗且位移極大(242,135px)，判定為構圖/框取範圍不一致的偽陽性，非真實城市化"
+  "years": [
+   2008,
+   2009,
+   2019,
+   2024
+  ],
+  "n_events": 63,
+  "n_by_type": {
+   "災害事件": 62,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 9,
+    "first_date": "2007-01-02",
+    "last_date": "2017-07-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2009-08-08",
+    "last_date": "2009-08-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 47,
+    "first_date": "2019-08-16",
+    "last_date": "2019-08-19",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-07-29",
+    "last_date": "2024-07-29",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1635,
+  "deep_verify_caveat": null
  },
  {
   "rank": 49,
-  "county": "屏東縣",
-  "district": "來義鄉",
-  "lat": 22.52695,
-  "lon": 120.68429,
+  "county": "高雄市",
+  "district": "桃源區",
+  "lat": 23.22112,
+  "lon": 120.80313,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.9188,
+  "years": [
+   2011,
+   2012,
+   2017,
+   2024
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "災害事件": 5,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2011,
+    "name": "南瑪都颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2011-08-31",
+    "last_date": "2011-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-06-11",
+    "last_date": "2012-07-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0613豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-06-14",
+    "last_date": "2017-06-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-11-01",
+    "last_date": "2024-11-01",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2186,
   "deep_verify_caveat": null
  },
  {
   "rank": 50,
   "county": "南投縣",
-  "district": "鹿谷鄉",
-  "lat": 23.7636,
-  "lon": 120.72387,
+  "district": "信義鄉",
+  "lat": 23.66829,
+  "lon": 120.87687,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.4794,
+  "years": [
+   1996,
+   2001,
+   2012,
+   2021
+  ],
+  "n_events": 23,
+  "n_by_type": {
+   "災害事件": 23
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "1996-01-01",
+    "last_date": "1997-05-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "2001-06-20",
+    "last_date": "2001-08-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0504豪雨",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2012-05-04",
+    "last_date": "2012-05-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 1,
+    "first_date": "2021-07-28",
+    "last_date": "2021-07-28",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.191,
   "deep_verify_caveat": null
  },
  {
   "rank": 51,
-  "county": "南投縣",
-  "district": "竹山鎮",
-  "lat": 23.77587,
-  "lon": 120.70992,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.53064,
+  "lon": 120.73412,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6816,
+  "years": [
+   2009,
+   2012,
+   2013,
+   2019
+  ],
+  "n_events": 8,
+  "n_by_type": {
+   "災害事件": 7,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2009-01-01",
+    "last_date": "2009-08-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-06-12",
+    "last_date": "2012-06-12",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "蘇力颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2013-07-14",
+    "last_date": "2013-07-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0518豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-05-20",
+    "last_date": "2019-05-20",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0751,
   "deep_verify_caveat": null
  },
  {
   "rank": 52,
-  "county": "臺中市",
-  "district": "和平區",
-  "lat": 24.17911,
-  "lon": 120.98003,
+  "county": "南投縣",
+  "district": "信義鄉",
+  "lat": 23.57529,
+  "lon": 120.87871,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.569,
+  "years": [
+   1996,
+   2004,
+   2005,
+   2017
+  ],
+  "n_events": 7,
+  "n_by_type": {
+   "災害事件": 7
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1996-08-03",
+    "last_date": "1996-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2004-07-08",
+    "last_date": "2004-07-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2005,
+    "name": "海棠颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2005-01-01",
+    "last_date": "2005-01-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2017-06-08",
+    "last_date": "2017-06-08",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1749,
   "deep_verify_caveat": null
  },
  {
   "rank": 53,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02289,
-  "lon": 121.18383,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 23.08607,
+  "lon": 120.67953,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.3723,
+  "years": [
+   2009,
+   2010,
+   2013,
+   2016
+  ],
+  "n_events": 24,
+  "n_by_type": {
+   "災害事件": 24
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-30",
+    "last_date": "2009-08-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2010-09-19",
+    "last_date": "2010-10-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "蘇力颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2013-07-13",
+    "last_date": "2013-07-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2016,
+    "name": "梅姬颱風",
+    "aliases": [],
+    "n_records": 11,
+    "first_date": "2016-01-01",
+    "last_date": "2016-10-06",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1274,
   "deep_verify_caveat": null
  },
  {
   "rank": 54,
-  "county": "屏東縣",
-  "district": "滿州鄉",
-  "lat": 21.98935,
-  "lon": 120.84274,
+  "county": "南投縣",
+  "district": "信義鄉",
+  "lat": 23.65937,
+  "lon": 120.882,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8248,
+  "years": [
+   1996,
+   2001,
+   2009,
+   2013
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "災害事件": 6
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1996-08-19",
+    "last_date": "1996-08-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2001-08-07",
+    "last_date": "2001-08-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-08-28",
+    "last_date": "2009-08-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2013-08-30",
+    "last_date": "2013-08-30",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1683,
   "deep_verify_caveat": null
  },
  {
   "rank": 55,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.0142,
-  "lon": 120.66695,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.00524,
+  "lon": 121.08956,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.8585,
+  "years": [
+   2001,
+   2004,
+   2009,
+   2012
+  ],
+  "n_events": 8,
+  "n_by_type": {
+   "災害事件": 8
+  },
+  "events": [
+   {
+    "year": 2001,
+    "name": "0610梅雨鋒面災害",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-06-12",
+    "last_date": "2001-06-12",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2004-07-24",
+    "last_date": "2004-07-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-13",
+    "last_date": "2009-08-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "0610豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-06-11",
+    "last_date": "2012-06-11",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0241,
   "deep_verify_caveat": null
  },
  {
   "rank": 56,
   "county": "南投縣",
-  "district": "竹山鎮",
-  "lat": 23.76314,
-  "lon": 120.72315,
+  "district": "草屯鎮",
+  "lat": 23.96708,
+  "lon": 120.78502,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.444,
+  "years": [
+   2008,
+   2009,
+   2010,
+   2012
+  ],
+  "n_events": 15,
+  "n_by_type": {
+   "災害事件": 15
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2008-09-15",
+    "last_date": "2008-09-15",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2009-08-14",
+    "last_date": "2009-08-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2010-09-20",
+    "last_date": "2010-09-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2012-08-04",
+    "last_date": "2012-08-04",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0264,
   "deep_verify_caveat": null
  },
  {
   "rank": 57,
   "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00625,
-  "lon": 121.09326,
+  "district": "信義鄉",
+  "lat": 23.65561,
+  "lon": 121.02135,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.1762,
+  "years": [
+   1996,
+   1999,
+   2001,
+   2009
+  ],
+  "n_events": 9,
+  "n_by_type": {
+   "災害事件": 9
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 4,
+    "first_date": "1996-01-01",
+    "last_date": "1996-08-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1999-01-01",
+    "last_date": "1999-01-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2001-01-01",
+    "last_date": "2001-08-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-15",
+    "last_date": "2009-08-15",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0708,
   "deep_verify_caveat": null
  },
  {
   "rank": 58,
-  "county": "屏東縣",
-  "district": "來義鄉",
-  "lat": 22.52694,
-  "lon": 120.67386,
+  "county": "南投縣",
+  "district": "鹿谷鄉",
+  "lat": 23.71198,
+  "lon": 120.7786,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7584,
+  "years": [
+   1996,
+   1999,
+   2001,
+   2009
+  ],
+  "n_events": 29,
+  "n_by_type": {
+   "災害事件": 29
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "1996-08-03",
+    "last_date": "1997-12-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1999-09-23",
+    "last_date": "1999-09-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 19,
+    "first_date": "2001-07-31",
+    "last_date": "2003-10-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-18",
+    "last_date": "2009-08-18",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0296,
   "deep_verify_caveat": null
  },
  {
   "rank": 59,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.97305,
-  "lon": 120.65121,
+  "county": "屏東縣",
+  "district": "三地門鄉",
+  "lat": 22.69236,
+  "lon": 120.70545,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7734,
+  "years": [
+   1996,
+   2003,
+   2007,
+   2009
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "災害事件": 6
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "1996-08-03",
+    "last_date": "1997-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2003,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 1,
+    "first_date": "2003-08-01",
+    "last_date": "2003-08-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2007,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "809豪雨"
+    ],
+    "n_records": 1,
+    "first_date": "2008-01-30",
+    "last_date": "2008-01-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-11-19",
+    "last_date": "2014-02-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.043,
   "deep_verify_caveat": null
  },
  {
   "rank": 60,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.57476,
-  "lon": 120.87632,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.58477,
+  "lon": 120.76532,
+  "n_independent_events": 4,
   "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.3393,
+  "years": [
+   1996,
+   1999,
+   2001,
+   2004
+  ],
+  "n_events": 8,
+  "n_by_type": {
+   "災害事件": 8
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "1996-07-31",
+    "last_date": "1996-07-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 1999,
+    "name": "九二一地震",
+    "aliases": [
+     "921集集大地震"
+    ],
+    "n_records": 3,
+    "first_date": "1999-09-22",
+    "last_date": "1999-11-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2001-07-31",
+    "last_date": "2001-07-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "崩塌地整治",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2004-06-01",
+    "last_date": "2004-06-01",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0597,
   "deep_verify_caveat": null
  },
  {
   "rank": 61,
-  "county": "新竹縣",
-  "district": "五峰鄉",
-  "lat": 24.57482,
-  "lon": 121.10574,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.7727,
+  "county": "臺東縣",
+  "district": "海端鄉",
+  "lat": 23.18311,
+  "lon": 121.03173,
+  "n_independent_events": 4,
+  "n_distinct_years": 3,
+  "years": [
+   2019,
+   2025,
+   2026
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0526豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-05-25",
+    "last_date": "2019-05-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-01-21",
+    "last_date": "2025-01-21",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-13",
+    "last_date": "2025-05-13",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-06-06",
+    "last_date": "2026-06-06",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1364,
   "deep_verify_caveat": null
  },
  {
   "rank": 62,
-  "county": "南投縣",
-  "district": "水里鄉",
-  "lat": 23.74095,
-  "lon": 120.8562,
-  "n_distinct_years": 4,
-  "method": "quickscan8",
-  "change_score": 0.6634,
+  "county": "宜蘭縣",
+  "district": "南澳鄉",
+  "lat": 24.41211,
+  "lon": 121.78898,
+  "n_independent_events": 4,
+  "n_distinct_years": 3,
+  "years": [
+   2020,
+   2023,
+   2026
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2020,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-12-01",
+    "last_date": "2020-12-01",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-01-06",
+    "last_date": "2023-01-06",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-06-04",
+    "last_date": "2023-06-04",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-05-29",
+    "last_date": "2026-05-29",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0424,
   "deep_verify_caveat": null
  },
  {
   "rank": 63,
   "county": "南投縣",
   "district": "信義鄉",
-  "lat": 23.56283,
-  "lon": 120.86779,
+  "lat": 23.71571,
+  "lon": 120.86204,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.3986,
+  "years": [
+   2012,
+   2024,
+   2025
+  ],
+  "n_events": 42,
+  "n_by_type": {
+   "災害事件": 39,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-08-03",
+    "last_date": "2012-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 16,
+    "first_date": "2024-07-27",
+    "last_date": "2024-07-29",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "丹娜絲颱風",
+    "aliases": [],
+    "n_records": 21,
+    "first_date": "2025-07-09",
+    "last_date": "2025-07-12",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2025-07-31",
+    "last_date": "2025-08-01",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1026,
   "deep_verify_caveat": null
  },
  {
   "rank": 64,
-  "county": "雲林縣",
-  "district": "古坑鄉",
-  "lat": 23.60474,
-  "lon": 120.60598,
+  "county": "臺東縣",
+  "district": "海端鄉",
+  "lat": 23.1375,
+  "lon": 121.11241,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.5806,
+  "years": [
+   2019,
+   2020,
+   2025
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-09-07",
+    "last_date": "2019-09-07",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2020,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-11-06",
+    "last_date": "2020-11-06",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "樺加沙颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-09-24",
+    "last_date": "2025-09-24",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "鳳凰颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-11-12",
+    "last_date": "2025-11-12",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0955,
   "deep_verify_caveat": null
  },
  {
   "rank": 65,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.56981,
-  "lon": 120.91484,
+  "county": "臺東縣",
+  "district": "海端鄉",
+  "lat": 23.23916,
+  "lon": 121.00365,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.6073,
+  "years": [
+   2023,
+   2024,
+   2025
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "媒體報導": 5
+  },
+  "events": [
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-05-27",
+    "last_date": "2023-05-27",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-09-22",
+    "last_date": "2023-09-22",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-06-08",
+    "last_date": "2024-06-08",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 2,
+    "first_date": "2025-07-31",
+    "last_date": "2025-08-03",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.14,
   "deep_verify_caveat": null
  },
  {
   "rank": 66,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.66929,
-  "lon": 120.87394,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.59147,
+  "lon": 120.74622,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.5737,
+  "years": [
+   2001,
+   2013,
+   2024
+  ],
+  "n_events": 19,
+  "n_by_type": {
+   "災害事件": 19
+  },
+  "events": [
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2001-07-31",
+    "last_date": "2001-07-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "102年其他",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2013-07-06",
+    "last_date": "2013-07-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2013,
+    "name": "0405豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2013-07-11",
+    "last_date": "2013-07-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 13,
+    "first_date": "2024-10-04",
+    "last_date": "2024-10-04",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0422,
   "deep_verify_caveat": null
  },
  {
   "rank": 67,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.10723,
-  "lon": 120.69661,
+  "county": "宜蘭縣",
+  "district": "南澳鄉",
+  "lat": 24.47381,
+  "lon": 121.78704,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.7618,
+  "years": [
+   2009,
+   2012,
+   2023
+  ],
+  "n_events": 11,
+  "n_by_type": {
+   "災害事件": 11
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "芭瑪颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2009-10-09",
+    "last_date": "2009-10-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "宜蘭南澳-001",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-08-02",
+    "last_date": "2012-08-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2012-08-08",
+    "last_date": "2012-08-08",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 2,
+    "first_date": "2023-10-21",
+    "last_date": "2023-10-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1515,
   "deep_verify_caveat": null
  },
  {
   "rank": 68,
-  "county": "嘉義縣",
-  "district": "中埔鄉",
-  "lat": 23.37309,
-  "lon": 120.56309,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.00331,
+  "lon": 121.09642,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.6744,
+  "years": [
+   2004,
+   2008,
+   2023
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "災害事件": 6
+  },
+  "events": [
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2004-07-21",
+    "last_date": "2004-07-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-10-02",
+    "last_date": "2008-10-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2008,
+    "name": "辛樂克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2008-10-02",
+    "last_date": "2008-10-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2023-08-29",
+    "last_date": "2023-08-29",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0154,
   "deep_verify_caveat": null
  },
  {
   "rank": 69,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.08621,
-  "lon": 120.67924,
+  "county": "花蓮縣",
+  "district": "秀林鄉",
+  "lat": 23.96425,
+  "lon": 121.49959,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.7895,
+  "years": [
+   2018,
+   2021,
+   2023
+  ],
+  "n_events": 10,
+  "n_by_type": {
+   "災害事件": 6,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2018,
+    "name": "山竹颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2018-09-16",
+    "last_date": "2018-09-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "圓規颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2021-10-12",
+    "last_date": "2022-05-31",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "杜蘇芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-07-27",
+    "last_date": "2023-07-27",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "海葵颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-09-04",
+    "last_date": "2023-09-04",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1744,
   "deep_verify_caveat": null
  },
  {
   "rank": 70,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.0067,
-  "lon": 121.09381,
+  "county": "臺東縣",
+  "district": "大武鄉",
+  "lat": 22.42059,
+  "lon": 120.93019,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.2934,
+  "years": [
+   1991,
+   2021,
+   2023
+  ],
+  "n_events": 30,
+  "n_by_type": {
+   "災害事件": 28,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 1991,
+    "name": "耐特颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1991-09-24",
+    "last_date": "1991-09-24",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "1013豪雨",
+    "aliases": [],
+    "n_records": 25,
+    "first_date": "2021-10-13",
+    "last_date": "2021-10-14",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "圓規颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2021-10-18",
+    "last_date": "2021-10-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "杜蘇芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-07-27",
+    "last_date": "2023-07-27",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0732,
   "deep_verify_caveat": null
  },
  {
   "rank": 71,
-  "county": "臺東縣",
-  "district": "太麻里鄉",
-  "lat": 22.69286,
-  "lon": 121.02084,
+  "county": "臺中市",
+  "district": "和平區",
+  "lat": 24.17269,
+  "lon": 120.96978,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "deephist25",
-  "change_score": 0.938,
-  "deep_verify_caveat": "河床裸露礫石灘明顯萎縮、坡地復綠，真實但熱區瀰漫，分數恐被一般林地紋理差異墊高（需複查）"
+  "years": [
+   2004,
+   2006,
+   2023
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 4,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2004,
+    "name": "艾利颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2004-08-30",
+    "last_date": "2004-08-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2004-08-31",
+    "last_date": "2004-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2006,
+    "name": "馬莎颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2006-05-11",
+    "last_date": "2006-05-11",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "卡努颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-08-04",
+    "last_date": "2023-08-04",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0915,
+  "deep_verify_caveat": null
  },
  {
   "rank": 72,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.70109,
-  "lon": 120.85408,
+  "county": "新北市",
+  "district": "烏來區",
+  "lat": 24.849,
+  "lon": 121.55074,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.5885,
+  "years": [
+   2015,
+   2019,
+   2021
+  ],
+  "n_events": 18,
+  "n_by_type": {
+   "災害事件": 18
+  },
+  "events": [
+   {
+    "year": 2015,
+    "name": "蘇迪勒颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "2015-08-13",
+    "last_date": "2015-08-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2015,
+    "name": "杜鵑颱風",
+    "aliases": [
+     "杜鵑風風"
+    ],
+    "n_records": 9,
+    "first_date": "2015-10-06",
+    "last_date": "2015-10-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2015-08-19",
+    "last_date": "2015-08-19",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "其他事件"
+    ],
+    "n_records": 1,
+    "first_date": "2021-07-13",
+    "last_date": "2021-07-13",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0061,
   "deep_verify_caveat": null
  },
  {
   "rank": 73,
-  "county": "花蓮縣",
-  "district": "卓溪鄉",
-  "lat": 23.34726,
-  "lon": 121.29398,
+  "county": "新北市",
+  "district": "汐止區",
+  "lat": 25.07937,
+  "lon": 121.67083,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8642,
+  "years": [
+   2000,
+   2001,
+   2004
+  ],
+  "n_events": 23,
+  "n_by_type": {
+   "災害事件": 23
+  },
+  "events": [
+   {
+    "year": 2000,
+    "name": "象神颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2000-10-31",
+    "last_date": "2000-11-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "納莉颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-09-22",
+    "last_date": "2001-09-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "海馬颱風",
+    "aliases": [],
+    "n_records": 13,
+    "first_date": "2004-09-11",
+    "last_date": "2004-09-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "納坦颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2004-10-26",
+    "last_date": "2004-10-26",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2918,
   "deep_verify_caveat": null
  },
  {
   "rank": 74,
   "county": "臺中市",
   "district": "和平區",
-  "lat": 24.17809,
-  "lon": 120.98094,
+  "lat": 24.20659,
+  "lon": 121.01913,
+  "n_independent_events": 4,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.473,
+  "years": [
+   2000,
+   2001,
+   2004
+  ],
+  "n_events": 7,
+  "n_by_type": {
+   "災害事件": 7
+  },
+  "events": [
+   {
+    "year": 2000,
+    "name": "象神颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2000-11-01",
+    "last_date": "2000-11-01",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-07-30",
+    "last_date": "2001-07-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "敏督利颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2004-07-07",
+    "last_date": "2004-07-07",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2004,
+    "name": "工程設施",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2004-07-21",
+    "last_date": "2004-07-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0631,
   "deep_verify_caveat": null
  },
  {
   "rank": 75,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02144,
-  "lon": 121.18313,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.4583,
+  "county": "苗栗縣",
+  "district": "大湖鄉",
+  "lat": 24.40733,
+  "lon": 120.86523,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2021,
+   2026
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-06-25",
+    "last_date": "2021-06-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-08-04",
+    "last_date": "2021-08-04",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "0404豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-04-05",
+    "last_date": "2026-04-05",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "巴威颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-07-11",
+    "last_date": "2026-07-11",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0246,
   "deep_verify_caveat": null
  },
  {
   "rank": 76,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.00227,
-  "lon": 121.08663,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.3774,
+  "county": "花蓮縣",
+  "district": "秀林鄉",
+  "lat": 24.20691,
+  "lon": 121.66648,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2024,
+   2025
+  ],
+  "n_events": 17,
+  "n_by_type": {
+   "災害事件": 12,
+   "媒體報導": 5
+  },
+  "events": [
+   {
+    "year": 2024,
+    "name": "0403花蓮地震",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-04-03",
+    "last_date": "2024-04-03",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 14,
+    "first_date": "2024-07-24",
+    "last_date": "2024-09-27",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "康芮颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-11-01",
+    "last_date": "2024-11-01",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-19",
+    "last_date": "2025-05-19",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2391,
   "deep_verify_caveat": null
  },
  {
   "rank": 77,
-  "county": "臺東縣",
-  "district": "大武鄉",
-  "lat": 22.45109,
-  "lon": 120.92319,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8117,
+  "county": "高雄市",
+  "district": "茂林區",
+  "lat": 22.91066,
+  "lon": 120.67981,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2009,
+   2024
+  ],
+  "n_events": 19,
+  "n_by_type": {
+   "災害事件": 19
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2009-08-09",
+    "last_date": "2009-08-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "1011豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-08-27",
+    "last_date": "2009-08-27",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-04-01",
+    "last_date": "2024-10-17",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2024-09-13",
+    "last_date": "2024-09-13",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0916,
   "deep_verify_caveat": null
  },
  {
   "rank": 78,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.91312,
-  "lon": 120.64866,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8743,
+  "county": "花蓮縣",
+  "district": "秀林鄉",
+  "lat": 24.24722,
+  "lon": 121.71832,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2012,
+   2024
+  ],
+  "n_events": 20,
+  "n_by_type": {
+   "災害事件": 19,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2012,
+    "name": "花蓮秀林-001",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-08-02",
+    "last_date": "2012-08-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-08-08",
+    "last_date": "2012-08-14",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "0403花蓮地震",
+    "aliases": [],
+    "n_records": 13,
+    "first_date": "2022-05-23",
+    "last_date": "2022-05-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "0629豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-06-30",
+    "last_date": "2024-06-30",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1832,
   "deep_verify_caveat": null
  },
  {
   "rank": 79,
-  "county": "南投縣",
-  "district": "信義鄉",
-  "lat": 23.6682,
-  "lon": 120.87701,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.4847,
+  "county": "臺中市",
+  "district": "和平區",
+  "lat": 24.25011,
+  "lon": 121.13112,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2019,
+   2024
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "媒體報導": 6
+  },
+  "events": [
+   {
+    "year": 2019,
+    "name": "0314豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-03-14",
+    "last_date": "2019-03-14",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2024-06-02",
+    "last_date": "2024-06-06",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2024年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2024-08-24",
+    "last_date": "2024-08-24",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2024年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2024-10-04",
+    "last_date": "2024-10-04",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0972,
   "deep_verify_caveat": null
  },
  {
   "rank": 80,
-  "county": "高雄市",
-  "district": "甲仙區",
-  "lat": 23.05404,
-  "lon": 120.54982,
-  "n_distinct_years": 3,
-  "method": "deephist25",
-  "change_score": 0.978,
-  "deep_verify_caveat": "100熱點中最高分；裸露河床/坡地復綠明顯(與莫拉克風災後時序吻合)，但熱區近乎滿版，可信度存疑（需複查）"
+  "county": "宜蘭縣",
+  "district": "大同鄉",
+  "lat": 24.53145,
+  "lon": 121.45126,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2012,
+   2017
+  ],
+  "n_events": 6,
+  "n_by_type": {
+   "災害事件": 6
+  },
+  "events": [
+   {
+    "year": 2012,
+    "name": "宜蘭大同-001",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2012-08-02",
+    "last_date": "2012-08-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-08-10",
+    "last_date": "2012-08-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "尼莎颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-07-30",
+    "last_date": "2017-07-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "海棠颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-08-10",
+    "last_date": "2017-08-10",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0756,
+  "deep_verify_caveat": null
  },
  {
   "rank": 81,
   "county": "屏東縣",
-  "district": "來義鄉",
-  "lat": 22.52686,
-  "lon": 120.66229,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.712,
+  "district": "瑪家鄉",
+  "lat": 22.70631,
+  "lon": 120.65774,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   2007,
+   2009
+  ],
+  "n_events": 10,
+  "n_by_type": {
+   "災害事件": 10
+  },
+  "events": [
+   {
+    "year": 2007,
+    "name": "0809豪雨",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2007-08-13",
+    "last_date": "2007-08-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "98年其他",
+    "aliases": [
+     "98其他屏東瑪家001"
+    ],
+    "n_records": 3,
+    "first_date": "2009-07-25",
+    "last_date": "2009-07-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "98年其它",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-07-28",
+    "last_date": "2009-07-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-09-04",
+    "last_date": "2009-09-04",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1334,
   "deep_verify_caveat": null
  },
  {
   "rank": 82,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 23.09484,
-  "lon": 120.67994,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8874,
+  "county": "臺北市",
+  "district": "北投區",
+  "lat": 25.1368,
+  "lon": 121.47431,
+  "n_independent_events": 4,
+  "n_distinct_years": 2,
+  "years": [
+   1999,
+   2001
+  ],
+  "n_events": 34,
+  "n_by_type": {
+   "災害事件": 34
+  },
+  "events": [
+   {
+    "year": 1999,
+    "name": "利奇馬颱風",
+    "aliases": [
+     "其他"
+    ],
+    "n_records": 20,
+    "first_date": "2001-09-29",
+    "last_date": "2001-10-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "0929",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2001-10-01",
+    "last_date": "2001-10-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "9月豪雨",
+    "aliases": [],
+    "n_records": 10,
+    "first_date": "2001-10-01",
+    "last_date": "2001-10-17",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "長延時強降雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-10-02",
+    "last_date": "2001-10-02",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1869,
   "deep_verify_caveat": null
  },
  {
   "rank": 83,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.97004,
-  "lon": 120.65177,
-  "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.7749,
+  "county": "宜蘭縣",
+  "district": "大同鄉",
+  "lat": 24.53897,
+  "lon": 121.45583,
+  "n_independent_events": 4,
+  "n_distinct_years": 1,
+  "years": [
+   2017
+  ],
+  "n_events": 20,
+  "n_by_type": {
+   "災害事件": 20
+  },
+  "events": [
+   {
+    "year": 2017,
+    "name": "尼莎颱風",
+    "aliases": [],
+    "n_records": 7,
+    "first_date": "2017-07-30",
+    "last_date": "2017-08-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "海棠颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2017-08-10",
+    "last_date": "2017-08-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "1011豪雨",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2017-10-13",
+    "last_date": "2017-10-13",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "1012豪雨",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2017-10-13",
+    "last_date": "2017-10-16",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0607,
   "deep_verify_caveat": null
  },
  {
   "rank": 84,
-  "county": "花蓮縣",
-  "district": "秀林鄉",
-  "lat": 24.24713,
-  "lon": 121.71829,
+  "county": "苗栗縣",
+  "district": "南庄鄉",
+  "lat": 24.53939,
+  "lon": 121.03165,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.7424,
+  "years": [
+   2018,
+   2019,
+   2026
+  ],
+  "n_events": 18,
+  "n_by_type": {
+   "災害事件": 17,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2018,
+    "name": "南庄崩塌",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2018-05-10",
+    "last_date": "2018-05-10",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0526豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2019-05-25",
+    "last_date": "2019-05-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "巴威颱風",
+    "aliases": [],
+    "n_records": 14,
+    "first_date": "2026-07-21",
+    "last_date": "2026-07-21",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1215,
   "deep_verify_caveat": null
  },
  {
   "rank": 85,
-  "county": "屏東縣",
-  "district": "霧臺鄉",
-  "lat": 22.69099,
-  "lon": 120.70919,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.13872,
+  "lon": 121.1858,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.827,
+  "years": [
+   2020,
+   2021,
+   2026
+  ],
+  "n_events": 3,
+  "n_by_type": {
+   "災害事件": 1,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2020,
+    "name": "0522豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-05-24",
+    "last_date": "2020-05-24",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "0521豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2021-09-02",
+    "last_date": "2021-09-02",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2026年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2026-04-18",
+    "last_date": "2026-04-18",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0887,
   "deep_verify_caveat": null
  },
  {
   "rank": 86,
-  "county": "高雄市",
-  "district": "甲仙區",
-  "lat": 23.06233,
-  "lon": 120.59178,
+  "county": "桃園市",
+  "district": "復興區",
+  "lat": 24.67401,
+  "lon": 121.4065,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "deephist25",
-  "change_score": 0.797,
-  "deep_verify_caveat": "舊期影像為去飽和灰階渲染、新期為全彩——跨世代色調差異已知會灌水，須排除後才能信分數（需複查）"
+  "years": [
+   2013,
+   2022,
+   2026
+  ],
+  "n_events": 7,
+  "n_by_type": {
+   "災害事件": 5,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2013,
+    "name": "菲特颱風",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2013-01-09",
+    "last_date": "2013-10-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-10-02",
+    "last_date": "2022-10-02",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "巴威颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-07-12",
+    "last_date": "2026-07-12",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0202,
+  "deep_verify_caveat": null
  },
  {
   "rank": 87,
-  "county": "花蓮縣",
-  "district": "卓溪鄉",
-  "lat": 23.34768,
-  "lon": 121.29375,
+  "county": "高雄市",
+  "district": "桃源區",
+  "lat": 23.14633,
+  "lon": 120.75384,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8635,
+  "years": [
+   2021,
+   2025,
+   2026
+  ],
+  "n_events": 3,
+  "n_by_type": {
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "豪雨"
+    ],
+    "n_records": 1,
+    "first_date": "2021-06-19",
+    "last_date": "2021-06-19",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-30",
+    "last_date": "2025-07-30",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "0901豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-09-01",
+    "last_date": "2026-09-01",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1024,
   "deep_verify_caveat": null
  },
  {
   "rank": 88,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02796,
-  "lon": 121.14984,
+  "county": "苗栗縣",
+  "district": "大湖鄉",
+  "lat": 24.4445,
+  "lon": 120.88681,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.5347,
+  "years": [
+   2021,
+   2023,
+   2026
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2021,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2021-05-29",
+    "last_date": "2021-06-12",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-04-20",
+    "last_date": "2023-04-20",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2026,
+    "name": "白海豚颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2026-08-09",
+    "last_date": "2026-08-09",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1011,
   "deep_verify_caveat": null
  },
  {
   "rank": 89,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.02189,
-  "lon": 121.18594,
+  "county": "嘉義縣",
+  "district": "中埔鄉",
+  "lat": 23.37189,
+  "lon": 120.56978,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.4933,
+  "years": [
+   2008,
+   2019,
+   2025
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 5
+  },
+  "events": [
+   {
+    "year": 2008,
+    "name": "卡玫基颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2008-07-18",
+    "last_date": "2008-07-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2019,
+    "name": "0815豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2019-08-26",
+    "last_date": "2019-08-26",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "丹娜絲颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-09",
+    "last_date": "2025-07-09",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.017,
   "deep_verify_caveat": null
  },
  {
   "rank": 90,
   "county": "高雄市",
-  "district": "甲仙區",
-  "lat": 23.09605,
-  "lon": 120.61395,
+  "district": "桃源區",
+  "lat": 23.16902,
+  "lon": 120.77606,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "deephist25",
-  "change_score": 0.755,
-  "deep_verify_caveat": "同86，舊期灰階/新期全彩色調落差；河床礫石灘一帶訊號較集中，5筆新增中相對最可信者（需複查）"
+  "years": [
+   2017,
+   2024,
+   2025
+  ],
+  "n_events": 37,
+  "n_by_type": {
+   "災害事件": 34,
+   "媒體報導": 3
+  },
+  "events": [
+   {
+    "year": 2017,
+    "name": "0601豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2017-06-05",
+    "last_date": "2017-06-05",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 24,
+    "first_date": "2024-07-26",
+    "last_date": "2024-08-14",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 11,
+    "first_date": "2025-07-31",
+    "last_date": "2025-08-09",
+    "types": [
+     "媒體報導",
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0918,
+  "deep_verify_caveat": null
  },
  {
   "rank": 91,
-  "county": "花蓮縣",
-  "district": "卓溪鄉",
-  "lat": 23.34507,
-  "lon": 121.29512,
+  "county": "高雄市",
+  "district": "六龜區",
+  "lat": 23.06906,
+  "lon": 120.68548,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8723,
+  "years": [
+   2009,
+   2021,
+   2025
+  ],
+  "n_events": 11,
+  "n_by_type": {
+   "災害事件": 11
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2009-08-18",
+    "last_date": "2009-08-18",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2021,
+    "name": "盧碧颱風暨0806水災",
+    "aliases": [],
+    "n_records": 5,
+    "first_date": "2021-08-10",
+    "last_date": "2022-10-23",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2025-08-09",
+    "last_date": "2025-08-09",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1831,
   "deep_verify_caveat": null
  },
  {
   "rank": 92,
-  "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 23.91106,
-  "lon": 121.02912,
+  "county": "宜蘭縣",
+  "district": "蘇澳鎮",
+  "lat": 24.49277,
+  "lon": 121.83286,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8513,
+  "years": [
+   2022,
+   2024,
+   2025
+  ],
+  "n_events": 4,
+  "n_by_type": {
+   "災害事件": 2,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-05-13",
+    "last_date": "2022-05-13",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-07-28",
+    "last_date": "2024-07-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0721豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-22",
+    "last_date": "2025-07-22",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1017,
   "deep_verify_caveat": null
  },
  {
   "rank": 93,
-  "county": "宜蘭縣",
-  "district": "蘇澳鎮",
-  "lat": 24.57886,
-  "lon": 121.86423,
+  "county": "南投縣",
+  "district": "仁愛鄉",
+  "lat": 24.17083,
+  "lon": 121.20983,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.913,
+  "years": [
+   2021,
+   2022,
+   2025
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 3,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2021,
+    "name": "彩雲颱風暨0605豪雨",
+    "aliases": [],
+    "n_records": 3,
+    "first_date": "2021-06-09",
+    "last_date": "2021-06-09",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2022,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2022-05-28",
+    "last_date": "2022-05-28",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "（未命名／泛稱）",
+    "aliases": [
+     "2025年其他災害"
+    ],
+    "n_records": 1,
+    "first_date": "2025-05-26",
+    "last_date": "2025-05-26",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1868,
   "deep_verify_caveat": null
  },
  {
   "rank": 94,
-  "county": "屏東縣",
-  "district": "霧臺鄉",
-  "lat": 22.6904,
-  "lon": 120.70984,
+  "county": "新竹縣",
+  "district": "尖石鄉",
+  "lat": 24.61991,
+  "lon": 121.28573,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8141,
+  "years": [
+   2017,
+   2020,
+   2025
+  ],
+  "n_events": 3,
+  "n_by_type": {
+   "災害事件": 2,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2017,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2017-01-06",
+    "last_date": "2017-01-06",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2020,
+    "name": "災害事件",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-06-30",
+    "last_date": "2020-06-30",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "1020豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-10-22",
+    "last_date": "2025-10-22",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.033,
   "deep_verify_caveat": null
  },
  {
   "rank": 95,
   "county": "南投縣",
-  "district": "仁愛鄉",
-  "lat": 24.01189,
-  "lon": 121.10216,
+  "district": "水里鄉",
+  "lat": 23.82087,
+  "lon": 120.85442,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.2351,
+  "years": [
+   2012,
+   2024,
+   2025
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 1,
+   "媒體報導": 4
+  },
+  "events": [
+   {
+    "year": 2012,
+    "name": "蘇拉颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2012-08-03",
+    "last_date": "2012-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2024-07-25",
+    "last_date": "2024-07-25",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2025-07-31",
+    "last_date": "2025-07-31",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.2188,
   "deep_verify_caveat": null
  },
  {
   "rank": 96,
-  "county": "新竹縣",
-  "district": "五峰鄉",
-  "lat": 24.56308,
-  "lon": 121.08932,
+  "county": "高雄市",
+  "district": "桃源區",
+  "lat": 23.12578,
+  "lon": 120.70915,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.4105,
+  "years": [
+   2009,
+   2023,
+   2025
+  ],
+  "n_events": 3,
+  "n_by_type": {
+   "災害事件": 1,
+   "媒體報導": 2
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-08-31",
+    "last_date": "2009-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2023,
+    "name": "（未命名／泛稱）",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2023-03-11",
+    "last_date": "2023-03-11",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2025,
+    "name": "0728豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2025-07-31",
+    "last_date": "2025-07-31",
+    "types": [
+     "媒體報導"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0905,
   "deep_verify_caveat": null
  },
  {
   "rank": 97,
-  "county": "宜蘭縣",
-  "district": "蘇澳鎮",
-  "lat": 24.58118,
-  "lon": 121.85483,
+  "county": "臺東縣",
+  "district": "太麻里鄉",
+  "lat": 22.66537,
+  "lon": 121.01066,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "deephist25",
-  "change_score": 0.917,
-  "deep_verify_caveat": "林地轉大片裸露開挖地，位置具體可辨；但熱區仍瀰漫全畫面，分數非單靠此區塊撐起（需複查）"
+  "years": [
+   2010,
+   2017,
+   2024
+  ],
+  "n_events": 5,
+  "n_by_type": {
+   "災害事件": 5
+  },
+  "events": [
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2010-09-20",
+    "last_date": "2010-09-20",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2017,
+    "name": "1011豪雨",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2017-10-16",
+    "last_date": "2017-10-16",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "山陀兒颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-10-04",
+    "last_date": "2024-10-04",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1116,
+  "deep_verify_caveat": null
  },
  {
   "rank": 98,
-  "county": "高雄市",
-  "district": "六龜區",
-  "lat": 22.89425,
-  "lon": 120.64717,
+  "county": "嘉義縣",
+  "district": "阿里山鄉",
+  "lat": 23.57616,
+  "lon": 120.74605,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.843,
+  "years": [
+   1996,
+   2001,
+   2024
+  ],
+  "n_events": 3,
+  "n_by_type": {
+   "災害事件": 3
+  },
+  "events": [
+   {
+    "year": 1996,
+    "name": "賀伯颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "1996-08-03",
+    "last_date": "1996-08-03",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2001,
+    "name": "桃芝颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2001-07-31",
+    "last_date": "2001-07-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2024-10-04",
+    "last_date": "2024-10-04",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1052,
   "deep_verify_caveat": null
  },
  {
   "rank": 99,
-  "county": "臺南市",
-  "district": "楠西區",
-  "lat": 23.16318,
-  "lon": 120.53387,
+  "county": "高雄市",
+  "district": "那瑪夏區",
+  "lat": 23.22793,
+  "lon": 120.69533,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.8855,
+  "years": [
+   2009,
+   2010,
+   2024
+  ],
+  "n_events": 9,
+  "n_by_type": {
+   "災害事件": 9
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 2,
+    "first_date": "2009-08-22",
+    "last_date": "2009-08-22",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2010,
+    "name": "凡那比颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2010-09-28",
+    "last_date": "2010-09-28",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 6,
+    "first_date": "2024-10-02",
+    "last_date": "2024-10-02",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.1908,
   "deep_verify_caveat": null
  },
  {
   "rank": 100,
-  "county": "花蓮縣",
-  "district": "光復鄉",
-  "lat": 23.64118,
-  "lon": 121.38101,
+  "county": "高雄市",
+  "district": "桃源區",
+  "lat": 23.1197,
+  "lon": 120.70931,
+  "n_independent_events": 3,
   "n_distinct_years": 3,
-  "method": "quickscan8",
-  "change_score": 0.4119,
+  "years": [
+   2009,
+   2020,
+   2024
+  ],
+  "n_events": 10,
+  "n_by_type": {
+   "災害事件": 9,
+   "媒體報導": 1
+  },
+  "events": [
+   {
+    "year": 2009,
+    "name": "莫拉克颱風",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2009-08-31",
+    "last_date": "2009-08-31",
+    "types": [
+     "災害事件"
+    ]
+   },
+   {
+    "year": 2020,
+    "name": "0521豪雨",
+    "aliases": [],
+    "n_records": 1,
+    "first_date": "2020-05-22",
+    "last_date": "2020-05-22",
+    "types": [
+     "媒體報導"
+    ]
+   },
+   {
+    "year": 2024,
+    "name": "凱米颱風",
+    "aliases": [],
+    "n_records": 8,
+    "first_date": "2024-09-30",
+    "last_date": "2024-09-30",
+    "types": [
+     "災害事件"
+    ]
+   }
+  ],
+  "method": "sentinel2",
+  "change_score": 0.0725,
   "deep_verify_caveat": null
  }
 ]

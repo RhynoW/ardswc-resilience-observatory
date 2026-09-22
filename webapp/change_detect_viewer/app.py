@@ -208,6 +208,7 @@ def api_data_status():
         "top100_consolidated": _file_provenance(DATA_ROOT / "top100_consolidated.json", len(_hotspots_by_rank())),
         "ledger": _file_provenance(DATA_ROOT / "ledger.json", len(ledger_rows)),
         "events_trimmed": _file_provenance(DATA_ROOT / "events_trimmed.json", len(_EVENTS or [])),
+        "dataset_meta": _load_json(DATA_ROOT / "dataset_meta.json", {}),
     })
 
 
@@ -355,20 +356,34 @@ def _decide_tier(recurrence_band, change_band, confidence_band, relief_band, con
     return "B", "建議複核"  # 其餘落在中間地帶，預設走複核，不自動放行到 A
 
 
+def _recurrence(h):
+    """複發性 = 獨立災害事件數（2026-09-22 起，見 scripts/build_hotspots.py；同一災害的後續追蹤、
+    重複拍攝已合併）。舊資料沒有這個欄位時退回不同年份數。"""
+    v = h.get("n_independent_events")
+    return v if v is not None else h.get("n_distinct_years")
+
+
 def _priority_for(h, ledger_by_rank, relief_by_rank, score_p33, score_p66, relief_p33, relief_p66):
     rank = h["rank"]
     dramatic = _dramatic_pair_alignment(rank)
     change_band = _band(h.get("change_score"), score_p33, score_p66)
-    recurrence_band = _band(h.get("n_distinct_years"), 4, 6)  # 依實際分布 p33≈3/p66≈4，取略高門檻避免「高」被灌水
+    # 獨立事件數分布（2026-09-22）：3 件 17、4 件 45、5 件 17、≥6 件 21 → 高 ≥6、中 4–5、低 3
+    recurrence_band = _band(_recurrence(h), 4, 6)
     relief_row = relief_by_rank.get(rank)
     relief_val = relief_row.get("relief_m") if relief_row else None
     relief_band = _band(relief_val, relief_p33, relief_p66) if relief_val is not None else "未知"
     confidence_band, confidence_source = _confidence_band(rank, ledger_by_rank, dramatic)
     tier, tier_label = _decide_tier(recurrence_band, change_band, confidence_band, relief_band, confidence_source)
+    # 人工覆核確認「已完成治理工程」或「現況已改善」者，不再列為優先現勘／複核（輔導委員建議：
+    # 避免歷史高複發、但目前已完成治理的地點仍被排在前面）；改列持續監測，追蹤治理成效。
+    l = ledger_by_rank.get(rank) or {}
+    if (l.get("treated") or l.get("improved")) and tier in ("A", "B"):
+        tier, tier_label = "C", "持續監測（已治理／已改善）"
     return {
         "rank": rank, "tier": tier, "tier_label": tier_label,
         "factors": {
-            "recurrence": {"value": h.get("n_distinct_years"), "band": recurrence_band},
+            "recurrence": {"value": _recurrence(h), "band": recurrence_band,
+                           "n_distinct_years": h.get("n_distinct_years"), "n_records": h.get("n_events")},
             "recent_change": {"value": h.get("change_score"), "band": change_band},
             "terrain_relief_m": {"value": relief_val, "band": relief_band},
             "confidence": {"band": confidence_band, "source": confidence_source},
@@ -377,12 +392,13 @@ def _priority_for(h, ledger_by_rank, relief_by_rank, score_p33, score_p66, relie
     }
 
 
-def _compute_priority():
+def _compute_priority(use_ledger=True):
     """100 個熱點的巡查優先級 A–D，見上方模組註解。全部由既有磁碟快取資料現算，
     不觸發任何新的 SSIM 運算或外部 API 呼叫（地形起伏另由批次腳本預先算好）。
-    /api/priority 與巡查任務輸出（/api/inspection/export 等）共用，兩者永遠一致。"""
+    /api/priority 與巡查任務輸出（/api/inspection/export 等）共用，兩者永遠一致。
+    use_ledger=False 算出「沒有人工覆核時」的分級，供量化驗證比較覆核前後的升降級。"""
     hotspots = _load_json(DATA_ROOT / "top100_consolidated.json", [])
-    ledger_by_rank = {l["rank"]: l for l in _load_json(DATA_ROOT / "ledger.json", [])}
+    ledger_by_rank = {l["rank"]: l for l in _load_json(DATA_ROOT / "ledger.json", [])} if use_ledger else {}
     relief_by_rank = _terrain_relief_by_rank()
 
     scores = sorted(h["change_score"] for h in hotspots if h.get("change_score") is not None)
@@ -418,10 +434,9 @@ def api_priority():
 # ── 巡查任務輸出（2026-09-22 追加，決賽審查意見「技術功能多於決策行動」）──────────
 # 把 A–D 分級轉成可交付給巡查人員的成果：清單（CSV/Markdown）與單點巡查摘要（Markdown）。
 # 全部由 _compute_priority() 與既有 JSON 現算、不落地存檔、不連外——DEMO_MODE 下同樣可用。
-# 刻意不列「歷年複發年份清單」：原始事件的 year 是建檔年份（CreateTime_YYYY）而非災害發生
-# 年份（見 _load_events 註解），只輸出彙整後的「不同年份數」，不假裝有逐年紀錄。
+# 2026-09-22 起熱點由平台即時資料的 DisasterYear（災害年份）聚合，逐年複發年份（years）可直接輸出。
 TIER_MEANING = {
-    "A": ("優先現勘", "複發性、近期變遷與資料品質均具支持性", "優先派遣現勘或無人機複核"),
+    "A": ("優先現勘", "複發性、近期變化候選訊號與資料品質均具支持性", "先完成人工影像覆核，確認後優先派遣現勘或無人機複核"),
     "B": ("建議複核", "具複發或變遷訊號，但證據尚不完整", "排入近期人工複核，再決定是否派工"),
     "C": ("持續監測", "有歷史複發訊號，但近期影像缺乏可靠變遷證據", "納入例行追蹤"),
     "D": ("資料待確認", "資料不足或品質不足，無法支持判斷", "補資料與人工確認；不代表低風險"),
@@ -429,7 +444,8 @@ TIER_MEANING = {
 _CONF_SOURCE_LABEL = {"human": "人工覆核", "auto_aligned": "自動對位良好",
                       "auto_uncertain": "自動對位不確定", "no_data": "無可用配對資料"}
 _EXPORT_DISCLAIMER = ("本清單為候選排序與證據鏈，非災害確定性判定。A 級為「優先確認候選」，仍需現勘或專業判讀；"
-                      "D 級代表資料不足以判斷，不代表風險較低。人工覆核結論優先於自動分數；變遷分數須與對位品質一併判讀。")
+                      "D 級代表資料不足以判斷，不代表風險較低。人工覆核結論優先於自動分數；變遷分數須與對位品質一併判讀。"
+                      "歷史通報有密度偏差（道路可達處、特定年度或單位較常拍攝），紀錄多不必然代表災害多。")
 PUBLIC_SITE_URL = "https://rhynowu-ardswc-resilience-observatory.hf.space"
 
 
@@ -450,7 +466,7 @@ def _inspection_rows():
         rec, chg, rel = f["recurrence"], f["recent_change"], f["terrain_relief_m"]
         conf_src = _CONF_SOURCE_LABEL.get(f["confidence"]["source"], "")
         reason = "；".join([
-            f"複發 {rec['value'] if rec['value'] is not None else '—'} 年（{rec['band']}）",
+            f"獨立災害事件 {rec['value'] if rec['value'] is not None else '—'} 件（{rec['band']}）",
             f"近期變遷 {chg['value'] if chg['value'] is not None else '—'}（{chg['band']}）",
             f"資料信心 {f['confidence']['band']}（{conf_src}）",
             f"地形起伏 {str(rel['value']) + ' m' if rel['value'] is not None else '未計算'}（{rel['band']}）",
@@ -460,7 +476,10 @@ def _inspection_rows():
             "action": TIER_MEANING[p["tier"]][2],
             "county": h.get("county") or "", "district": h.get("district") or "",
             "lat": h.get("lat"), "lon": h.get("lon"),
-            "n_distinct_years": rec["value"], "change_score": chg["value"],
+            "n_independent_events": rec["value"], "n_distinct_years": h.get("n_distinct_years"),
+            "years": "、".join(str(y) for y in (h.get("years") or [])),
+            "event_list": "；".join(f"{e['year']} {e['name']}（{e['n_records']} 筆）" for e in (h.get("events") or [])),
+            "n_events": h.get("n_events"), "change_score": chg["value"],
             "method": h.get("method") or "",
             "max_change_pair": f"{_fmt_date(dp.get('date_a'))}→{_fmt_date(dp.get('date_b'))}" if dp else "",
             "max_change_fraction": dp.get("overall_change_fraction") if dp else None,
@@ -539,12 +558,12 @@ def api_inspection_export():
     if fmt == "md":
         L = [f"# 巡查清單（{scope}）", "", f"- 產製時間：{stamp}　共 {len(rows)} 處", f"- 資料版本：{prov}",
              f"- 來源：坡地韌性哨兵 {PUBLIC_SITE_URL}", "", f"> ⚠ {_EXPORT_DISCLAIMER}", "",
-             "| 優先級 | 名次 | 行政區 | 經緯度 | 複發年數 | 變遷分數 | 資料信心 | 人工覆核 | 建議行動 |",
+             "| 優先級 | 名次 | 行政區 | 經緯度 | 獨立事件數 | 變遷分數 | 資料信心 | 人工覆核 | 建議行動 |",
              "|---|---|---|---|---|---|---|---|---|"]
         for r in rows:
             L.append("| " + " | ".join(_md_cell(x) for x in (
                 f"{r['tier']} {r['tier_label']}", r["rank"], f"{r['county']}{r['district']}",
-                f"{r['lat']:.5f}, {r['lon']:.5f}", r["n_distinct_years"], r["change_score"],
+                f"{r['lat']:.5f}, {r['lon']:.5f}", r["n_independent_events"], r["change_score"],
                 f"{r['confidence']}（{r['confidence_source']}）", r["human_verdict"], r["action"])) + " |")
         L += ["", "## 分級意義", "", "| 等級 | 決策意義 | 建議行動 |", "|---|---|---|"]
         L += [f"| {t} {m[0]} | {m[1]} | {m[2]} |" for t, m in TIER_MEANING.items()]
@@ -552,7 +571,8 @@ def api_inspection_export():
     import csv
     cols = [("tier", "優先級"), ("tier_label", "分級"), ("action", "建議行動"), ("rank", "名次"),
             ("county", "縣市"), ("district", "鄉鎮"), ("lat", "緯度"), ("lon", "經度"),
-            ("n_distinct_years", "複發年數"), ("change_score", "變遷分數"), ("method", "比對方法"),
+            ("n_independent_events", "獨立災害事件數"), ("n_distinct_years", "不同災害年份數"), ("years", "災害年份"),
+            ("event_list", "獨立事件清單"), ("n_events", "原始紀錄筆數（去重前）"), ("change_score", "變遷分數"), ("method", "比對方法"),
             ("max_change_pair", "最大變遷期間"), ("max_change_fraction", "最大變遷面積比"),
             ("terrain_relief_m", "地形起伏m"), ("confidence", "資料信心"), ("confidence_source", "信心來源"),
             ("human_verdict", "人工覆核"), ("human_note", "覆核說明"), ("deep_verify_caveat", "深度驗證註記"),
@@ -607,6 +627,21 @@ def api_validation():
     pr = _compute_priority()
     tiers = Counter(p["tier"] for p in pr["items"])
     ledger_verdicts = Counter(l.get("verdict_label") for l in ledger)
+    before = {p["rank"]: p["tier"] for p in _compute_priority(use_ledger=False)["items"]}
+    after = {p["rank"]: p["tier"] for p in pr["items"]}
+    reviewed = {l["rank"] for l in ledger}
+    downgraded = sum(1 for r in reviewed if r in before and after[r] > before[r])
+    upgraded = sum(1 for r in reviewed if r in before and after[r] < before[r])
+    a_before = [r for r, t in before.items() if t == "A"]
+    a_reviewed = [r for r in a_before if r in reviewed]
+    ok_ranks = {l["rank"] for l in ledger if l.get("verdict") == "ok"}
+    bad_ranks = {l["rank"] for l in ledger if l.get("verdict") == "bad"}
+    # 基準：只依複發性（獨立事件數）排序、取與 A 級同樣多的前 N 名
+    base_top = [h["rank"] for h in sorted(hotspots, key=lambda h: (-(_recurrence(h) or 0), h["rank"]))][:len(a_before)]
+    base_reviewed = [r for r in base_top if r in reviewed]
+
+    def rate(ranks, hits):
+        return round(sum(1 for r in ranks if r in hits) / len(ranks), 3) if ranks else None
 
     def med(a):
         a = sorted(a)
@@ -614,14 +649,16 @@ def api_validation():
 
     return jsonify({
         "events": {
-            "raw_photos_note": "有座標、2026-09-05 快照；含災害事件 29,991／重要地景 44,241／媒體報導 2,392／出版品 149。平台 2026-09-22 即時總數 105,131 筆（有座標 80,617）",
+            "raw_photos_note": _dataset_note(),
             "deduped_events": len(_EVENTS or []),
-            "dedup_rule": "自建網格掃描 GetEventPositionList（突破單次 500 筆上限）後合併去重",
+            "dedup_rule": "水保署影像平台公開 API 四類全量分頁下載，依 EventID 去重、排除台澎金馬範圍外座標",
         },
         "hotspots": {
             "n": len(hotspots),
-            "recurrence_years_distribution": dict(sorted(Counter(h.get("n_distinct_years") for h in hotspots).items())),
-            "rule": "依「不同年份出現次數」（非照片總數）排序取前 100",
+            "recurrence_years_distribution": dict(sorted(Counter(_recurrence(h) for h in hotspots).items())),
+            "records_before_dedup": sum(h.get("n_events") or 0 for h in hotspots),
+            "independent_events": sum(_recurrence(h) or 0 for h in hotspots),
+            "rule": "災害事件＋媒體報導、250 m 網格；同一災害的後續追蹤與重複拍攝合併為獨立事件，依獨立事件數排序、相距 <400 m 去重後取前 100",
         },
         "imagery": {
             "with_multi_period": with_imagery, "n": len(hotspots),
@@ -632,6 +669,14 @@ def api_validation():
         },
         "alignment": {"ok": align["ok"], "uncertain": align["uncertain"], "no_data": align["no_data"],
                       "basis": "各熱點「最大變遷配對」的自動對位檢查結果"},
+        "review_effect": {
+            "a_candidates_auto": len(a_before), "a_candidates_reviewed": len(a_reviewed),
+            "downgraded_after_review": downgraded, "upgraded_after_review": upgraded,
+            "precision_auto_a": rate(a_reviewed, ok_ranks), "false_positive_auto_a": rate(a_reviewed, bad_ranks),
+            "baseline_recurrence_only_top_n": len(base_top), "baseline_reviewed": len(base_reviewed),
+            "precision_baseline": rate(base_reviewed, ok_ranks),
+            "note": "精確率＝已覆核者中判定「可信」的比例；基準＝只依獨立事件數排序取同樣多名。覆核數不足時為 null。",
+        },
         "human_review": {
             "reviewed": len(ledger), "verdicts": dict(ledger_verdicts),
             "trusted": ledger_verdicts.get("可信", 0),
@@ -643,7 +688,7 @@ def api_validation():
                      "exportable_note": "A 級（派工現勘）＋ B 級（人工複核）皆可匯出巡查清單／單點摘要"},
         "reliability": {
             "demo_mode": DEMO_MODE,
-            "offline_core": ["決策首頁", "巡查優先級", "三個案例", "深度驗證台帳", "巡查清單／摘要匯出", "量化驗證"],
+            "offline_core": ["決策首頁", "巡查優先級", "Sentinel-2 年度比對面板", "量化驗證", "人工覆核台帳", "巡查清單／摘要匯出"],
             "degradation": [
                 "即時 GE Web 擷取失效 → DEMO_MODE 停用入口，改看預先擷取的示範案例",
                 "本地 DTM 缺失 → 退回 Cesium World Terrain；兩者皆無 → 隱藏等高線／流域分析",
@@ -676,7 +721,9 @@ def api_hotspot_summary(rank):
          "## 位置", f"- 行政區：{r['county']} {r['district']}",
          f"- 經緯度（WGS84）：{r['lat']:.5f}, {r['lon']:.5f}（[Google 地圖](https://www.google.com/maps?q={r['lat']},{r['lon']})）", "",
          "## 證據",
-         f"- 跨年度複發：{r['n_distinct_years']} 個不同年份有通報（水保署災害影像通報，依建檔年份去重）",
+         f"- 複發性：{r['n_independent_events']} 件獨立災害事件、{r['n_distinct_years']} 個不同災害年份"
+         f"（原始紀錄 {r['n_events'] or '—'} 筆，同一災害的後續追蹤與重複拍攝已合併；災害事件＋媒體報導，250 m 網格）",
+         f"- 獨立事件清單：{r['event_list'] or '—'}",
          f"- 近期影像變遷：{change}",
          f"- 對位品質與資料信心：{r['confidence']}（{r['confidence_source']}）",
          f"- 地形摘要：0.3 km 內地形起伏 {relief}",
@@ -686,12 +733,14 @@ def api_hotspot_summary(rank):
     L += ["", "## 分級理由", r["reason"], "", "## 建議現勘確認事項"] + [f"- [ ] {c}" for c in checks]
     L += ["", "## 現勘回饋（現場填寫，回傳後更新驗證台帳）",
           "- [ ] 確認變遷　- [ ] 無顯著變遷　- [ ] 資料不足　- [ ] 影像對位問題",
+          "- [ ] 已完成治理工程　- [ ] 現況已改善（勾選後改列持續監測，不再列為優先）",
           "- 現勘日期：＿＿＿＿　人員：＿＿＿＿　備註：＿＿＿＿＿＿＿＿", "",
           "## 資料限制與免責聲明", _EXPORT_DISCLAIMER,
-          "變遷分數為 SSIM 像素比對，易受季節、雲影、跨世代影像色調與對位誤差影響；地形起伏為 20 m DTM 統計值，非現地量測。", "",
+          "變遷分數為 Sentinel-2（10 m）年度影像的 SSIM 像素比對，只看得到面積級變化，並易受季節、薄雲與雲影影響；"
+          "地形起伏為 20 m DTM 統計值，非現地量測。", "",
           "## 資料來源與產製版本",
-          "- 災害事件：農業部農村發展及水土保持署 災害影像通報（photo.ardswc.gov.tw）",
-          "- 歷史影像：Google Earth 歷史影像；地形：內政部地政司 20 m DTM",
+          "- 災害紀錄：農業部農村發展及水土保持署 歷史影像平台（photo.ardswc.gov.tw）災害事件＋媒體報導",
+          "- 衛星影像：Copernicus Sentinel-2（Sentinel Hub WMTS，每年一期）；地形：內政部地政司 20 m DTM",
           f"- 資料版本：{prov}", f"- 產製：坡地韌性哨兵 {PUBLIC_SITE_URL}　{stamp}"]
     return _download("\n".join(L) + "\n", "text/markdown; charset=utf-8", f"inspection_summary_rank{rank:02d}.md")
 
@@ -1104,14 +1153,24 @@ def serve_watershed_image(filename):
     return send_file(full)
 
 
-# ── 76,773 筆原始事件：統計/分類/地圖疊點（2026-09-04 追加）─────────────────
-# 欄位取自 ARDSWC GetEventPositionList 原始回應，僅保留本觀測站用得到的子集
-# （County 欄位全為 null，DisasterYear 亦全為 null，經抽查證實不可用，故不提供依縣市/災害年份
-# 篩選；PhotoType/CreateTime_YYYY 為唯二可靠的分類維度）。
+# ── 原始紀錄：統計/分類/地圖疊點（2026-09-04 追加；2026-09-22 改用平台即時資料）──────────
+# 2026-09-22 起 events_trimmed.json 由 scripts/build_hotspots.py 從平台公開 API 重建：四類中有座標的
+# 紀錄，year = DisasterYear（災害年份）、另附 county/town。舊版（GetEventPositionList）沒有這兩個欄位，
+# 只能用建檔年份。
 _EVENTS = None
 _EVENTS_STATS = None
 
 _PHOTO_TYPE_LABELS = {"0": "災害事件", "6": "重要地景", "8": "媒體報導", "10": "出版品照片"}
+
+
+def _dataset_note():
+    """資料集版本說明，一律從 dataset_meta.json（build_hotspots.py 產出）讀，不寫死數字。"""
+    m = _load_json(DATA_ROOT / "dataset_meta.json", {})
+    if not m:
+        return "資料集中繼資料缺檔"
+    by = m.get("geolocated_by_type", {})
+    return (f"水保署影像平台 {m.get('fetched')} 即時資料：共 {m.get('platform_total_records', 0):,} 筆，"
+            f"有效座標 {m.get('geolocated_records', 0):,} 筆（" + "／".join(f"{k} {v:,}" for k, v in by.items()) + "）")
 
 
 def _load_events():
@@ -1131,9 +1190,7 @@ def _load_events():
         "by_year": [
             {"year": k, "count": v} for k, v in sorted(yr_counter.items(), key=lambda kv: (kv[0] or ""))
         ],
-        "note": "County/DisasterYear 欄位於來源資料全為空值，故僅提供 PhotoType（事件分類）與"
-                "CreateTime_YYYY（資料建檔年份，非災害實際發生年份）兩個維度；ARDSWC 原始資料"
-                "不含可靠的行政區欄位，本觀測站不對 76,773 筆原始事件做縣市分類。",
+        "note": "年份為平台 DisasterYear（災害年份）；" + _dataset_note(),
     }
 
 
@@ -1541,6 +1598,19 @@ def api_dtm_heights():
     resp = send_file(io.BytesIO(z.astype("<f4").tobytes()), mimetype="application/octet-stream")
     resp.headers["Cache-Control"] = "public, max-age=86400"
     return resp
+
+
+@app.route("/api/uav_registrations")
+def api_uav_registrations():
+    """所有 UAV 對位成果的清單（供 3D 頁面的樣本選單）。"""
+    out = []
+    for fp in sorted((HERE / "static" / "uav").glob("*/meta.json")):
+        try:
+            m = json.loads(fp.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        out.append({"id": m["id"], "title": m["title"], "holdout_rmse_m": m["quality"]["holdout_rmse_m"]})
+    return jsonify(out)
 
 
 @app.route("/api/uav_registration/<uid>")
