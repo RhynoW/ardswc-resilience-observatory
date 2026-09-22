@@ -375,10 +375,10 @@ def _priority_for(h, ledger_by_rank, relief_by_rank, score_p33, score_p66, relie
     }
 
 
-@app.route("/api/priority")
-def api_priority():
+def _compute_priority():
     """100 個熱點的巡查優先級 A–D，見上方模組註解。全部由既有磁碟快取資料現算，
-    不觸發任何新的 SSIM 運算或外部 API 呼叫（地形起伏另由批次腳本預先算好）。"""
+    不觸發任何新的 SSIM 運算或外部 API 呼叫（地形起伏另由批次腳本預先算好）。
+    /api/priority 與巡查任務輸出（/api/inspection/export 等）共用，兩者永遠一致。"""
     hotspots = _load_json(DATA_ROOT / "top100_consolidated.json", [])
     ledger_by_rank = {l["rank"]: l for l in _load_json(DATA_ROOT / "ledger.json", [])}
     relief_by_rank = _terrain_relief_by_rank()
@@ -396,7 +396,7 @@ def api_priority():
 
     out = [_priority_for(h, ledger_by_rank, relief_by_rank, score_p33, score_p66, relief_p33, relief_p66)
            for h in hotspots]
-    return jsonify({
+    return {
         "items": out,
         "band_basis": {
             "change_score_p33": score_p33, "change_score_p66": score_p66,
@@ -405,7 +405,206 @@ def api_priority():
         },
         "governance_note": ("巡查優先級為排序建議，非災害確定性判定；A 級仍需現勘或專業判讀確認，"
                              "D 級代表資料不足以支持任何判斷，不代表風險較低。"),
-    })
+    }
+
+
+@app.route("/api/priority")
+def api_priority():
+    return jsonify(_compute_priority())
+
+
+# ── 巡查任務輸出（2026-09-22 追加，決賽審查意見「技術功能多於決策行動」）──────────
+# 把 A–D 分級轉成可交付給巡查人員的成果：清單（CSV/Markdown）與單點巡查摘要（Markdown）。
+# 全部由 _compute_priority() 與既有 JSON 現算、不落地存檔、不連外——DEMO_MODE 下同樣可用。
+# 刻意不列「歷年複發年份清單」：原始事件的 year 是建檔年份（CreateTime_YYYY）而非災害發生
+# 年份（見 _load_events 註解），只輸出彙整後的「不同年份數」，不假裝有逐年紀錄。
+TIER_MEANING = {
+    "A": ("優先現勘", "複發性、近期變遷與資料品質均具支持性", "優先派遣現勘或無人機複核"),
+    "B": ("建議複核", "具複發或變遷訊號，但證據尚不完整", "排入近期人工複核，再決定是否派工"),
+    "C": ("持續監測", "有歷史複發訊號，但近期影像缺乏可靠變遷證據", "納入例行追蹤"),
+    "D": ("資料待確認", "資料不足或品質不足，無法支持判斷", "補資料與人工確認；不代表低風險"),
+}
+_CONF_SOURCE_LABEL = {"human": "人工覆核", "auto_aligned": "自動對位良好",
+                      "auto_uncertain": "自動對位不確定", "no_data": "無可用配對資料"}
+_EXPORT_DISCLAIMER = ("本清單為候選排序與證據鏈，非災害確定性判定。A 級為「優先確認候選」，仍需現勘或專業判讀；"
+                      "D 級代表資料不足以判斷，不代表風險較低。人工覆核結論優先於自動分數；變遷分數須與對位品質一併判讀。")
+PUBLIC_SITE_URL = "https://rhynowu-ardswc-resilience-observatory.hf.space"
+
+
+def _fmt_date(d):
+    return f"{d[:4]}-{d[4:6]}-{d[6:]}" if d and len(d) == 8 else (d or "—")
+
+
+def _inspection_rows():
+    """每個熱點一列：優先級＋因子＋台帳＋位置，供清單與單點摘要共用。"""
+    pr = _compute_priority()
+    hs = _hotspots_by_rank()
+    ledger_by_rank = {l["rank"]: l for l in _load_json(DATA_ROOT / "ledger.json", [])}
+    rows = []
+    for p in pr["items"]:
+        h, f = hs.get(p["rank"], {}), p["factors"]
+        l = ledger_by_rank.get(p["rank"]) or {}
+        dp = p.get("dramatic_pair") or {}
+        rec, chg, rel = f["recurrence"], f["recent_change"], f["terrain_relief_m"]
+        conf_src = _CONF_SOURCE_LABEL.get(f["confidence"]["source"], "")
+        reason = "；".join([
+            f"複發 {rec['value'] if rec['value'] is not None else '—'} 年（{rec['band']}）",
+            f"近期變遷 {chg['value'] if chg['value'] is not None else '—'}（{chg['band']}）",
+            f"資料信心 {f['confidence']['band']}（{conf_src}）",
+            f"地形起伏 {str(rel['value']) + ' m' if rel['value'] is not None else '未計算'}（{rel['band']}）",
+        ])
+        rows.append({
+            "rank": p["rank"], "tier": p["tier"], "tier_label": p["tier_label"],
+            "action": TIER_MEANING[p["tier"]][2],
+            "county": h.get("county") or "", "district": h.get("district") or "",
+            "lat": h.get("lat"), "lon": h.get("lon"),
+            "n_distinct_years": rec["value"], "change_score": chg["value"],
+            "method": h.get("method") or "",
+            "max_change_pair": f"{_fmt_date(dp.get('date_a'))}→{_fmt_date(dp.get('date_b'))}" if dp else "",
+            "max_change_fraction": dp.get("overall_change_fraction") if dp else None,
+            "terrain_relief_m": rel["value"],
+            "confidence": f["confidence"]["band"], "confidence_source": conf_src,
+            "human_verdict": l.get("verdict_label") or "", "human_note": l.get("note") or "",
+            "deep_verify_caveat": h.get("deep_verify_caveat") or "",
+            "reason": reason,
+        })
+    return rows
+
+
+def _provenance_line():
+    parts = []
+    for name in ("top100_consolidated", "ledger", "terrain_relief"):
+        pv = _file_provenance(DATA_ROOT / f"{name}.json")
+        if pv.get("exists"):
+            parts.append(f"{name}.json sha256:{pv['sha256_12']}（{pv['modified']}）")
+    return "；".join(parts)
+
+
+def _site_checks(r):
+    """建議現勘確認事項：依分級與資料信心來源給出具體可執行的確認點，不是通用口號。"""
+    checks = []
+    if r["tier"] == "A":
+        checks.append(f"現場確認最大變遷期間（{r['max_change_pair'] or '—'}）的地貌變化是否仍在發展（崩塌擴大、裸露、河道改變）")
+        checks.append("確認周邊保全對象（道路、聚落、農地）與通報點的相對位置")
+    elif r["tier"] == "B":
+        checks.append("先由人工判讀比對影像（熱區是否集中、是否為季節或色調差異），再決定是否派工")
+    elif r["tier"] == "C":
+        checks.append("例行巡查時順道確認現況；如有新通報或新影像再重新評估")
+    else:
+        checks.append("補擷取歷史影像或人工覆核；目前資料不足以判斷風險高低")
+    if r["confidence_source"] == "自動對位不確定":
+        checks.append("影像對位不確定：變遷分數可能是對位誤差造成的偽陽性，判讀前先確認兩期影像範圍一致")
+    if r["human_verdict"]:
+        checks.append(f"已有人工覆核結論「{r['human_verdict']}」，以覆核意見為準")
+    if r["terrain_relief_m"] is not None and r["terrain_relief_m"] >= 100:
+        checks.append(f"0.3 km 內地形起伏 {r['terrain_relief_m']} m，屬陡峻地形，注意現勘路線安全")
+    return checks
+
+
+def _md_cell(v):
+    return str("—" if v is None or v == "" else v).replace("|", "／").replace("\n", " ")
+
+
+def _stamp():
+    return datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M")
+
+
+def _download(text, mime, name):
+    resp = send_file(io.BytesIO(text.encode("utf-8")), mimetype=mime, as_attachment=True, download_name=name)
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/api/inspection/export")
+def api_inspection_export():
+    """巡查清單匯出。?tier=A（可多選，如 AB；省略＝全部）&county=南投&format=csv|md|json。
+    排序：優先級 → 變遷分數高到低 → 名次。CSV 帶 UTF-8 BOM，Excel 直接開啟不亂碼。"""
+    rows = _inspection_rows()
+    tiers = "".join(t for t in "ABCD" if t in request.args.get("tier", "").upper())
+    county = request.args.get("county", "").strip()
+    if tiers:
+        rows = [r for r in rows if r["tier"] in tiers]
+    if county:
+        rows = [r for r in rows if county in r["county"]]
+    rows.sort(key=lambda r: ("ABCD".index(r["tier"]), -(r["change_score"] or -1), r["rank"]))
+    fmt = request.args.get("format", "csv").lower()
+    stamp, prov = _stamp(), _provenance_line()
+    scope = f"{tiers or '全部'}級{'・' + county if county else ''}"
+    fname = f"inspection_list_{tiers or 'ALL'}_{datetime.now().strftime('%Y%m%d')}"
+    if fmt == "json":
+        return jsonify({"generated": stamp, "filter": {"tier": tiers, "county": county}, "items": rows,
+                        "tier_meaning": TIER_MEANING, "disclaimer": _EXPORT_DISCLAIMER, "provenance": prov})
+    if fmt == "md":
+        L = [f"# 巡查清單（{scope}）", "", f"- 產製時間：{stamp}　共 {len(rows)} 處", f"- 資料版本：{prov}",
+             f"- 來源：坡地韌性哨兵 {PUBLIC_SITE_URL}", "", f"> ⚠ {_EXPORT_DISCLAIMER}", "",
+             "| 優先級 | 名次 | 行政區 | 經緯度 | 複發年數 | 變遷分數 | 資料信心 | 人工覆核 | 建議行動 |",
+             "|---|---|---|---|---|---|---|---|---|"]
+        for r in rows:
+            L.append("| " + " | ".join(_md_cell(x) for x in (
+                f"{r['tier']} {r['tier_label']}", r["rank"], f"{r['county']}{r['district']}",
+                f"{r['lat']:.5f}, {r['lon']:.5f}", r["n_distinct_years"], r["change_score"],
+                f"{r['confidence']}（{r['confidence_source']}）", r["human_verdict"], r["action"])) + " |")
+        L += ["", "## 分級意義", "", "| 等級 | 決策意義 | 建議行動 |", "|---|---|---|"]
+        L += [f"| {t} {m[0]} | {m[1]} | {m[2]} |" for t, m in TIER_MEANING.items()]
+        return _download("\n".join(L) + "\n", "text/markdown; charset=utf-8", fname + ".md")
+    import csv
+    cols = [("tier", "優先級"), ("tier_label", "分級"), ("action", "建議行動"), ("rank", "名次"),
+            ("county", "縣市"), ("district", "鄉鎮"), ("lat", "緯度"), ("lon", "經度"),
+            ("n_distinct_years", "複發年數"), ("change_score", "變遷分數"), ("method", "比對方法"),
+            ("max_change_pair", "最大變遷期間"), ("max_change_fraction", "最大變遷面積比"),
+            ("terrain_relief_m", "地形起伏m"), ("confidence", "資料信心"), ("confidence_source", "信心來源"),
+            ("human_verdict", "人工覆核"), ("human_note", "覆核說明"), ("deep_verify_caveat", "深度驗證註記"),
+            ("reason", "分級理由")]
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow([h for _, h in cols])
+    for r in rows:
+        w.writerow(["" if r[k] is None else r[k] for k, _ in cols])
+    w.writerow([])
+    w.writerow([f"範圍 {scope}", f"產製時間 {stamp}", f"資料版本 {prov}"])
+    w.writerow([_EXPORT_DISCLAIMER])
+    return _download("\ufeff" + buf.getvalue(), "text/csv; charset=utf-8", fname + ".csv")
+
+
+@app.route("/api/hotspots/<int:rank>/summary")
+def api_hotspot_summary(rank):
+    """單點巡查摘要（Markdown 下載；?format=json 回結構化資料）。欄位依決賽審查意見的最小欄位清單，
+    並附現勘回饋勾選欄，讓摘要可以直接帶到現場、回來後據以更新驗證台帳。"""
+    r = next((x for x in _inspection_rows() if x["rank"] == rank), None)
+    if r is None:
+        abort(404)
+    checks, stamp, prov = _site_checks(r), _stamp(), _provenance_line()
+    if request.args.get("format") == "json":
+        return jsonify({**r, "site_checks": checks, "generated": stamp,
+                        "disclaimer": _EXPORT_DISCLAIMER, "provenance": prov})
+    m = TIER_MEANING[r["tier"]]
+    relief = f"{r['terrain_relief_m']} m" if r["terrain_relief_m"] is not None else "未計算"
+    change = (f"自動篩選分數 {r['change_score'] if r['change_score'] is not None else '—'}（比對方法 {r['method'] or '—'}）；"
+              f"最大變遷期間 {r['max_change_pair'] or '—'}"
+              + (f"，變遷面積比 {r['max_change_fraction']:.3f}" if r["max_change_fraction"] is not None else ""))
+    L = [f"# 巡查摘要：熱點 #{r['rank']}　{r['county']}{r['district']}", "",
+         f"**巡查優先級：{r['tier']} 級（{r['tier_label']}）** — {m[1]}  ", f"**建議行動：** {m[2]}", "",
+         "## 位置", f"- 行政區：{r['county']} {r['district']}",
+         f"- 經緯度（WGS84）：{r['lat']:.5f}, {r['lon']:.5f}（[Google 地圖](https://www.google.com/maps?q={r['lat']},{r['lon']})）", "",
+         "## 證據",
+         f"- 跨年度複發：{r['n_distinct_years']} 個不同年份有通報（水保署災害影像通報，依建檔年份去重）",
+         f"- 近期影像變遷：{change}",
+         f"- 對位品質與資料信心：{r['confidence']}（{r['confidence_source']}）",
+         f"- 地形摘要：0.3 km 內地形起伏 {relief}",
+         f"- 人工覆核：{(r['human_verdict'] + '　' + r['human_note']) if r['human_verdict'] else '尚未人工覆核'}"]
+    if r["deep_verify_caveat"]:
+        L.append(f"- 深度驗證註記：{r['deep_verify_caveat']}")
+    L += ["", "## 分級理由", r["reason"], "", "## 建議現勘確認事項"] + [f"- [ ] {c}" for c in checks]
+    L += ["", "## 現勘回饋（現場填寫，回傳後更新驗證台帳）",
+          "- [ ] 確認變遷　- [ ] 無顯著變遷　- [ ] 資料不足　- [ ] 影像對位問題",
+          "- 現勘日期：＿＿＿＿　人員：＿＿＿＿　備註：＿＿＿＿＿＿＿＿", "",
+          "## 資料限制與免責聲明", _EXPORT_DISCLAIMER,
+          "變遷分數為 SSIM 像素比對，易受季節、雲影、跨世代影像色調與對位誤差影響；地形起伏為 20 m DTM 統計值，非現地量測。", "",
+          "## 資料來源與產製版本",
+          "- 災害事件：農業部農村發展及水土保持署 災害影像通報（photo.ardswc.gov.tw）",
+          "- 歷史影像：Google Earth 歷史影像；地形：內政部地政司 20 m DTM",
+          f"- 資料版本：{prov}", f"- 產製：坡地韌性哨兵 {PUBLIC_SITE_URL}　{stamp}"]
+    return _download("\n".join(L) + "\n", "text/markdown; charset=utf-8", f"inspection_summary_rank{rank:02d}.md")
 
 
 @app.route("/api/pair/<site>/<date_a>/<date_b>")

@@ -366,6 +366,14 @@
     border:1px solid var(--accent); padding:9px 18px; cursor:pointer; letter-spacing:.02em;
   }
   .pc-goto:hover{ opacity:.88; }
+  .pc-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .export-btn{
+    font-family:var(--font-mono); font-size:12px; background:var(--paper-raised); color:var(--ink);
+    border:1px solid var(--ink); padding:8px 14px; cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .export-btn:hover{ background:var(--ink); color:var(--paper); }
+  .tier-filter .export-group{ margin-left:auto; display:flex; gap:6px; align-items:center; }
+  .ec-export{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:11.5px; color:var(--muted); }
 
   .proof-section{ margin:0 0 32px; }
   .proof-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:14px; }
@@ -585,7 +593,11 @@
       <div class="pc-tiers" id="pc-tiers">
         <div style="padding:16px; color:var(--muted); font-size:12.5px;">載入優先級統計中…</div>
       </div>
-      <button id="pc-goto-a" class="pc-goto">→ 查看 A 級「建議優先現勘」完整名單</button>
+      <div class="pc-actions">
+        <button id="pc-goto-a" class="pc-goto">→ 查看 A 級「建議優先現勘」完整名單</button>
+        <a class="export-btn" href="/api/inspection/export?tier=A&format=csv" download>⬇ 匯出 A 級巡查清單（CSV）</a>
+        <a class="export-btn" href="/api/inspection/export?tier=A&format=md" download>⬇ Markdown</a>
+      </div>
     </div>
 
     <div class="proof-section">
@@ -760,6 +772,10 @@
       <button data-tier="B">B 建議複核</button>
       <button data-tier="C">C 持續監測</button>
       <button data-tier="D">D 資料待確認</button>
+      <span class="export-group">
+        <a class="export-btn" id="export-list-csv" href="/api/inspection/export?format=csv" download>⬇ 匯出目前清單 CSV</a>
+        <a class="export-btn" id="export-list-md" href="/api/inspection/export?format=md" download>⬇ Markdown</a>
+      </span>
     </div>
     <div class="tablewrap">
       <table id="hotspots-table">
@@ -876,6 +892,12 @@ const TIER_EXPLAIN = {
   C: "歷史複發次數高，但近期影像未見可靠的變遷證據——建議維持定期監測，暫不需優先派工。",
   D: "自動篩選分數或對位資訊不足，無法支持任何判斷——不代表風險較低，只代表目前資料不足以判讀。",
 };
+// 巡查清單匯出連結跟著目前的優先級篩選走（「全部」＝不帶 tier 參數）。
+function updateExportLinks(){
+  const q = tierFilter ? `tier=${tierFilter}&` : "";
+  document.getElementById("export-list-csv").href = `/api/inspection/export?${q}format=csv`;
+  document.getElementById("export-list-md").href = `/api/inspection/export?${q}format=md`;
+}
 function tierBadgeHtml(rank){
   const p = PRIORITY_BY_RANK[rank];
   if(!p) return "";
@@ -904,6 +926,10 @@ function renderEvidenceCard(rank){
         <div class="ec-factor"><div class="ec-flabel">近期變遷分數</div><div class="ec-fvalue">${score}</div><div class="ec-fband ${RISK_BAND_CLASS[f.recent_change.band]}">${f.recent_change.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">地形起伏（0.3km 內）</div><div class="ec-fvalue">${relief}</div><div class="ec-fband ${RISK_BAND_CLASS[f.terrain_relief_m.band]}">${f.terrain_relief_m.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">資料信心</div><div class="ec-fvalue" style="font-size:12px;">${confSourceLabel}</div><div class="ec-fband ${CONF_BAND_CLASS[f.confidence.band]}">${f.confidence.band}</div></div>
+      </div>
+      <div class="ec-export">
+        <a class="export-btn" href="/api/hotspots/${rank}/summary" download>📄 匯出巡查摘要（Markdown）</a>
+        <span>含位置、證據、分級理由、建議現勘確認事項、現勘回饋欄與資料版本</span>
       </div>
     </div>`;
 }
@@ -2062,6 +2088,7 @@ document.querySelectorAll("#hotspots-table thead th[data-key]").forEach(th=>{
 document.querySelectorAll("#tier-filter button").forEach(btn=>{
   btn.onclick = () => {
     tierFilter = btn.dataset.tier;
+    updateExportLinks();
     document.querySelectorAll("#tier-filter button").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     renderHotspotsTable();
