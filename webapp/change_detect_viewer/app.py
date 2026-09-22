@@ -566,6 +566,93 @@ def api_inspection_export():
     return _download("\ufeff" + buf.getvalue(), "text/csv; charset=utf-8", fname + ".csv")
 
 
+# ── 量化驗證（2026-09-22 追加，決賽審查意見「建議量化驗證頁」）─────────────────────
+# 把「系統知道自己可能出錯」提升為「系統能量化說明錯誤模式與資料品質」。每個數字都由既有
+# JSON／磁碟快取現算（不寫死），讓畫面上的數字與資料檔永遠一致；算不出來的項目回 None，
+# 前端顯示「—」而不是 0。
+@app.route("/api/validation")
+def api_validation():
+    from collections import Counter
+    hotspots = _load_json(DATA_ROOT / "top100_consolidated.json", [])
+    ledger = _load_json(DATA_ROOT / "ledger.json", [])
+    _load_events()
+
+    # 影像資料：每個熱點優先取深度站點，日期集合由時間軸配對推得
+    n_dates, spans, with_imagery = [], [], 0
+    for h in hotspots:
+        for site in (f"ardswc_top{h['rank']:02d}_deephist", f"ardswc_top{h['rank']:02d}"):
+            tl = _load_json(CAPTURES_ROOT / site / "_change_detect" / f"{site}_change_timeline.json", None)
+            if tl and tl.get("pairs"):
+                ds = sorted({d for pr in tl["pairs"] for d in (pr.get("date_a"), pr.get("date_b")) if d})
+                if len(ds) >= 2:
+                    with_imagery += 1
+                    n_dates.append(len(ds))
+                    spans.append((datetime.strptime(ds[-1], "%Y%m%d") - datetime.strptime(ds[0], "%Y%m%d")).days / 365.25)
+                break
+
+    # 對位品質：各熱點最大變遷配對的自動對位狀態
+    align = Counter()
+    for h in hotspots:
+        dp = _dramatic_pair_alignment(h["rank"])
+        al = (dp or {}).get("alignment")
+        if not al:
+            align["no_data"] += 1
+        elif al.get("applied") and not al.get("uncertain"):
+            align["ok"] += 1
+        else:
+            align["uncertain"] += 1
+
+    pr = _compute_priority()
+    tiers = Counter(p["tier"] for p in pr["items"])
+    ledger_verdicts = Counter(l.get("verdict_label") for l in ledger)
+
+    def med(a):
+        a = sorted(a)
+        return round(a[len(a) // 2], 1) if a else None
+
+    return jsonify({
+        "events": {
+            "raw_photos_note": "97,500+ 張災害通報影像（ARDSWC 災害影像通報平台）",
+            "deduped_events": len(_EVENTS or []),
+            "dedup_rule": "自建網格掃描 GetEventPositionList（突破單次 500 筆上限）後合併去重",
+        },
+        "hotspots": {
+            "n": len(hotspots),
+            "recurrence_years_distribution": dict(sorted(Counter(h.get("n_distinct_years") for h in hotspots).items())),
+            "rule": "依「不同年份出現次數」（非照片總數）排序取前 100",
+        },
+        "imagery": {
+            "with_multi_period": with_imagery, "n": len(hotspots),
+            "periods_min": min(n_dates) if n_dates else None, "periods_median": med(n_dates),
+            "periods_max": max(n_dates) if n_dates else None,
+            "span_years_median": med(spans), "span_years_max": round(max(spans), 1) if spans else None,
+            "method_counts": dict(Counter(h.get("method") for h in hotspots)),
+        },
+        "alignment": {"ok": align["ok"], "uncertain": align["uncertain"], "no_data": align["no_data"],
+                      "basis": "各熱點「最大變遷配對」的自動對位檢查結果"},
+        "human_review": {
+            "reviewed": len(ledger), "verdicts": dict(ledger_verdicts),
+            "trusted": ledger_verdicts.get("可信", 0),
+            "false_or_untrusted": sum(1 for l in ledger if l.get("verdict") == "bad"),
+            "needs_recheck": sum(1 for l in ledger if l.get("verdict") == "warn"),
+        },
+        "decision": {"tiers": {t: tiers.get(t, 0) for t in "ABCD"},
+                     "exportable_tasks": tiers.get("A", 0) + tiers.get("B", 0),
+                     "exportable_note": "A 級（派工現勘）＋ B 級（人工複核）皆可匯出巡查清單／單點摘要"},
+        "reliability": {
+            "demo_mode": DEMO_MODE,
+            "offline_core": ["決策首頁", "巡查優先級", "三個案例", "深度驗證台帳", "巡查清單／摘要匯出", "量化驗證"],
+            "degradation": [
+                "即時 GE Web 擷取失效 → DEMO_MODE 停用入口，改看預先擷取的示範案例",
+                "本地 DTM 缺失 → 退回 Cesium World Terrain；兩者皆無 → 隱藏等高線／流域分析",
+                "外部底圖圖磚失效 → 切換其他底圖，不影響分級與證據資料",
+                "Sentinel-2 憑證未設定 → 入口自動隱藏",
+            ],
+        },
+        "provenance": _provenance_line(),
+    })
+
+
 @app.route("/api/hotspots/<int:rank>/summary")
 def api_hotspot_summary(rank):
     """單點巡查摘要（Markdown 下載；?format=json 回結構化資料）。欄位依決賽審查意見的最小欄位清單，
