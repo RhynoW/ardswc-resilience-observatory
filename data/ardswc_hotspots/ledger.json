@@ -3,8 +3,8 @@
   "rank": 44, "site": "ardswc_top44_deephist", "name": "臺中市和平區（松鶴）",
   "date_a": "20121017", "date_b": "20250101", "score": 0.756,
   "alignment_applied": true, "alignment_uncertain": false,
-  "verdict": "ok", "verdict_label": "可信",
-  "note": "河岸/坡地訊號集中，與長年坡地侵蝕問題吻合。深度驗證 11 個熱點中，唯一同時對位成功且目視確認乾淨無疑。"
+  "verdict": "warn", "verdict_label": "需複查",
+  "note": "自動對位成功，但 2026-09-22 再次目視覆核時，前後期影像上看不出可明確指認的地貌變化，撤回原先「可信（真實命中）」判定，改列需複查；在取得更清晰影像或現勘結果前，不作為真實命中案例。"
  },
  {
   "rank": 20, "site": "ardswc_top20_deephist", "name": "新北市汐止區（林肯大郡）",

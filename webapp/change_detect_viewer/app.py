@@ -8,9 +8,9 @@
 專注呈現台灣觀測站敘事，移除所有非台灣、非本觀測站資料集的比對能力。）
 
 資料管線（見 CLAUDE.md 對應章節、以及本觀測站首頁「方法論」內容）：
-  水保署 ARDSWC 歷史災害影像庫（97,500+ 張現場影像）
+  水保署 ARDSWC 歷史影像平台（2026-09-22 查詢共 105,131 筆，其中有座標 80,617 筆）
   → 自適應遞迴網格掃描 GetEventPositionList API（突破單次查詢 500 筆上限）
-  → 76,773 筆全台去重事件紀錄
+  → 76,773 筆全台去重、有座標的影像紀錄（2026-09-05 快照；災害事件 29,991 筆）
   → 依「不同年份出現次數」（非原始照片數）重新排序 → Top 100 長期複發熱點
   → 對每個熱點跑 Google Earth Web 歷史影像擷取（`ge_web_capture_v2_8k.py`，最長回溯 25 期）
   → `ge_change_detect.py` 的 SSIM 像素級變遷偵測（本 app 唯一 import 的比對引擎，不重寫演算法）
@@ -327,6 +327,8 @@ def _decide_tier(recurrence_band, change_band, confidence_band, relief_band, con
     的清晰案例（rank44，change_score 0.94、人工確認乾淨，但複發年數只是中等）落到
     B 級，一個已證實乾淨的訊號卻沒被標為優先——用這個已知的真實案例測出來才發現這個
     邏輯漏洞（複發年數在此只能當加分／邊界情況的調節因子，不能當 AND 閘）。
+    （補記 2026-09-22：rank44 的「可信」判定後來因影像上看不出明確變化而撤回、改列 warn，
+    依下方 human_warn 規則現落 B 級；這條規則修正本身仍然成立。）
 
     第二個用已知案例測出來的漏洞：confidence_band=="中" 這個值同時代表兩種性質完全不同
     的情況——(a) 沒有人看過、但自動對位看起來正常（auto_aligned），(b) 人已經看過、
@@ -612,7 +614,7 @@ def api_validation():
 
     return jsonify({
         "events": {
-            "raw_photos_note": "97,500+ 張災害通報影像（ARDSWC 災害影像通報平台）",
+            "raw_photos_note": "有座標、2026-09-05 快照；含災害事件 29,991／重要地景 44,241／媒體報導 2,392／出版品 149。平台 2026-09-22 即時總數 105,131 筆（有座標 80,617）",
             "deduped_events": len(_EVENTS or []),
             "dedup_rule": "自建網格掃描 GetEventPositionList（突破單次 500 筆上限）後合併去重",
         },

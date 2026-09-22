@@ -603,7 +603,7 @@
       <div class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026</div>
       <h2>具有真實導入潛力的空間情報國家韌性決策原型</h2>
       <p class="sec-sub decision-lead">這不是「AI 自動判定災害」的黑箱系統，而是一套<strong>候選排序＋證據鏈</strong>的決策
-      輔助原型：把 76,773 筆水保署歷史通報，收斂成 100 個長期複發熱點，再用透明規則排出
+      輔助原型：把水保署影像平台 76,773 筆有座標的歷史影像紀錄（其中災害事件 29,991 筆），收斂成 100 個長期複發熱點，再用透明規則排出
       <strong>巡查優先級</strong>，讓有限的地面稽查人力知道「下一步該先去哪裡」——每一個排序背後都附上
       可回溯、可驗證的證據鏈，而不是一個要人盲目相信的分數。</p>
     </div>
@@ -624,10 +624,10 @@
     </div>
 
     <div class="proof-section">
-      <h3>為什麼可以信任這套排序？——兩個真實命中，一個真實誤報</h3>
+      <h3>為什麼不能只看分數？——兩個真實案例</h3>
       <p class="sec-sub" style="max-width:78ch;">11 個熱點做過完整人工目視覆核，我們不是只挑好看的結果展示。
-      以下 3 個真實案例涵蓋整個結果光譜：一個乾淨可信的命中、一個「分數很高但需要人工複核才能定案」的
-      真實訊號、一個「分數也很高、但其實是系統性錯誤」的誤報——點卡片可看完整的原始影像與判斷依據。</p>
+      以下兩個案例的自動分數都很高：一個「分數最高、但需要人工複核才能定案」，一個「分數也很高、但其實是
+      系統性錯誤」的誤報——這正是巡查優先級必須搭配證據鏈與人工覆核的原因。點卡片可看完整的原始影像與判斷依據。</p>
       <div class="proof-grid" id="proof-grid">
         <div style="padding:20px; color:var(--muted); font-size:13px;">載入案例中…</div>
       </div>
@@ -642,7 +642,7 @@
           <div class="rec-item"><h4>先篩後查</h4><p>對六龜、和平、信義這類人力難以頻繁到達的山區熱點，用歷史影像變化偵測把有限的地面稽查資源導向真正在變化中的地點。</p></div>
           <div class="rec-item"><h4>依複發年數分級監控</h4><p>複發 ≥5 年的熱點列為高優先，搭配每半年至一年一次的衛星影像複核，作為既有山坡地危險區劃設之外的動態分級依據。</p></div>
           <div class="rec-item"><h4>自動篩選＋人工複核 SOP</h4><p>本觀測站的深度驗證台帳就是現成範本——純自動化分數近半數在目視覆核後被判定不可信，任何政策工具導入衛星變遷偵測都必須內建這層品質關卡。</p></div>
-          <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜、松鶴案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
+          <div class="rec-item"><h4>追蹤工程整治成效</h4><p>作為現場會勘之外的獨立佐證資料（見六龜案例），補足「工程完工後究竟有沒有持續有效」這個現場照片難以回溯比對的問題。</p></div>
         </div>
         <div class="rec-col">
           <h3>民眾</h3>
@@ -733,13 +733,13 @@
     <div class="guide-hero">
       <div class="lead">
         <h3 style="margin:0 0 8px;">7 大類真實地點快速索引</h3>
-        <p class="sec-sub">從水保署 76,773 筆歷史通報整理出的長期複發熱點出發，延伸到土石流觀測站、
+        <p class="sec-sub">從水保署影像平台 76,773 筆有座標歷史紀錄整理出的長期複發熱點出發，延伸到土石流觀測站、
         大規模崩塌潛勢區、海岸/河川侵蝕案例、都市開發示範區與捷運工程——以下 7 大類、共
         <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入下方「線上分析」，
         即時擷取 Google Earth Web 歷史影像做前後期比對。</p>
       </div>
       <div class="stats">
-        <div class="guide-stat"><div class="n">76,773</div><div class="l">全台去重災害事件紀錄</div></div>
+        <div class="guide-stat"><div class="n">76,773</div><div class="l">全台去重影像紀錄（有座標；災害事件 29,991）</div></div>
         <div class="guide-stat"><div class="n">100</div><div class="l">複發熱點（Top 100）</div></div>
         <div class="guide-stat"><div class="n" id="guide-other-n">—</div><div class="l">其餘 6 大類真實地點總數</div></div>
       </div>
@@ -752,7 +752,7 @@
     <p class="sec-sub">依「不同年份出現次數」而非照片總數，從水保署全台災害影像通報中篩出長期地質不穩定熱點，再用十年以上衛星歷史影像逐一驗證——並誠實記錄自動化比對會在哪裡騙人。</p>
 
     <div class="statgrid">
-      <div><div class="stat-num">76,773</div><div class="stat-label">全台去重災害事件紀錄（自建網格掃描突破 API 500 筆上限）</div></div>
+      <div><div class="stat-num">76,773</div><div class="stat-label">全台去重影像紀錄（有座標，2026-09-05 快照；其中災害事件 29,991 筆；自建網格掃描突破 API 500 筆上限）</div></div>
       <div><div class="stat-num">100</div><div class="stat-label">依複發年數重新排序後的長期不穩定熱點</div></div>
       <div><div class="stat-num" id="stat-ledger-n">—</div><div class="stat-label">已完成完整人工目視覆核的熱點（深度驗證台帳）</div></div>
       <div><div class="stat-num" id="stat-ok-n">—</div><div class="stat-label">同時「對位成功＋熱區集中」乾淨通過的熱點</div></div>
@@ -764,7 +764,7 @@
 
     <div class="eventstats">
       <div class="eventstats-head">
-        <h3 style="margin:0;">76,773 筆事件統計與分類</h3>
+        <h3 style="margin:0;">76,773 筆影像紀錄統計與分類</h3>
         <span class="note" id="events-note"></span>
       </div>
       <div class="stat-bars">
@@ -854,7 +854,7 @@
       <div class="pattern">
         <div class="pt-eg">TYPE B</div>
         <h4>事後介入型</h4>
-        <p>事件年之後出現新生工程特徵（擋土結構、整地、植生復育）。案例：六龜、松鶴——代表已有工程處置且可能已見效，可用衛星影像追蹤成效。</p>
+        <p>事件年之後出現新生工程特徵（擋土結構、整地、植生復育）。案例：六龜——代表已有工程處置且可能已見效，可用衛星影像追蹤成效。</p>
       </div>
       <div class="pattern">
         <div class="pt-eg">TYPE C</div>
@@ -907,7 +907,7 @@
       </div>
 
       <h2>深度驗證台帳——為什麼不能只信一個分數</h2>
-      <p class="sec-sub">11 個熱點做完整目視覆核，結果只有 1 個同時「對位成功」且「視覺確認為乾淨集中訊號」。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
+      <p class="sec-sub">11 個熱點做完整目視覆核，目前沒有一個能在影像上明確指認為乾淨的真實命中（原列「可信」的 #44 松鶴已於 2026-09-22 撤回判定、改列需複查）。其餘各自落入不同程度的問題：3 個是系統性陷阱造成的偽陽性/不可信，7 個雖有真實地貌訊號、但分數被瀰漫雜訊或跨世代色調差異墊高。點一列查看該熱點的實際影像。</p>
       <div class="ledger-list" id="ledger-list"></div>
       <p style="margin-top:20px; font-size:13px; color:var(--muted); max-width:70ch;">已知系統性陷阱清單：<strong>瀰漫式雜訊灌水</strong>（季節/紋理差異拉高分數卻無集中訊號）、<strong>對位失敗偽陽性</strong>（兩期框取範圍不一致被誤讀成地貌劇變）、<strong>劣質模糊基準影像</strong>（GE 早期渲染在特定日期會退化成無法使用的模糊佔位圖）、<strong>雲影誤判</strong>、<strong>跨世代影像色調差異灌水</strong>（航照 vs 現代衛星色調不同）。每一項都是在真實資料上發現並記錄下來的，可作為未來任何政府單位導入類似比對工具時的現成 QC 檢查清單。</p>
     </div>
@@ -1030,7 +1030,7 @@ async function loadValidation(){
   const t = v.decision.tiers;
   g.innerHTML = `
     <div class="vd-cell"><h4>事件資料處理</h4><div class="vd-big">${n(v.events.deduped_events)}</div>
-      <div class="vd-sub">筆去重事件（原始 ${v.events.raw_photos_note}）<br>${v.events.dedup_rule}</div></div>
+      <div class="vd-sub">筆去重影像紀錄（${v.events.raw_photos_note}）<br>${v.events.dedup_rule}</div></div>
     <div class="vd-cell"><h4>熱點生成</h4><div class="vd-big">${n(v.hotspots.n)}</div>
       <div class="vd-sub">個複發熱點；${v.hotspots.rule}<br>複發年數分布：${rec}</div></div>
     <div class="vd-cell"><h4>影像資料</h4><div class="vd-big">${n(v.imagery.with_multi_period)} / ${n(v.imagery.n)}</div>
@@ -2113,17 +2113,16 @@ document.getElementById("pc-goto-a").onclick = () => {
   if(btnA) btnA.click();
 };
 
-// ── 決策首頁：三個真實案例（候選排序＋證據鏈的具體示範，非精心挑選的好結果）──
-// 選案準則（誠實記錄）：44＝11 個深度驗證熱點中唯一「對位成功＋熱區集中」皆通過的乾淨命中；
+// ── 決策首頁：兩個真實案例（候選排序＋證據鏈的具體示範，非精心挑選的好結果）──
+// 選案準則（誠實記錄）：原案例一 #44 松鶴（「真實命中」）於 2026-09-22 再次目視覆核時，影像上
+// 看不出可明確指認的變化，已撤回判定、改列需複查並自首頁移除——不以無法在影像上指認的案例宣稱命中。
 // 80＝全部 100 熱點中自動分數最高（0.978），但目視覆核後誠實標示「熱區近乎滿版，可信度存疑」
 //   ——刻意選它是要示範「分數最高≠最可信」，這正是「候選排序≠AI自動判定」的核心論點；
 // 48＝分數也很高（0.906）但目視覆核後確認是對位失敗造成的偽陽性（老漁港不可能 7 年城市化）。
 const PROOF_CASES = [
-  { rank: 44, kicker: "案例一・真實命中", cls: "pf-ok",
-    explain: "河岸/坡地訊號集中，與臺中和平區松鶴長年坡地侵蝕問題吻合。11 個深度驗證熱點中，唯一同時「對位成功」且「目視確認乾淨無疑」的案例。" },
-  { rank: 80, kicker: "案例二・分數最高≠最可信", cls: "pf-warn",
+  { rank: 80, kicker: "案例一・分數最高≠最可信", cls: "pf-warn",
     explain: "自動分數 0.978，是全部 100 個熱點中最高分——但目視覆核發現熱區幾乎佈滿整張畫面，不是集中訊號，可信度存疑。分數本身不能直接採信，需搭配熱區集中度一起判讀。" },
-  { rank: 48, kicker: "案例三・真實誤報", cls: "pf-bad",
+  { rank: 48, kicker: "案例二・真實誤報", cls: "pf-bad",
     explain: "自動分數高達 0.906，但宜蘭蘇澳的老漁港不可能在 7 年內完成城市化——目視覆核確認是兩期影像框取範圍不一致造成的偽陽性，非真實地貌變化。" },
 ];
 function renderProofCards(){
