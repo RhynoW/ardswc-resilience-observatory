@@ -1178,6 +1178,8 @@ def _load_events():
     if _EVENTS is not None:
         return
     _EVENTS = _load_json(DATA_ROOT / "events_trimmed.json", [])
+    for e in _EVENTS:                       # 檔案為了控制大小不存標籤（見 build_hotspots.py）
+        e.setdefault("photo_type_label", _PHOTO_TYPE_LABELS.get(e.get("photo_type"), "未分類"))
     from collections import Counter
     pt_counter = Counter(e.get("photo_type") for e in _EVENTS)
     yr_counter = Counter(e.get("year") for e in _EVENTS)

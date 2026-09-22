@@ -8,7 +8,7 @@
 1. 資料來源：https://photo.ardswc.gov.tw/api/v1/rest/dataset/metadata/<PhotoType>?page=N
    （每頁 1000 筆，四類 PhotoType 全抓）。原始回應快取到 --raw-dir，同一份快取可重跑出同樣結果。
 2. events_trimmed.json：四類中「有座標」的紀錄全部保留（地圖疊點與統計用），
-   欄位 id/lat/lon/photo_type/photo_type_label/year/county/town；year = DisasterYear（災害年份）。
+   寫檔欄位 id/lat/lon/photo_type/year（year = DisasterYear 災害年份；類別標籤由 app 補上）。
 3. 熱點只用 PhotoType=0「災害事件」與 PhotoType=8「媒體報導」（報導的災情地點）：
    重要地景、出版品照片不代表災害發生，不計入複發（2026-09-22 輔導委員建議）。
 4. 空間聚合：以台灣中心緯度（23.7°）換算的等距 250 m 網格（與影像框、地形起伏因子同尺度）。
@@ -244,7 +244,11 @@ def main():
             break
 
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "events_trimmed.json").write_text(json.dumps(events, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # 網站只用 id/lat/lon/photo_type/year（類別標籤由 app 補上）；其餘欄位只在聚合時用，不寫檔——
+    # 公開部署（HF）拒收 >10 MiB 的非 LFS 檔，座標取 5 位小數（約 1 m）。
+    slim = [{"id": e["id"], "lat": round(e["lat"], 5), "lon": round(e["lon"], 5),
+             "photo_type": e["photo_type"], "year": e["year"]} for e in events]
+    (OUT / "events_trimmed.json").write_text(json.dumps(slim, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (OUT / "top100_consolidated.json").write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding="utf-8")
     meta = {
         "source": API, "fetched": fetched, "platform_total_records": total_all,
