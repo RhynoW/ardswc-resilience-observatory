@@ -43,7 +43,7 @@ Flask 後端 + Leaflet 前端單頁應用；比對引擎為 SSIM 像素級變遷
 （`scripts/prepare_dtm20.py` 下載整備；沒有時退回 Cesium World Terrain，需選配 `CESIUM_ION_TOKEN`；
 兩者皆無時等高線疊圖開關自動隱藏，不影響其餘功能）；100 熱點的影像證據為
 Sentinel-2（Sentinel Hub WMTS 512 圖磚、10 m、每年一期，`scripts/s2_verify_hotspots.py`；線上補充時間軸需選配
-`SENTINEL_INSTANCE_ID` secret），只適用面積級變化；Google Earth Web 用於任意座標的線上分析。系統架構、API
+`SENTINEL_INSTANCE_ID` secret），只適用面積級變化；Esri Wayback 歷史影像用於任意座標的線上分析。系統架構、API
 一覽與資料治理原則見 [ARCHITECTURE.md](ARCHITECTURE.md)；完整開發過程與除錯記錄維護在
 私有研究倉庫，這份公開版本為精簡發布版。
 
@@ -54,11 +54,11 @@ Sentinel-2（Sentinel Hub WMTS 512 圖磚、10 m、每年一期，`scripts/s2_ve
 
 ## 現場展示可靠性
 
-- **`/api/health`**：即時回報核心資料檔案、離線可播放熱點數、線上擷取/Playwright 可用性、
+- **`/api/health`**：即時回報核心資料檔案、離線可播放熱點數、線上擷取可用性、
   地形來源（20 m DTM／Cesium token）狀態，供展示前自我檢查——不是行銷宣稱，每一項都是可驗證的具體事實。
   頁面右上角「系統狀態」徽章即時顯示。
 - **`DEMO_MODE=1`**（選配 Space variable）：現場展示時可主動開啟，停用依賴外部服務
-  （Google Earth Web 即時擷取）的功能，只保留完全由本機快取資料驅動的核心內容（100 熱點
+  （Esri Wayback 即時擷取）的功能，只保留完全由本機快取資料驅動的核心內容（100 熱點
   清單/地圖/優先級、Sentinel-2 年度比對面板、量化驗證與人工覆核台帳、巡查清單匯出），避免展示現場受外部
   網站當下狀況影響。開啟時首頁與頁首會顯示明顯的離線展示模式提示。
 

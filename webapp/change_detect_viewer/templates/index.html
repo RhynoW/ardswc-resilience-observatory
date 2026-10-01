@@ -652,7 +652,7 @@
         </div>
         <div class="rec-col">
           <h3>公共政策</h3>
-          <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；Sentinel-2 自 2017 年起每年可取得一期、Google Earth 歷史影像可回溯更久，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
+          <div class="rec-item"><h4>時間縱深</h4><p>現場照片只有事件當下的單張切片；Sentinel-2 自 2017 年起每年可取得一期、Esri Wayback 歷史影像（2014 起）可回溯更久，能重建事件前的基準狀態到事後長期演變軌跡。</p></div>
           <div class="rec-item"><h4>均質覆蓋</h4><p>現場照片的分佈天生受人力可達性影響；衛星視角是全境等密度覆蓋，能補足偏遠、通報稀少但實際地貌可能已在變化的資料缺口。</p></div>
           <div class="rec-item"><h4>可量化、可比較</h4><p>SSIM 差異分數＋對位品質指標，提供跨地點、跨年份的統一量化基礎，取代仰賴文字敘述的人工主觀判斷。</p></div>
         </div>
@@ -666,7 +666,7 @@
         <button class="explore-link" data-tab="ledger">🔍 證據與驗證：量化驗證＋人工覆核台帳</button>
         <button class="explore-link" data-tab="dashboard">🛰️ 空間分析平台：衛星影像變遷偵測・國土測繪中心／中研院底圖・20 m DTM・UAV 自動套合・Cesium 3D</button>
       </div>
-      <p class="guide-note">⚠ 即時線上擷取（任意座標的 Google Earth Web 比對）與 3D 立體檢視為輔助探索工具，
+      <p class="guide-note">⚠ 即時線上擷取（任意座標的 Esri Wayback 歷史影像比對）與 3D 立體檢視為輔助探索工具，
         依賴外部服務即時狀況；正式展示以上方已驗證的巡查優先級與三個案例為準——即時功能是否可用可查右上角「系統狀態」。</p>
     </div>
   </section>
@@ -675,13 +675,13 @@
   <section id="tab-dashboard" class="tabpanel">
     <h2>空間分析平台——巡查決策背後的技術底座</h2>
     <p class="sec-sub" style="max-width:82ch;">巡查優先級所用的影像證據、地形與底圖，都來自以下五個模組。巡查清單與證據本身完全離線可用、
-      不依賴本頁；本頁部分功能需要外部服務（Google Earth Web、Sentinel Hub、圖磚服務、CesiumJS CDN），可用性見右上角「系統狀態」。</p>
+      不依賴本頁；本頁部分功能需要外部服務（Esri Wayback、Sentinel Hub、圖磚服務、CesiumJS CDN），可用性見右上角「系統狀態」。</p>
 
     <div class="tech-grid">
       <div class="tech-card">
         <div class="tc-kicker">01・變遷偵測</div>
         <h4>🛰️ 衛星影像變遷偵測</h4>
-        <p><strong>Sentinel-2</strong>（WMTS 512 圖磚、10 m）每年一期覆驗全部 100 個熱點（2017 起、乾季雲量最低場景）；<strong>Google Earth 歷史影像</strong>僅作概念驗證與輔助（任意座標線上分析），正式導入可替換為授權明確的政府航照或衛星影像。SSIM 變化只是<strong>候選訊號</strong>，不等於災害或風險。</p>
+        <p><strong>Sentinel-2</strong>（WMTS 512 圖磚、10 m）每年一期覆驗全部 100 個熱點（2017 起、乾季雲量最低場景）；<strong>Esri Wayback 歷史影像</strong>僅作概念驗證與輔助（任意座標線上分析），正式導入可替換為授權明確的政府航照或衛星影像。SSIM 變化只是<strong>候選訊號</strong>，不等於災害或風險。</p>
         <button class="tc-go" data-go="custom">開啟線上分析 →</button>
       </div>
       <div class="tech-card">
@@ -737,7 +737,7 @@
         <p class="sec-sub">從水保署影像平台 30,196 筆有座標災害事件整理出的長期複發熱點出發，延伸到土石流觀測站、
         大規模崩塌潛勢區、海岸/河川侵蝕案例、都市開發示範區與捷運工程——以下 7 大類、共
         <strong id="guide-total-n">131+</strong> 個真實地點，每一筆都可一鍵送入下方「線上分析」，
-        即時擷取 Google Earth Web 歷史影像做前後期比對。</p>
+        即時擷取 Esri Wayback 歷史影像做前後期比對。</p>
       </div>
       <div class="stats">
         <div class="guide-stat"><div class="n">30,196</div><div class="l">有座標災害事件（平台共 105,131 筆，2026-09-22）</div></div>
@@ -788,12 +788,13 @@
     </div>
 
     <div class="custom-panel" id="custom-panel">
-      <h3>🎯 線上分析：任意座標的 GE Web 前後期影像比對</h3>
+      <h3>🎯 線上分析：任意座標的 Esri Wayback 前後期影像比對</h3>
       <p class="sub">
         不限於既有 100 個熱點——從下方 7 大類真實地點清單快速選點（或直接在地圖上點一下/輸入
-        座標），送出後會即時對該座標跑 Google Earth Web 歷史影像擷取＋全部相鄰日期的變遷偵測，
-        與熱點詳情用的是同一套 SSIM 像素級比對引擎。<strong>公開展示版無 GPU，每個歷史日期約需
-        35–45 秒</strong>，送出後請耐心等候（下方會顯示進度條與即時 log；同一時間只能有一個人
+        座標），送出後會即時對該座標取 Esri Wayback 歷史影像（只取內容真正不同的拍攝日）＋全部相鄰日期的變遷偵測，
+        與熱點詳情用的是同一套 SSIM 像素級比對引擎。<strong>Wayback 解析度略低於 Google Earth（多為 z17，約 1 m/px），
+        且各期來自不同感測器／季節／定位，SSIM 分數可能整體偏高、不具鑑別力——請以前後期影像目視為準。
+        整體約需 20–90 秒</strong>，送出後請耐心等候（下方會顯示進度條與即時 log；同一時間只能有一個人
         在跑，忙碌時請稍候再試）。
         <span id="custom-disabled-note" style="display:none;"></span>
       </p>
@@ -812,12 +813,12 @@
       <div class="custom-row">
         <div class="custom-field"><label>緯度 lat</label><input type="number" id="custom-lat" step="0.000001" placeholder="點地圖設定"></div>
         <div class="custom-field"><label>經度 lon</label><input type="number" id="custom-lon" step="0.000001" placeholder="點地圖設定"></div>
-        <div class="custom-field" style="min-width:100px;"><label>GSD (m/px)</label><input type="number" id="custom-gsd" value="0.2" step="0.05" min="0.05" max="2"></div>
+        <div class="custom-field" style="min-width:100px;"><label>範圍 ±m</label><input type="number" id="custom-gsd" value="500" step="50" min="200" max="750"></div>
         <div class="custom-field" style="min-width:100px;"><label>歷史期數</label><input type="number" id="custom-ndates" value="10" step="1" min="2" max="30"></div>
       </div>
       <div class="custom-confirm" id="custom-confirm">尚未設定中心點——請先點地圖或輸入座標、或從上方清單選一個地點</div>
       <button id="btn-capture-custom" disabled>🚀 開始擷取</button>
-      <button id="btn-sentinel-custom" disabled style="display:none;" title="Sentinel-2 每 5 天重訪、10 m 解析度：補足 Google Earth 歷史影像期數不足，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）">🛰️ 用 Sentinel-2 補充時間軸（10 m・約 3 年）</button>
+      <button id="btn-sentinel-custom" disabled style="display:none;" title="Sentinel-2 每 5 天重訪、10 m 解析度：補足 Wayback 歷史影像期數不足，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）">🛰️ 用 Sentinel-2 補充時間軸（10 m・約 3 年）</button>
       <div id="custom-progress-wrap">
         <div id="custom-progress-status">
           <span id="custom-progress-label">準備中…</span>
@@ -930,7 +931,7 @@
     <div id="detail-body"><div class="detail-loading">選擇左側熱點或地圖上的點以載入影像…</div></div>
     <div class="detail-foot" id="detail-foot" style="display:none;">
       <span class="gnote">候選區塊為自動化建議、非已驗證事實；紅色標記為該熱點通報座標，非精確災害範圍。</span>
-      <a id="ge-trace-link" href="#" target="_blank" rel="noopener">🌐 回溯 Google Earth Web →</a>
+      <a id="ge-trace-link" href="#" target="_blank" rel="noopener">🌐 在 Esri Wayback 開啟 →</a>
     </div>
   </div>
 
@@ -1499,10 +1500,9 @@ function findLocationBySite(site){
 }
 
 function customFootprintBounds(latlng){
-  const gsd = parseFloat(document.getElementById("custom-gsd").value) || 0.2;
-  const wM = gsd * 7680, hM = gsd * 4320;   // 8K 擷取（ge_web_capture_v2_8k.py 預設 viewport）
-  const dLat = (hM / 2) / 111320;
-  const dLon = (wM / 2) / (111320 * Math.cos(latlng.lat * Math.PI / 180));
+  const half = Math.min(750, Math.max(200, parseFloat(document.getElementById("custom-gsd").value) || 500));
+  const dLat = half / 111320;   // Esri Wayback 擷取範圍：以中心點為準的 ±half 公尺方框
+  const dLon = half / (111320 * Math.cos(latlng.lat * Math.PI / 180));
   return [[latlng.lat - dLat, latlng.lng - dLon], [latlng.lat + dLat, latlng.lng + dLon]];
 }
 
@@ -1541,8 +1541,8 @@ function updateCustomConfirm(){
     btn.disabled = true;
     return;
   }
-  const wM = Math.round(gsd * 7680), hM = Math.round(gsd * 4320);
-  box.innerHTML = `即將送出：<b>${lat.toFixed(6)}, ${lon.toFixed(6)}</b>　範圍約 ${wM}×${hM} m<br>站點名稱：<code>custom_${lat.toFixed(5)}_${lon.toFixed(5)}</code>`.replace(/-/g,"m").replace(/\.(?=\d{5}(_|<))/g,"p");
+  const side = Math.round(2 * Math.min(750, Math.max(200, parseFloat(gsd) || 500)));
+  box.innerHTML = `即將送出：<b>${lat.toFixed(6)}, ${lon.toFixed(6)}</b>　範圍約 ${side}×${side} m<br>站點名稱：<code>custom_${lat.toFixed(5)}_${lon.toFixed(5)}</code>`.replace(/-/g,"m").replace(/\.(?=\d{5}(_|<))/g,"p");
   btn.disabled = customCaptureBusy;
 }
 
@@ -1612,7 +1612,7 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   let r;
   try{
     r = await fetch("/api/capture_custom", { method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({lat, lon, gsd, n_dates}) }).then(x=>x.json());
+      body: JSON.stringify({lat, lon, half_m: parseFloat(gsd) || 500, n_dates}) }).then(x=>x.json());
   } catch(e){
     logEl.style.color = "var(--sem-bad)"; logEl.textContent = "✘ 送出失敗：" + e;
     btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;
@@ -2172,7 +2172,7 @@ async function loadHealth(){
   if(h.demo_mode){
     const banner = document.getElementById("demo-banner");
     banner.style.display = "block";
-    banner.textContent = "◆ 目前為離線展示模式：即時線上擷取已停用，僅顯示已驗證的既有分析結果，不受外部服務（Google Earth Web）現場狀況影響。";
+    banner.textContent = "◆ 目前為離線展示模式：即時線上擷取已停用，僅顯示已驗證的既有分析結果，不受外部服務（Esri Wayback）現場狀況影響。";
   }
 
   const c = h.checks;
@@ -2181,7 +2181,7 @@ async function loadHealth(){
     <div class="hb-row"><span>核心資料檔案</span><span>${c.core_data_files.ok ? "✔ 完整" : "✘ 缺失"}</span></div>
     <div class="hb-row"><span>離線可播放熱點數</span><span>${c.offline_capture_cache.deep_verified_sites_with_images}</span></div>
     <div class="hb-row"><span>線上即時擷取</span><span>${c.live_capture.feature_enabled ? (c.live_capture.busy ? "執行中" : "可用") : "已停用"}</span></div>
-    <div class="hb-row"><span>Playwright 瀏覽器自動化</span><span>${c.live_capture.playwright_installed ? "✔ 已安裝" : "✘ 未安裝"}</span></div>
+    <div class="hb-row"><span>線上擷取來源</span><span>${c.live_capture.source || "—"}</span></div>
     <div class="hb-row"><span>Cesium 地形 token</span><span>${c.cesium_terrain_token.configured ? "已設定" : "未設定（選配）"}</span></div>
     <div class="hb-row"><span>背景任務</span><span>${h.background_jobs.running} 執行中 / ${h.background_jobs.total_tracked} 累計</span></div>
     <div class="hb-row"><span>版本</span><span>${h.git_commit}</span></div>

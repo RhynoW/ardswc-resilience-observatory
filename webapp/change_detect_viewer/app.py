@@ -65,6 +65,7 @@ import cesium_terrain as CT            # noqa: E402  — 等高線/流域的備�
 import dtm20 as DTM                    # noqa: E402  — 主要地形來源：全臺灣 20 m DTM（內政部地政司，本地檔）
 import watershed_analysis as WA        # noqa: E402  — 小範圍坡度/流域分析（積水候選提示）
 import ardswc_photo_search as APS      # noqa: E402  — 水保署官方歷史影像庫真實查詢
+import wayback_assist as WB            # noqa: E402  — 線上分析的歷史影像來源（Esri World Imagery Wayback）
 
 REPO = HERE.parent.parent
 CAPTURES_ROOT = REPO / "data" / "ge_captures"
@@ -788,18 +789,12 @@ def serve_image(relpath):
 # ── GE Web 回溯（換日期直連 URL，同 §14.7/reference_ge_web_date_url 手法）─────
 @app.route("/api/ge_trace")
 def api_ge_trace():
-    lon, lat = request.args.get("lon"), request.args.get("lat")
-    date = request.args.get("date", "")
-    dist = request.args.get("dist", "500")
-    if not (lon and lat):
-        return jsonify({"error": "缺 lon/lat"}), 400
-    template = f"https://earth.google.com/web/@{lat},{lon},0.00a,{dist}d,35y,0h,0t,0r"
+    """路由名稱沿用以免動前端；實際回傳 Esri Wayback 網站的直連（以該座標為中心，19 級）。"""
     try:
-        import ge_web_capture as GW  # noqa: PLC0415
-        url = GW.build_url(template, date) if (date and len(date) == 8) else template
-    except Exception:
-        url = template
-    return jsonify({"url": url})
+        lon, lat = float(request.args["lon"]), float(request.args["lat"])
+    except (KeyError, ValueError):
+        return jsonify({"error": "缺 lon/lat"}), 400
+    return jsonify({"url": WB.viewer_url(lat, lon)})
 
 
 # ── 水保署歷史影像庫真實查詢（2026-09-05 追加，取代連到無法帶查詢條件的官方搜尋首頁）──────
@@ -1232,34 +1227,19 @@ def api_events():
                      "truncated": total_matched > len(matched)})
 
 
-# ── 線上分析（自訂座標，2026-09-05 追加）─────────────────────────────────────
-# 把 imagery_change_toolkit（8074）的「自訂座標」機制搬進本觀測站——使用者輸入/點選任意
-# 座標，即時跑 GE Web 歷史影像擷取＋全部相鄰日期變遷偵測，不必侷限在既有 100 個熱點。
+# ── 線上分析（自訂座標）─────────────────────────────────────────────────────
+# 使用者輸入/點選任意座標，即時取該座標的歷史影像＋全部相鄰日期變遷偵測，不必侷限在既有 100 個熱點。
 # 範例／預設座標：豐丘觀測站（南投縣信義鄉，土石流潛勢溪流「投縣DF190」），見前端敘事卡片。
 #
-# **公開 HF Space 確認可行（2026-09-05 實測驗證，推翻本節原先「無法跑」的結論）**：起初認為
-# 需要真實瀏覽器自動化的容器（python:3.11-slim 無瀏覽器）做不到，但在獨立的私有測試 Space
-# （同款 cpu-basic 硬體）實測：Playwright **內建 Chromium**（非 channel=chrome）以
-# `headless=True` 即可正確載入 GE Web、進歷史模式、逐步走訪日期 stepper、截出正確日期的
-# 清晰影像——不需要虛擬螢幕(Xvfb)、不需要真的 Google Chrome、不需要 GPU。過程中一併修正
-# 兩個真正的可攜性 bug：(1) `ge_web_capture*.py` 硬編碼開發者本機路徑 `F:\GitHub\...`，容器
-# 上根本不存在（已改用 `Path(__file__).resolve().parent.parent`）；(2) `_read_stepper()` 的
-# 日期正則只認中文格式（開發者本機 zh-TW locale），容器預設 en-US locale 下 GE Web 渲染英文
-# 日期（`Jan 1, 2020`），原正則直接匹配失敗、整支函式提早回傳 None（已加英文月份格式的
-# fallback，中文本機行為完全不變）。詳細測試記錄與取捨見 ARCHITECTURE.md「線上分析」章節。
-#
-# 因此改用 `GE_CAPTURE_CONTAINER_MODE` 環境變數切換擷取後端（同 GMAPS_DEMO_APPLE_AUTO 的既有
-# 取捨模式）：預設 `0`＝本機沿用既有 `ge_web_capture_v2_8k.py`（8K viewport、真 Chrome、
-# headed、持久化 profile，本機桌機資源充足、追求最高解析度）；公開部署版 Dockerfile 設
-# `GE_CAPTURE_CONTAINER_MODE=1`＝改呼叫 `ge_web_capture_v2.py --headless-container`（1920×1080
-# viewport，實測在 cpu-basic 無 GPU 下最穩定——2560×1440 曾出現 screenshot 逾時與日期讀取
-# 錯位，8K 更不用談）。`ENABLE_LIVE_CAPTURE` 開關保留，但公開版現在**預設開啟**——僅在真的
-# 需要暫時停用時（例如濫用/資源異常）才手動關閉，不再是「這裡先天做不到」的 fail-closed 用途。
+# 歷史影像來源：Esri World Imagery Wayback（`wayback_assist.py`，2014 起、免金鑰、純 HTTP 圖磚）。
+# 取代先前的 Google Earth Web 瀏覽器自動化（Playwright 驅動 Flutter/CanvasKit，每期 35–45 秒、
+# 依賴 UI 結構、cpu-basic 上不穩）。代價：解析度略低（多為 z17 約 1 m/px），且各期為不同供應商的
+# 混合鑲嵌，SSIM 分數易飽和（結果 JSON 的 `ssim_saturated` 旗標與 job log 會照實標示）。
+# 舊的 `scripts/ge_web_capture*.py` 保留在倉庫中但已不在請求路徑上。
+# `ENABLE_LIVE_CAPTURE` 為緊急停用開關（預設開啟）。
 ENABLE_LIVE_CAPTURE = os.environ.get("ENABLE_LIVE_CAPTURE", "1") != "0"
-GE_CAPTURE_CONTAINER_MODE = os.environ.get("GE_CAPTURE_CONTAINER_MODE", "0") == "1"
-# 容器模式無 GPU、實測約 35-45s/期，上限收緊避免單一任務佔用整個容器 20+ 分鐘；
-# 本機模式維持原上限 30（桌機資源充足、8K wrapper 通常快得多）。
-MAX_N_DATES = 12 if GE_CAPTURE_CONTAINER_MODE else 30
+# Wayback 單一座標通常只有數期到十餘期不同拍攝日，上限 12 已足夠。
+MAX_N_DATES = 12
 # 離線展示模式（見下方 /api/health 區塊完整說明）：現場展示時可主動開啟，關閉對外部
 # 服務（GE Web/Playwright 即時擷取）的依賴，只保留完全本機快取驅動的功能。預設關閉。
 DEMO_MODE = os.environ.get("DEMO_MODE", "0") == "1"
@@ -1438,18 +1418,11 @@ def api_health():
         "note": "未設定 SENTINEL_INSTANCE_ID（Space secret）時，Sentinel-2 補充分析入口自動隱藏。",
     }
 
-    playwright_ok = False
-    try:
-        import importlib.util
-        playwright_ok = importlib.util.find_spec("playwright") is not None
-    except Exception:  # noqa: BLE001
-        playwright_ok = False
     checks["live_capture"] = {
         "ok": True,  # 停用是刻意設定，不是故障
         "feature_enabled": ENABLE_LIVE_CAPTURE and not DEMO_MODE,
         "demo_mode": DEMO_MODE,
-        "playwright_installed": playwright_ok,
-        "container_mode": GE_CAPTURE_CONTAINER_MODE,
+        "source": "Esri World Imagery Wayback（免金鑰、純 HTTP，不需瀏覽器）",
         "busy": _capture_lock.locked(),
     }
 
@@ -1493,12 +1466,13 @@ def api_capture_custom():
         return jsonify({"error": "lat/lon 需為數字"}), 400
     if not (-90 <= lat <= 90 and -180 <= lon <= 180):
         return jsonify({"error": "座標超出範圍"}), 400
-    gsd = float(body.get("gsd", 0.2))
+    zoom = max(WB.MIN_ZOOM, min(WB.MAX_ZOOM, int(body.get("zoom", WB.DEFAULT_ZOOM))))
+    half_m = max(200.0, min(750.0, float(body.get("half_m", 500))))
     n_dates = max(2, min(MAX_N_DATES, int(body.get("n_dates", 10))))
     slug = _coord_slug(lat, lon)
 
     if _capture_lock.locked():
-        return jsonify({"error": "目前已有擷取任務在執行，GE Web 瀏覽器自動化一次只能跑一個，請稍候再試"}), 409
+        return jsonify({"error": "目前已有擷取任務在執行，請稍候再試"}), 409
 
     jid = _new_job("capture_custom")
 
@@ -1508,57 +1482,54 @@ def api_capture_custom():
             _job_finish(jid, error="lock busy")
             return
         try:
-            _job_log(jid, f"擷取 {slug}（{lat},{lon}）gsd={gsd}m/px n_dates={n_dates} …（GE Web 瀏覽器自動化，數分鐘）")
-            if GE_CAPTURE_CONTAINER_MODE:
-                # 容器模式：跳過 8K wrapper（該腳本設計是「先試 8K、失敗才退 fallback」，在無 GPU
-                # 容器上從一開始就不該碰 8K），直接呼叫 v2 的 headless-container 分支＋較小 viewport
-                # （見上方 GE_CAPTURE_CONTAINER_MODE 說明的實測依據）。
-                cmd = [sys.executable, str(SCRIPTS / "ge_web_capture_v2.py"),
-                       "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
-                       "--n-dates", str(n_dates), "--headless-container", "--vw", "1920", "--vh", "1080"]
-            else:
-                # 8K wrapper 只存在於私有研究倉庫；公開精簡版沒有，找不到就直接用 v2
-                # （本機真 Chrome、有頭、持久化 profile、預設 2560×1440 viewport）。
-                script = SCRIPTS / "ge_web_capture_v2_8k.py"
-                if not script.exists():
-                    script = SCRIPTS / "ge_web_capture_v2.py"
-                cmd = [sys.executable, str(script),
-                       "--site", slug, "--gsd", str(gsd), "--lat", str(lat), "--lon", str(lon),
-                       "--n-dates", str(n_dates)]
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                     text=True, encoding="utf-8", errors="replace", cwd=str(REPO))
-            for line in proc.stdout:
-                _job_log(jid, line.rstrip())
-            rc = proc.wait()
-            if rc != 0:
-                _job_finish(jid, error=f"擷取失敗（exit code {rc}），詳見上方 log")
+            _job_log(jid, f"Esri Wayback 擷取 {slug}（{lat},{lon}）±{half_m:g} m、z{zoom}"
+                          f"（約 {WB.m_per_px(lat, zoom):.2f} m/px）…")
+            frames = WB.list_frames(lat, lon, zoom, log=lambda m: _job_log(jid, m))
+            if len(frames) < 2:
+                _job_finish(jid, error=f"Wayback 在此座標只有 {len(frames)} 個不同拍攝日的影像，不足以比對（需 ≥2）。"
+                                       "可嘗試降低 zoom（z16）或換座標。")
                 return
+            if len(frames) > n_dates:   # 均勻挑選，保留頭尾，涵蓋整段時間
+                idx = sorted({round(i * (len(frames) - 1) / (n_dates - 1)) for i in range(n_dates)})
+                frames = [frames[i] for i in idx]
+            site_dir = CAPTURES_ROOT / slug
+            site_dir.mkdir(parents=True, exist_ok=True)
+            for old in [*site_dir.glob(f"{slug}_gmap_*"), *(site_dir / "_change_detect").glob("*")]:
+                old.unlink()
+            for i, f in enumerate(frames, 1):
+                img, bounds = WB.fetch_image(lat, lon, half_m, f["release"], zoom)
+                WB.save_frame(site_dir, slug, f["date"], img, bounds)
+                _job_log(jid, f"✔ [{i}/{len(frames)}] {f['date']}（{'拍攝日' if f['date_kind'] == 'acquired' else '僅知發布日'}"
+                              f"，{f['source'] or '未標示來源'}，原生 {f['res_m'] or '?'} m）")
 
-            capture_dir = CAPTURES_ROOT / slug
-            dated = CD._list_dated(capture_dir)
-            if len(dated) < 2:
-                _job_finish(jid, error=f"只擷取到 {len(dated)} 個歷史日期，不足以比對變遷（需 ≥2）")
-                return
-
-            _job_log(jid, f"擷取完成（{len(dated)} 期），開始變遷偵測（全部相鄰日期）…")
-            out_dir = capture_dir / "_change_detect"
+            _job_log(jid, f"擷取完成（{len(frames)} 期），開始變遷偵測（全部相鄰日期）…")
+            dated = CD._list_dated(site_dir)
+            out_dir = site_dir / "_change_detect"
             summary = []
             for i in range(len(dated) - 1):
                 (da, pa), (db, pb) = dated[i], dated[i + 1]
                 _job_log(jid, f"{da} -> {db} 計算中…")
+                # Wayback 沒有 GE 的 UI 邊條，不裁切
                 r = CD.detect_change(
-                    pa, pb, da, db, out_dir, slug,
-                    ssim_thresh=float(body.get("ssim_thresh", CD.DEFAULT_SSIM_THRESH)),
+                    pa, pb, da, db, out_dir, slug, ui_top=0, ui_bottom=0, ui_top_auto=False,
+                    ssim_thresh=float(body.get("ssim_thresh", 0.45)), min_region_px=60,
                     water_suppress=bool(body.get("water_suppress", True)),
                 )
                 summary.append({"date_a": da, "date_b": db,
                                  "overall_change_fraction": r["overall_change_fraction"],
                                  "mean_ssim": r["mean_ssim"], "n_regions": r["n_regions"]})
                 _job_log(jid, f"{da} -> {db} 完成：overall_change={r['overall_change_fraction']}")
+            saturated = bool(summary) and sorted(p["overall_change_fraction"] for p in summary)[len(summary) // 2] > 0.7
             (out_dir / f"{slug}_change_timeline.json").write_text(
-                json.dumps({"site": slug, "pairs": summary}, ensure_ascii=False, indent=2), encoding="utf-8")
+                json.dumps({"site": slug, "source": "esri-wayback", "zoom": zoom,
+                            "frames": frames, "ssim_saturated": saturated, "pairs": summary},
+                           ensure_ascii=False, indent=2), encoding="utf-8")
+            if saturated:
+                _job_log(jid, "⚠ 多數相鄰期別變化比例 >70%：Wayback 各期來自不同感測器／季節／定位，"
+                              "SSIM 分數已飽和、不具鑑別力，請以前後期影像目視比對為準，不要依分數排序。")
             _job_log(jid, "✔ 全部完成")
-            _job_finish(jid, result={"site": slug, "lat": lat, "lon": lon, "n_dates": len(dated), "pairs": summary})
+            _job_finish(jid, result={"site": slug, "lat": lat, "lon": lon, "n_dates": len(frames),
+                                      "pairs": summary, "ssim_saturated": saturated})
         except Exception as e:  # noqa: BLE001
             _job_log(jid, f"失敗：{type(e).__name__}: {e}")
             _job_finish(jid, error=str(e))

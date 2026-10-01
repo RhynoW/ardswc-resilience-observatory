@@ -40,7 +40,7 @@
 一律以**決策流程**、而非 Python 模組作為主架構圖：
 
 ```
-公開空間資料        ARDSWC 災害影像通報｜Google Earth 歷史影像｜20 m DTM
+公開空間資料        ARDSWC 災害影像通報｜Esri Wayback／Sentinel-2 歷史影像｜20 m DTM
       ▼
 資料整備與空間聚合  去重｜座標清理｜跨年度複發統計 → Top 100 複發熱點
       ▼
@@ -63,7 +63,7 @@
 |---|---|---|
 | **P0 核心決策** | 熱點排序、A–D 分級、證據卡、深度驗證台帳、量化驗證、三個案例、巡查清單／摘要匯出 | 完全離線可展示（`DEMO_MODE=1` 下全部可用） |
 | **P1 支援分析** | 地圖、既有影像時間軸與比對面板、原始事件統計、等高線、水保署影像庫查詢 | 可展示，不阻塞主流程 |
-| **P2 研究與擴充** | 即時 GE Web 擷取、UAV 自動對位、Cesium 3D 疊合、D8 流域分析、Sentinel-2 補充、7 大類地點瀏覽器 | 技術深度證明與未來擴充；依賴外部服務或算力 |
+| **P2 研究與擴充** | 即時 Esri Wayback 擷取、UAV 自動對位、Cesium 3D 疊合、D8 流域分析、Sentinel-2 補充、7 大類地點瀏覽器 | 技術深度證明與未來擴充；依賴外部服務或算力 |
 
 **P2 選配研究模組不影響核心巡查決策流程與離線展示。**
 
@@ -78,7 +78,7 @@
 瀏覽器 ── HTTP ── Flask (app.py)
                      ├─ 靜態 JSON 讀取（熱點清單/台帳/事件統計/分類地點）
                      ├─ ge_change_detect.py（SSIM 比對，讀取已快取的影像/JSON）
-                     ├─ ge_web_capture_v2.py（線上分析：即時 GE Web 擷取，見 §5）
+                     ├─ wayback_assist.py（線上分析：Esri Wayback 取像，見 §5）
                      ├─ dtm20.py／cesium_terrain.py（地形資料：等高線疊圖／坡度流域分析；DTM 為主、Cesium 備援）
                      ├─ watershed_analysis.py（D8 流向＋流量累積，積水候選提示）
                      ├─ ardswc_photo_search.py（水保署歷史影像庫真實查詢）
@@ -106,7 +106,7 @@
 
 | 模組 | 內容 | 入口 |
 |---|---|---|
-| 衛星影像變遷偵測 | Google Earth 歷史影像（最長 25 期）＋ Sentinel-2（10 m）補充時間軸；SSIM 比對＋對位檢查 | 開啟線上分析面板 |
+| 衛星影像變遷偵測 | Esri Wayback 歷史影像（2014 起）＋ Sentinel-2（10 m）補充時間軸；SSIM 比對＋對位檢查 | 開啟線上分析面板 |
 | 國土測繪中心・中研院底圖 | NLSC 地形圖／航照正射／歷史正射／電子地圖＋等高線、坡度、土壤液化、國土利用、地籍疊圖；中研院 1904 臺灣堡圖、1966 Corona | 捲動到地圖圖層面板 |
 | 臺灣 20 m DTM | 等高線、坡度與 D8 流域分析、地形起伏因子、Cesium 3D 地形高程 | UAV／Cesium 3D 面板 |
 | UAV × 衛星影像自動套合 | LoFTR＋MAGSAC，無 EXIF 照片純影像內容對位；保留檢核點 RMSE | UAV／Cesium 3D 面板 |
@@ -135,20 +135,24 @@
 ## 5. 線上分析：任意座標即時比對
 
 支援功能——不限於既有 100 個熱點，使用者可在地圖上點選（或從 §6 的分類清單挑選）任意
-座標，即時對該座標跑 GE Web 歷史影像擷取＋全部相鄰日期的 SSIM 變遷偵測，用的是與 100
+座標，即時對該座標取 Esri Wayback 歷史影像＋全部相鄰日期的 SSIM 變遷偵測，用的是與 100
 熱點同一套比對引擎。**正式展示以既有已驗證的巡查優先級與三個案例（§4）為準，本功能依賴
-外部服務（Google Earth Web）即時狀況，不作為主線敘事。**
+外部服務（Esri Wayback）即時狀況，不作為主線敘事。**
 
-- **擷取後端**：`scripts/ge_web_capture_v2.py`，Playwright 驅動 Google Earth Web，操作
-  Flutter/CanvasKit 渲染的無障礙功能樹（`flt-semantics`/`[role]` 節點）讀取歷史日期
-  stepper、進歷史模式、逐步取得每個日期的截圖。
-- **容器模式**（`GE_CAPTURE_CONTAINER_MODE=1`，這個公開部署的預設值）：純 headless
-  Chromium（Playwright 內建，非需要系統安裝的 Google Chrome）、一次性 context（不用
-  persistent profile）、1920×1080 viewport——實測在 `cpu-basic`（2 vCPU、無 GPU、
-  software WebGL）上最穩定；更大的 viewport（2560×1440 甚至 8K）在此硬體上會出現
-  screenshot 逾時與日期讀取錯位。每個歷史日期約需 35–45 秒（無 GPU），`n_dates` 上限
-  收緊為 12（約 10 分鐘封頂），避免單一任務佔滿容器過久。同一時間只允許一個擷取任務
-  （行程內全域鎖），忙碌時新請求回 409。
+- **擷取後端**：`webapp/change_detect_viewer/wayback_assist.py`，Esri World Imagery Wayback
+  （2014 起約 190 個版本，免金鑰、純 HTTP 256 px WMTS 圖磚，不需瀏覽器自動化）。取代先前的
+  Google Earth Web（Playwright 驅動 Flutter/CanvasKit，每期 35–45 秒、依賴 UI 結構）；舊腳本
+  `scripts/ge_web_capture*.py` 保留但已不在請求路徑上。
+- **只取「真正不同」的期別**：Wayback 的版本是發布批次，不是影像期別——相鄰版本在同一地點常是
+  同一批影像重新調色。流程：① tilemap 端點的 `select` 欄位跳過內容相同的版本；② 讀各版本 metadata
+  圖層取得**實際拍攝日**（SRC_DATE2）；③ 同一拍攝日只留一期。實測南港例子：196 版本 → 20 個內容有變動
+  的版本 → 9 個不同拍攝日（2010–2025）；台灣山區熱點（#76 附近）僅 4 期。檔名用拍攝日，
+  查不到才退回發布日並在時間軸 JSON 標註 `date_kind`。
+- **解析度與範圍**：預設 z17（約 1.1 m/px，台灣緯度）、±500 m（可調 200–750 m）；z19 多數地點無影像。
+  單次約 20–60 秒（metadata 服務延遲不穩，逾時 20 秒即退回發布日）。
+- **已知限制（實測）**：Wayback 各期來自不同供應商／感測器／季節／定位，SSIM 在此來源上**分數飽和**——
+  南港、#76 附近的相鄰期別多被判 80–95% 變化，縮小解析度也沒有改善。結果 JSON 與 job log 會標示
+  `ssim_saturated`；這類結果只能目視比對前後期影像，不得依分數排序。100 熱點的正式影像證據仍是 Sentinel-2。
 - **進度回饋**：送出後顯示依「預估總時間」換算的進度條（時間常數依實測校準），並嘗試從
   即時 log 解析真實步驟（第幾期/第幾組變遷偵測）疊加顯示；進度條在真正完成前最多只到
   96%，避免時間估不準時誤報「完成」。
@@ -338,7 +342,7 @@ z12 38 m/px）補回被遮蔽像素（`sentinel_assist._fill_watermark`）：上
 | `/api/dtm_heights` | GET | `west/south/east/north` + `n`（2–257）→ n×n float32 小端序高程（北→南、西→東），供 3D 疊合頁的 Cesium 地形；範圍上限 4°×4°，無本地 DTM 時回 503 |
 | `/api/uav_registration/<id>` | GET | UAV 對位成果中繼資料（`static/uav/<id>/meta.json`）；id 僅允許數字，擋路徑穿越 |
 | `/api/tile/apple\|nlsc_topo\|nlsc_photo/<z>/<x>/<y>` | GET | 底圖圖磚代理（Google/ESRI/Bing/OSM 前端直連） |
-| `/api/ge_trace` | GET | 依座標＋日期組出對應歷史日期的 GE Web 直連 URL |
+| `/api/ge_trace` | GET | 依座標組出 Esri Wayback 網站直連 URL（路由名稱為相容保留） |
 | `/image/<relpath>` | GET | 靜態影像服務（`safe_join` 擋路徑穿越） |
 
 ## 10. 部署設定與現場展示可靠性
@@ -365,15 +369,14 @@ z12 38 m/px）補回被遮蔽像素（`sentinel_assist._fill_watermark`）：上
 | `SENTINEL_INSTANCE_ID` | 未設定 | 選配 Space secret（Copernicus Data Space Sentinel Hub Instance ID，等同存取憑證、免費 10,000 請求/月）；設定後「線上分析」面板出現「用 Sentinel-2 補充時間軸」按鈕（`sentinel_assist.py`）。**只補充時間解析度、不取代 GE 影像**：10 m/像素，只看得到面積級變化（崩塌、裸露、河道、大範圍開發）。未設定時入口自動隱藏。本機開發可改放 repo 根目錄的 `.sentinel_instance_id`（已 gitignore，環境變數優先），本機即預設開啟 |
 | `ENABLE_LIVE_CAPTURE` | `1` | 線上分析的緊急停用開關 |
 | `DEMO_MODE` | `0` | **離線展示模式**（2026-09-06 追加）：設為 `1` 時停用線上即時擷取（不受
-Google Earth Web 現場狀況影響），只保留完全依賴本機快取資料的核心內容，首頁與頁首會
+Esri Wayback 現場狀況影響），只保留完全依賴本機快取資料的核心內容，首頁與頁首會
 顯示明顯提示。現場展示前建議主動開啟；平常對外服務維持關閉以提供完整功能。 |
 | `TORCH_VARIANT` | `cpu` | 建置參數：UAV 對位用 torch wheel 版本（`cpu`／`cu128`），見上方 |
 | `UAV_DEVICE` | 未設定 | 對位腳本運算裝置（`cpu`／`cuda`／`cuda:0`）；未設定時自動偵測。本機 GPU 不穩時設 `cpu` 強制 CPU |
-| `GE_CAPTURE_CONTAINER_MODE` | `1`（此部署明確設定） | 切換擷取後端為容器安全模式（§5） |
 | `GMAPS_DEMO_APPLE_AUTO` | `0`（此部署明確設定） | 關閉 Apple 底圖 token 自動換發（此容器連外部網站常逾時） |
 
 **服務健康狀態**：頁首右上角「系統狀態」徽章即時呼叫 `/api/health`，回報的是可驗證的
-具體事實（資料檔案是否存在、離線可播放熱點數、Playwright 是否安裝、背景任務數等），
+具體事實（資料檔案是否存在、離線可播放熱點數、線上擷取來源、背景任務數等），
 不是行銷宣稱；點擊可展開詳細清單。動機：開發過程中真實發生過 HF Space 被切到暫停、
 Cesium 地形 token 靜默過期兩次事故，皆非現場能立即排除的問題，因此需要一個不依賴外部
 網路（避免健康檢查本身被同一個外部故障拖垮）的自我檢查機制。
@@ -392,7 +395,7 @@ Cesium 地形 token 靜默過期兩次事故，皆非現場能立即排除的問
   「概略／未驗證」，絕不編造座標湊數。
 - SSIM 變化分數定位為「影像變化候選訊號」，不等同災害或風險；雲影、色調差異、對位誤差與解析度差異都可能
   造成偽陽性。自動化結果與人工判讀在資料結構（`top100_consolidated.json` vs `ledger.json`）與畫面上都分開呈現。
-- Google Earth 歷史影像僅作概念驗證與輔助（任意座標線上分析）；正式導入時可替換為授權明確、來源穩定的
+- Esri Wayback 歷史影像僅作概念驗證與輔助（任意座標線上分析；Esri World Imagery 條款）；正式導入時可替換為授權明確、來源穩定的
   政府航照（如國土測繪中心正射影像）或衛星影像。100 熱點的正式影像證據為 Sentinel-2（Copernicus 開放授權）。
 - 歷史通報有密度偏差，紀錄多不必然代表災害多（見 §7.3）。
 - 線上分析（§5）擷取的座標/日期為自動化幾何流程，非人工驗證的地面真相；產出的比對
