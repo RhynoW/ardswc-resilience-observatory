@@ -813,7 +813,7 @@
       <div class="custom-row">
         <div class="custom-field"><label>緯度 lat</label><input type="number" id="custom-lat" step="0.000001" placeholder="點地圖設定"></div>
         <div class="custom-field"><label>經度 lon</label><input type="number" id="custom-lon" step="0.000001" placeholder="點地圖設定"></div>
-        <div class="custom-field" style="min-width:100px;"><label>範圍 ±m</label><input type="number" id="custom-gsd" value="500" step="50" min="200" max="750"></div>
+        <div class="custom-field" style="min-width:100px;"><label>範圍 ±m</label><input type="number" id="custom-gsd" value="750" step="50" min="200" max="750"></div>
         <div class="custom-field" style="min-width:100px;"><label>歷史期數</label><input type="number" id="custom-ndates" value="10" step="1" min="2" max="30"></div>
       </div>
       <div class="custom-confirm" id="custom-confirm">尚未設定中心點——請先點地圖或輸入座標、或從上方清單選一個地點</div>
@@ -1500,7 +1500,7 @@ function findLocationBySite(site){
 }
 
 function customFootprintBounds(latlng){
-  const half = Math.min(750, Math.max(200, parseFloat(document.getElementById("custom-gsd").value) || 500));
+  const half = Math.min(750, Math.max(200, parseFloat(document.getElementById("custom-gsd").value) || 750));
   const dLat = half / 111320;   // Esri Wayback 擷取範圍：以中心點為準的 ±half 公尺方框
   const dLon = half / (111320 * Math.cos(latlng.lat * Math.PI / 180));
   return [[latlng.lat - dLat, latlng.lng - dLon], [latlng.lat + dLat, latlng.lng + dLon]];
@@ -1541,7 +1541,7 @@ function updateCustomConfirm(){
     btn.disabled = true;
     return;
   }
-  const side = Math.round(2 * Math.min(750, Math.max(200, parseFloat(gsd) || 500)));
+  const side = Math.round(2 * Math.min(750, Math.max(200, parseFloat(gsd) || 750)));
   box.innerHTML = `即將送出：<b>${lat.toFixed(6)}, ${lon.toFixed(6)}</b>　範圍約 ${side}×${side} m<br>站點名稱：<code>custom_${lat.toFixed(5)}_${lon.toFixed(5)}</code>`.replace(/-/g,"m").replace(/\.(?=\d{5}(_|<))/g,"p");
   btn.disabled = customCaptureBusy;
 }
@@ -1612,7 +1612,7 @@ document.getElementById("btn-capture-custom").onclick = async () => {
   let r;
   try{
     r = await fetch("/api/capture_custom", { method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({lat, lon, half_m: parseFloat(gsd) || 500, n_dates}) }).then(x=>x.json());
+      body: JSON.stringify({lat, lon, half_m: parseFloat(gsd) || 750, n_dates}) }).then(x=>x.json());
   } catch(e){
     logEl.style.color = "var(--sem-bad)"; logEl.textContent = "✘ 送出失敗：" + e;
     btn.disabled = false; customCaptureBusy = false; btn.textContent = origLabel;

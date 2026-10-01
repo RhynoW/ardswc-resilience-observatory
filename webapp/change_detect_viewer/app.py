@@ -1467,7 +1467,7 @@ def api_capture_custom():
     if not (-90 <= lat <= 90 and -180 <= lon <= 180):
         return jsonify({"error": "座標超出範圍"}), 400
     zoom = max(WB.MIN_ZOOM, min(WB.MAX_ZOOM, int(body.get("zoom", WB.DEFAULT_ZOOM))))
-    half_m = max(200.0, min(750.0, float(body.get("half_m", 500))))
+    half_m = max(200.0, min(750.0, float(body.get("half_m", 750))))
     n_dates = max(2, min(MAX_N_DATES, int(body.get("n_dates", 10))))
     slug = _coord_slug(lat, lon)
 
