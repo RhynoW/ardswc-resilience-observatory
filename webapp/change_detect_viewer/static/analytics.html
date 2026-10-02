@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>歷史影像大數據分析｜坡地韌性哨兵</title>
+<meta name="description" content="水保署歷史影像平台 10 萬筆紀錄的年度、季節、縣市、關鍵字與地圖分析，可選事件名稱查看災點分布。">
+<link rel="stylesheet" href="/static/leaflet.css">
+<style>
+  :root{ --bg:#fff; --surface:#f7f7f8; --raised:#fff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f; --accent:#0b5fd4; --accent-soft:#e8f0fc; --focus:#0b5fd4;
+    --c0:#c0392b; --c6:#8e8e93; --c8:#2b6cb0; --c10:#7b61a8; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; --mono:ui-monospace,Consolas,monospace; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb; --accent:#6aa9ff; --accent-soft:#1f2d44; --focus:#8bbcff;
+    --c0:#ff8a80; --c6:#a0a0a8; --c8:#6aa9ff; --c10:#b79dea; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:var(--radius);z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none} nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap} nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);color:var(--text);text-decoration:none;font-size:15px} nav a:hover{background:var(--accent-soft)}
+  h1{font-size:clamp(26px,4vw,36px);margin:36px 0 8px;line-height:1.25} h2{font-size:22px;margin:0 0 6px} .sub{color:var(--muted);margin:0 0 16px;max-width:48em}
+  section{padding:28px 0;border-top:1px solid var(--border)}
+  .stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:0;padding:0;list-style:none}
+  .stat{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .stat b{display:block;font:700 28px/1.1 var(--mono);font-variant-numeric:tabular-nums} .stat span{color:var(--muted);font-size:14px}
+  figure{margin:0} figcaption{color:var(--muted);font-size:14px;margin-top:6px}
+  svg.chart{width:100%;height:auto;background:var(--raised);border:1px solid var(--border);border-radius:var(--radius)}
+  svg text{fill:var(--muted);font:11px var(--font)} svg .ax{stroke:var(--border)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0;font-size:14px} .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  details.tbl{margin-top:8px} details.tbl summary{cursor:pointer;color:var(--accent)} table{border-collapse:collapse;font-size:14px;margin-top:8px;width:100%} th,td{border-bottom:1px solid var(--border);padding:5px 8px;text-align:right} th:first-child,td:first-child{text-align:left}
+  .scroll{overflow-x:auto;max-height:320px}
+  #map{height:520px;border:1px solid var(--border);border-radius:var(--radius)}
+  .mapbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:0 0 10px} select,button,input{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--raised);color:var(--text);min-height:40px}
+  .callout{border:1px solid var(--border);border-left:4px solid #b7791f;background:var(--surface);border-radius:var(--radius);padding:12px 16px;max-width:50em}
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:20px 0;color:var(--muted);font-size:14px;margin-top:20px}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/accessible">坡地韌性哨兵 · 歷史影像大數據分析</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/accessible">無障礙入口頁</a></li><li><a href="/">決策系統</a></li><li><a href="/review">人工覆核</a></li></ul></nav>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="wrap">
+  <h1>10 萬張照片裡，藏著哪些災害的樣子？</h1>
+  <p class="sub">水保署歷史影像平台累積了 <span id="n-all">十多</span>萬筆照片與紀錄。這一頁把它們整理成圖，看看哪一年拍得多、哪些月份災害多、哪些縣市最常被記錄，以及特定颱風或地震的災點分布在哪裡。資料更新日：<span id="gen">—</span>。</p>
+  <div class="callout" role="note"><strong>先讀這一段：</strong>圖裡的「筆數」是<em>照片張數</em>，不是災害次數。同一場災害可能拍了幾百張；有路、有人的地方也比較常被拍。所以筆數多不一定代表比較危險。近年無人機（空拍）占了九成以上，也會讓近年的數字變大。</div>
+
+  <section aria-labelledby="s1"><h2 id="s1">資料總覽</h2><ul class="stats" id="stats"></ul></section>
+
+  <section aria-labelledby="s2"><h2 id="s2">每一年的紀錄量</h2>
+    <p class="sub">依「災害發生年份」統計。顏色代表紀錄的類別。</p>
+    <figure><div class="legend" id="lg-year"></div><svg class="chart" id="c-year" viewBox="0 0 960 300" role="img" aria-labelledby="t-year"><title id="t-year">逐年紀錄量堆疊長條圖</title></svg>
+    <figcaption>2009 年的高峰是莫拉克颱風；2024 年後的暴增主要是凱米颱風與 0403 花蓮地震，以及無人機拍攝量變大。</figcaption></figure>
+    <details class="tbl"><summary>以表格查看</summary><div class="scroll"><table id="tb-year"></table></div></details>
+    <h3 style="margin:22px 0 6px;font-size:17px">空拍（無人機）占比</h3>
+    <svg class="chart" id="c-uav" viewBox="0 0 960 200" role="img" aria-labelledby="t-uav"><title id="t-uav">各年空拍紀錄占比折線圖</title></svg>
+  </section>
+
+  <section aria-labelledby="s3"><h2 id="s3">哪些月份災害多？</h2>
+    <p class="sub">只看「災害事件」與「媒體報導」，依照片拍攝月份統計。</p>
+    <figure><svg class="chart" id="c-month" viewBox="0 0 960 240" role="img" aria-labelledby="t-month"><title id="t-month">各月份災害紀錄長條圖</title></svg>
+    <figcaption>夏秋兩季（颱風與梅雨季）明顯偏多。</figcaption></figure>
+  </section>
+
+  <section aria-labelledby="s4"><h2 id="s4">哪些縣市記錄最多？</h2>
+    <p class="sub">只計有座標的紀錄。</p>
+    <figure><div class="legend" id="lg-county"></div><svg class="chart" id="c-county" viewBox="0 0 960 420" role="img" aria-labelledby="t-county"><title id="t-county">各縣市紀錄量橫向堆疊長條圖</title></svg></figure>
+  </section>
+
+  <section aria-labelledby="s5"><h2 id="s5">描述裡最常出現的詞</h2>
+    <p class="sub">在「災害事件」與「媒體報導」的描述與備註中，計算每個關鍵字出現在多少筆紀錄裡。</p>
+    <figure><svg class="chart" id="c-kw" viewBox="0 0 960 360" role="img" aria-labelledby="t-kw"><title id="t-kw">關鍵字出現次數橫向長條圖</title></svg></figure>
+  </section>
+
+  <section aria-labelledby="s6"><h2 id="s6">地圖：災點在哪裡？</h2>
+    <p class="sub">底圖上的圓點是 5 公里格子裡的紀錄量（越大越多）。從下拉選單挑一個事件，就會把那個事件的災點用紅點標出來。</p>
+    <div class="mapbar"><label for="ev">事件名稱 <select id="ev"><option value="">（不選，只看密度）</option></select></label>
+      <label><input type="checkbox" id="grid" checked> 顯示密度圓點</label><span id="evinfo" role="status" aria-live="polite"></span></div>
+    <div id="map" role="application" aria-label="災點分布地圖"></div>
+    <p class="sub" style="margin-top:8px">地圖無法用鍵盤逐點操作；事件的筆數、年份與縣市會顯示在選單旁邊，也可在上方的圖表與表格取得。</p>
+  </section>
+</div></main>
+<footer><div class="wrap">資料：農業部農村發展及水土保持署歷史影像平台公開 API（metadata，四類 PhotoType），由 <code>scripts/build_analytics.py</code> 彙整。底圖：內政部國土測繪中心。</div></footer>
+
+<script src="/static/leaflet.js"></script>
+<script>
+const COL={"災害事件":"var(--c0)","重要地景":"var(--c6)","媒體報導":"var(--c8)","出版品照片":"var(--c10)"}, TYPES=Object.keys(COL);
+const NS="http://www.w3.org/2000/svg", fmt=n=>n.toLocaleString("zh-Hant");
+function el(tag,attrs,txt){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(txt!=null)e.textContent=txt;return e}
+function legend(id,types){document.getElementById(id).innerHTML=types.map(t=>`<span><i style="background:${COL[t]}"></i>${t}</span>`).join("")}
+function stackedBars(svg,labels,series,types,{W=960,H=300,L=56,R=10,T=10,B=28,horizontal=false}={}){
+  svg.innerHTML=svg.innerHTML; const totals=labels.map(l=>types.reduce((a,t)=>a+((series[l]||{})[t]||0),0)), mx=Math.max(...totals,1);
+  if(!horizontal){
+    const pw=W-L-R, ph=H-T-B, bw=pw/labels.length;
+    [0,.5,1].forEach(f=>{const y=T+ph*(1-f);svg.append(el("line",{x1:L,x2:W-R,y1:y,y2:y,class:"ax"}),el("text",{x:L-4,y:y+4,"text-anchor":"end"},fmt(Math.round(mx*f))))});
+    labels.forEach((l,i)=>{let y=T+ph;types.forEach(t=>{const v=(series[l]||{})[t]||0,h=v/mx*ph;if(h>0){const r=el("rect",{x:L+i*bw+bw*.12,y:y-h,width:bw*.76,height:h,fill:COL[t]});r.append(el("title",{},`${l}　${t}：${fmt(v)} 筆`));svg.append(r)}y-=h});
+      if(labels.length<=14||i%Math.ceil(labels.length/14)===0)svg.append(el("text",{x:L+i*bw+bw/2,y:H-8,"text-anchor":"middle"},l))});
+  }else{
+    const pw=W-L-R-70, rh=(H-T-B)/labels.length;
+    labels.forEach((l,i)=>{let x=L;types.forEach(t=>{const v=(series[l]||{})[t]||0,w=v/mx*pw;if(w>0){const r=el("rect",{x,y:T+i*rh+rh*.15,width:w,height:rh*.7,fill:COL[t]});r.append(el("title",{},`${l}　${t}：${fmt(v)} 筆`));svg.append(r)}x+=w});
+      svg.append(el("text",{x:L-6,y:T+i*rh+rh*.62,"text-anchor":"end"},l),el("text",{x:x+4,y:T+i*rh+rh*.62},fmt(totals[i])))});
+  }}
+function table(id,labels,series,types){document.getElementById(id).innerHTML=`<tr><th></th>${types.map(t=>`<th>${t}</th>`).join("")}</tr>`+labels.map(l=>`<tr><td>${l}</td>${types.map(t=>`<td>${fmt((series[l]||{})[t]||0)}</td>`).join("")}</tr>`).join("")}
+fetch("/api/analytics").then(r=>r.json()).then(D=>{
+  document.getElementById("gen").textContent=D.generated||"—";
+  const T=D.totals; document.getElementById("n-all").textContent=Math.floor(T.all/10000);
+  document.getElementById("stats").innerHTML=[[fmt(T.all),"平台紀錄總數"],[fmt(T.geolocated),"有座標的紀錄"],[fmt(T.by_type["災害事件"]),"災害事件紀錄"],[fmt(T.by_type["媒體報導"]),"媒體報導的災情地點"]]
+    .map(([n,l])=>`<li class="stat"><b>${n}</b><span>${l}</span></li>`).join("");
+  const years=Object.keys(D.by_year); legend("lg-year",TYPES); stackedBars(document.getElementById("c-year"),years,D.by_year,TYPES); table("tb-year",years,D.by_year,TYPES);
+  // UAV share line
+  const u=document.getElementById("c-uav"), uy=Object.keys(D.uav_share).filter(y=>D.uav_share[y].all>200), W=960,H=200,PL=56,R=16,Tp=12,Bt=26, pw=W-PL-R, ph=H-Tp-Bt;
+  [0,.5,1].forEach(f=>{const y=Tp+ph*(1-f);u.append(el("line",{x1:PL,x2:W-R,y1:y,y2:y,class:"ax"}),el("text",{x:PL-4,y:y+4,"text-anchor":"end"},Math.round(f*100)+"%"))});
+  let d="";uy.forEach((y,i)=>{const s=D.uav_share[y],x=PL+i/(uy.length-1)*pw,yy=Tp+ph*(1-s.uav/s.all);d+=(i?"L":"M")+x+" "+yy+" ";const c=el("circle",{cx:x,cy:yy,r:3.5,fill:"var(--accent)"});c.append(el("title",{},`${y}：空拍 ${fmt(s.uav)} / ${fmt(s.all)}（${Math.round(s.uav/s.all*100)}%）`));u.append(c);
+    if(i%2===0||uy.length<9)u.append(el("text",{x,y:H-8,"text-anchor":"middle"},y))});
+  u.append(el("path",{d,fill:"none",stroke:"var(--accent)","stroke-width":2}));
+  const months=["1","2","3","4","5","6","7","8","9","10","11","12"]; stackedBars(document.getElementById("c-month"),months,D.by_month,["災害事件","媒體報導"],{H:240});
+  const cs=Object.keys(D.by_county).filter(c=>c&&c!=="未標示").slice(0,16); legend("lg-county",["災害事件","重要地景","媒體報導","出版品照片"]); stackedBars(document.getElementById("c-county"),cs,D.by_county,["災害事件","重要地景","媒體報導","出版品照片"],{H:420,horizontal:true,L:90});
+  const kws=Object.keys(D.keywords).map(k=>[k,Object.values(D.keywords[k]).reduce((a,b)=>a+b,0)]).sort((a,b)=>b[1]-a[1]), kmx=kws[0][1], k=document.getElementById("c-kw"), rh=(360-20)/kws.length;
+  kws.forEach(([w,n],i)=>{const wd=n/kmx*(960-140-80);const r=el("rect",{x:90,y:10+i*rh+rh*.15,width:wd,height:rh*.7,fill:"var(--accent)"});r.append(el("title",{},`${w}：${fmt(n)} 筆`));k.append(r,el("text",{x:84,y:10+i*rh+rh*.62,"text-anchor":"end"},w),el("text",{x:94+wd,y:10+i*rh+rh*.62},fmt(n)))});
+  // 地圖
+  const map=L.map("map").setView([23.7,121],8); L.tileLayer("https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}",{maxZoom:17,attribution:"&copy; 內政部國土測繪中心 NLSC"}).addTo(map);
+  const gmax=Math.max(...D.grid.map(g=>g[2])), gl=L.layerGroup().addTo(map);
+  D.grid.forEach(([la,lo,n])=>L.circleMarker([la,lo],{radius:3+Math.sqrt(n/gmax)*22,color:"#0b5fd4",weight:1,fillColor:"#0b5fd4",fillOpacity:.28}).bindTooltip(`${n} 筆（約 5 km 格）`).addTo(gl));
+  document.getElementById("grid").onchange=e=>e.target.checked?gl.addTo(map):map.removeLayer(gl);
+  const sel=document.getElementById("ev"); D.top_events.forEach(e=>{const o=document.createElement("option");o.value=e.name;o.textContent=`${e.name}（${fmt(e.n)} 筆）`;sel.append(o)});
+  let evl=null; sel.onchange=()=>{ if(evl){map.removeLayer(evl);evl=null}
+    const info=document.getElementById("evinfo"); if(!sel.value){info.textContent="";return}
+    const e=D.top_events.find(x=>x.name===sel.value), ps=D.event_points[e.name]||[];
+    evl=L.layerGroup(ps.map(p=>L.circleMarker(p,{radius:3,color:"#c0392b",weight:0,fillColor:"#c0392b",fillOpacity:.7}))).addTo(map);
+    map.fitBounds([[e.bbox[1],e.bbox[0]],[e.bbox[3],e.bbox[2]]],{padding:[20,20]});
+    info.textContent=`${e.name}：${fmt(e.n)} 筆${e.years?`，${e.years[0]===e.years[1]?e.years[0]:e.years[0]+"–"+e.years[1]} 年`:""}，主要在 ${e.counties.map(c=>c[0]+" "+fmt(c[1])).join("、")}${ps.length<e.n?`（地圖抽樣顯示 ${fmt(ps.length)} 點）`:""}`; };
+}).catch(e=>{console.error(e&&e.stack||e);document.getElementById("stats").innerHTML='<li class="stat"><span>資料載入失敗，請重新整理。</span></li>'});
+</script>
+</body>
+</html>

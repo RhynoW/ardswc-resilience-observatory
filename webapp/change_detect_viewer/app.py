@@ -795,6 +795,22 @@ def accessible_landing():
     return send_from_directory(HERE / "static", "landing_aria.html")
 
 
+@app.route("/analytics")
+def analytics_page():
+    """歷史影像平台大數據視覺化分析頁（static/analytics.html；資料見 /api/analytics）。"""
+    return send_from_directory(HERE / "static", "analytics.html")
+
+
+@app.route("/api/analytics")
+def api_analytics():
+    fp = REPO / "data" / "analytics.json"
+    if not fp.exists():
+        return jsonify({"error": "尚未產生 data/analytics.json（scripts/build_analytics.py）"}), 503
+    resp = send_file(fp, mimetype="application/json")
+    resp.headers["Cache-Control"] = "public, max-age=3600"
+    return resp
+
+
 @app.route("/review")
 def review_queue():
     fp = REPO / "review" / "review_queue.html"
