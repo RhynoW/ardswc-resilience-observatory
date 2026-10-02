@@ -314,7 +314,7 @@ z12 38 m/px）補回被遮蔽像素（`sentinel_assist._fill_watermark`）：上
   方法、授權標示與品質指標。示範案例：花蓮秀林石公溪小清水溪（2026/08/29，成大 CC-BY）已改用地形糾正版
   （足跡內地形起伏達數百公尺，單應矩陣的平面假設在此失效）：留出 30% 對應點、地面誤差 **RMSE ≈ 4 m、中位數 ≈ 3 m**；
   誤差與單應矩陣的比較見 `meta.json` 的 `quality.note`（比較集合由相機模型篩選，對單應矩陣偏不利）。
-  限制：20 m DTM、遮擋以 DTM 近似、無 EXIF 時焦距與高度互相補償。其餘 9 個樣本仍是單應矩陣版（`rect.webp`）。
+  限制：20 m DTM、遮擋以 DTM 近似、無 EXIF 時焦距與高度互相補償。其餘樣本為單應矩陣版（`rect.webp`），目前共 28 個：2026 年 2 個、2025 年 17 個、2022／2024 年 9 個；擴充時把留出點 RMSE 門檻放寬到 10 m（`UAV_HOLD_MAX`），2025 年候選試了約 170 個後暫停（通過率低於 15%，停在 28 個，未達 30），勘災團隊的斜拍照 LoFTR 粗對位內點僅 5–9 個而失敗。批次以 `run_chunks.py` 分批、可續跑，並以 `thermal_guard.py` 做 GPU 過熱保護（≥70°C 暫停、≤58°C 繼續，並按推論時間限流）。
 - **3D 檢視（`static/uav_cesium.html?id=<事件 id>`）**：CesiumJS（jsDelivr CDN）+
   `CustomHeightmapTerrainProvider`，逐 tile 向 `/api/dtm_heights` 取本地 20 m DTM 的 float32
   高程——**不需要 Cesium ion token**。底圖 Esri World Imagery，UAV 影像以 `SingleTileImageryProvider`
