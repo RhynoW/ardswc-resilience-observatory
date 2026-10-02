@@ -238,7 +238,9 @@
     color:var(--muted); padding:6px 11px; cursor:pointer;
   }
   #btn-toggle-custom.active{ color:var(--paper); background:var(--accent); border-color:var(--accent); }
-  #btn-toggle-tilt3d.active{ color:var(--paper); background:var(--accent-2); border-color:var(--accent-2); }
+  #btn-toggle-tilt3d{ display:inline-block; text-decoration:none; }
+  #btn-toggle-tilt3d:hover{ color:var(--ink); border-color:var(--accent-2); }
+  .vh{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
   /* ── 3D 立體檢視：CSS perspective 傾斜，純視覺、非真實 3D 相機（見 ARCHITECTURE.md） ──
      只轉 #hotspot-map 本體（含 Leaflet 內部 canvas/圖磚），基準面板/座標讀出等 HUD
@@ -925,7 +927,7 @@
         <select id="filter-year"><option value="">全部年份</option></select>
         <button id="btn-toggle-events">🗺️ 顯示原始通報點（≤3000筆）</button>
         <button id="btn-toggle-custom">🎯 線上分析（自訂座標）</button>
-        <button id="btn-toggle-tilt3d">🧊 3D 立體檢視</button>
+        <a id="btn-toggle-tilt3d" href="https://rhynowu-ardswc-resilience-observatory.hf.space/static/spatial3d.html" target="_blank" rel="noopener" title="在新分頁開啟 3D 集群分析（Cesium 真實 3D 地形）">🧊 3D 立體檢視<span class="vh"> （在新分頁開啟）</span></a>
       </div>
       <button id="btn-fullscreen">⛶ 全螢幕地圖</button>
     </div>
@@ -1524,14 +1526,9 @@ function initMap(){
 // 故用 tilt3dActive 旗標暫停「點選」類互動（熱點/自訂座標），只保留平移縮放瀏覽——
 // 見 ARCHITECTURE.md 對這個取捨的完整說明。
 let tilt3dActive = false;
-function initTilt3d(){
-  document.getElementById("btn-toggle-tilt3d").onclick = () => {
-    tilt3dActive = !tilt3dActive;
-    document.getElementById("map-wrap").classList.toggle("tilt-3d", tilt3dActive);
-    document.getElementById("btn-toggle-tilt3d").classList.toggle("active", tilt3dActive);
-    setTimeout(()=> map.invalidateSize(), 520);
-  };
-}
+// 2026-10-02：「🧊 3D 立體檢視」改為連結（<a id="btn-toggle-tilt3d">），在新分頁開啟 Cesium 版的 3D 集群分析頁
+// （/static/spatial3d.html，真實 3D 地形）。下方的 CSS 傾斜機制不再由按鈕觸發，保留旗標讓既有 guard 仍成立。
+function initTilt3d(){}
 
 // ── 線上分析：自訂座標（2026-09-05 追加，同日再擴充為 7 大類地點瀏覽器）──────────────────
 // 把座標點選+擷取送出的機制搬進本站地圖（原本是 imagery_change_toolkit/8074 的通用版本）。
