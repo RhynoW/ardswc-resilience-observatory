@@ -786,6 +786,18 @@ def serve_image(relpath):
     return send_file(full)
 
 
+# ── 人工覆核工作單（scripts/review_queue.py 產生的靜態 HTML，與本機 review/review_queue.html 同一份）──
+# 頁面以相對路徑 ../data/ge_captures/ 引用面板影像；線上改指向上方的 /image/ 路由。
+# 判讀只存在使用者瀏覽器的 localStorage（匯出 ledger.json 才生效），此路由唯讀、不寫回伺服器。
+@app.route("/review")
+def review_queue():
+    fp = REPO / "review" / "review_queue.html"
+    if not fp.exists():
+        abort(404)
+    html = fp.read_text(encoding="utf-8").replace("../data/ge_captures/", "/image/")
+    return app.response_class(html, mimetype="text/html")
+
+
 # ── GE Web 回溯（換日期直連 URL，同 §14.7/reference_ge_web_date_url 手法）─────
 @app.route("/api/ge_trace")
 def api_ge_trace():
