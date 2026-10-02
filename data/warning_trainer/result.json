@@ -1,0 +1,91 @@
+{
+ "n_pos": 191,
+ "n_neg": 955,
+ "features": [
+  "elev_m",
+  "slope_mean_deg",
+  "slope_p90_deg",
+  "relief_m",
+  "roughness_m",
+  "debris_dist_km",
+  "debris_within_500m",
+  "debris_high_1km"
+ ],
+ "single_factor": {
+  "elev_m": {
+   "auc": 0.691,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.298,
+   "lift": 1.49
+  },
+  "slope_mean_deg": {
+   "auc": 0.704,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.372,
+   "lift": 1.86
+  },
+  "slope_p90_deg": {
+   "auc": 0.609,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.225,
+   "lift": 1.13
+  },
+  "relief_m": {
+   "auc": 0.659,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.215,
+   "lift": 1.07
+  },
+  "roughness_m": {
+   "auc": 0.66,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.298,
+   "lift": 1.49
+  },
+  "debris_dist_km": {
+   "auc": 0.808,
+   "direction": "低→風險高",
+   "hit_rate_top20pct": 0.571,
+   "lift": 2.85
+  },
+  "debris_within_500m": {
+   "auc": 0.681,
+   "direction": "高→風險高",
+   "hit_rate_top20pct": 1.0,
+   "lift": 5.0
+  },
+  "debris_high_1km": {
+   "auc": 0.672,
+   "direction": "高→風險高",
+   "hit_rate_top20pct": 1.0,
+   "lift": 5.0
+  }
+ },
+ "multi": {
+  "cv": "GroupKFold k=5, block 10.0 km",
+  "cv_auc": 0.84,
+  "precision_top20pct": 0.555,
+  "base_rate": 0.167,
+  "std_coef": {
+   "elev_m": -0.303,
+   "slope_mean_deg": -1.928,
+   "slope_p90_deg": 1.806,
+   "relief_m": -0.035,
+   "roughness_m": -0.095,
+   "debris_dist_km": -0.44,
+   "debris_within_500m": 0.34,
+   "debris_high_1km": 0.38
+  },
+  "relative_weight_pct": {
+   "elev_m": 5.7,
+   "slope_mean_deg": 36.2,
+   "slope_p90_deg": 33.9,
+   "relief_m": 0.7,
+   "roughness_m": 1.8,
+   "debris_dist_km": 8.3,
+   "debris_within_500m": 6.4,
+   "debris_high_1km": 7.1
+  }
+ },
+ "caveat": "正例為有通報的災害（曝險偏差）；負例為隨機山區點；僅靜態 DTM 特徵；非真實災害機率。"
+}

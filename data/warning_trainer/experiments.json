@@ -1,0 +1,180 @@
+{
+ "E1_time_slice": {
+  "last_event<=2021": {
+   "n_pos": 103,
+   "auc_debris_dist": 0.802
+  },
+  "last_event>=2022": {
+   "n_pos": 88,
+   "auc_debris_dist": 0.815
+  }
+ },
+ "E2_exposure_strata": {
+  "none": {
+   "built_range": [
+    0.0,
+    0.001
+   ],
+   "n_pos": 23,
+   "n_neg": 647,
+   "auc_debris_dist": 0.73,
+   "auc_slope_low": 0.526
+  },
+  "low": {
+   "built_range": [
+    0.001,
+    0.01
+   ],
+   "n_pos": 82,
+   "n_neg": 156,
+   "auc_debris_dist": 0.697,
+   "auc_slope_low": 0.499
+  },
+  "high": {
+   "built_range": [
+    0.01,
+    0.391
+   ],
+   "n_pos": 86,
+   "n_neg": 152,
+   "auc_debris_dist": 0.797,
+   "auc_slope_low": 0.312
+  }
+ },
+ "E2_auc_of_builtfrac_alone": 0.801,
+ "E4_exposure_matched": {
+  "n": 382,
+  "auc_debris_dist": 0.744,
+  "auc_slope_low": 0.454,
+  "auc_builtfrac": 0.49
+ },
+ "tile_layers": {
+  "geosens_in": {
+   "in_frac_pos": 0.298,
+   "in_frac_neg": 0.214,
+   "auc_all": 0.542,
+   "auc_exposure_matched": 0.552
+  },
+  "dislope_in": {
+   "in_frac_pos": 0.042,
+   "in_frac_neg": 0.047,
+   "auc_all": 0.497,
+   "auc_exposure_matched": 0.49
+  },
+  "histls_in": {
+   "in_frac_pos": 0.236,
+   "in_frac_neg": 0.139,
+   "auc_all": 0.548,
+   "auc_exposure_matched": 0.573
+  }
+ },
+ "E5_rain_case_crossover": {
+  "r3d": {
+   "n_pairs": 270,
+   "median_event_mm": 35.7,
+   "median_ctrl_mm": 2.9,
+   "frac_event_wetter": 0.774,
+   "paired_auc": 0.793,
+   "sign_test_p": 0.0
+  },
+  "r7d": {
+   "n_pairs": 270,
+   "median_event_mm": 94.7,
+   "median_ctrl_mm": 16.2,
+   "frac_event_wetter": 0.837,
+   "paired_auc": 0.841,
+   "sign_test_p": 0.0
+  },
+  "r30d": {
+   "n_pairs": 270,
+   "median_event_mm": 262.3,
+   "median_ctrl_mm": 163.5,
+   "frac_event_wetter": 0.715,
+   "paired_auc": 0.715,
+   "sign_test_p": 0.0
+  },
+  "rmax1d": {
+   "n_pairs": 270,
+   "median_event_mm": 24.8,
+   "median_ctrl_mm": 2.5,
+   "frac_event_wetter": 0.767,
+   "paired_auc": 0.785,
+   "sign_test_p": 0.0
+  },
+  "ante30d": {
+   "n_pairs": 270,
+   "median_event_mm": 185.5,
+   "median_ctrl_mm": 159.2,
+   "frac_event_wetter": 0.607,
+   "paired_auc": 0.607,
+   "sign_test_p": 0.0005
+  }
+ },
+ "E5_r3d_threshold": {
+  "20": {
+   "hit_rate": 0.593,
+   "false_alarm_rate_on_ctrl": 0.222
+  },
+  "50": {
+   "hit_rate": 0.437,
+   "false_alarm_rate_on_ctrl": 0.096
+  },
+  "100": {
+   "hit_rate": 0.322,
+   "false_alarm_rate_on_ctrl": 0.022
+  },
+  "150": {
+   "hit_rate": 0.193,
+   "false_alarm_rate_on_ctrl": 0.004
+  },
+  "200": {
+   "hit_rate": 0.104,
+   "false_alarm_rate_on_ctrl": 0.0
+  }
+ },
+ "E5_conditional_logit": {
+  "features": [
+   "log1p r3d 差",
+   "log1p ante30d 差",
+   "SMAP 根系層前期差"
+  ],
+  "coef": [
+   0.802,
+   0.269,
+   1.308
+  ],
+  "paired_auc": 0.778
+ },
+ "E3_case_crossover": {
+  "sm_rz_3d": {
+   "n_pairs": 270,
+   "mean_diff": 0.031,
+   "frac_event_wetter": 0.681,
+   "sign_test_p": 0.0
+  },
+  "sm_surf_3d": {
+   "n_pairs": 270,
+   "mean_diff": 0.0422,
+   "frac_event_wetter": 0.752,
+   "sign_test_p": 0.0
+  },
+  "sm_rz_ante3d": {
+   "n_pairs": 270,
+   "mean_diff": 0.0165,
+   "frac_event_wetter": 0.548,
+   "sign_test_p": 0.128
+  },
+  "sm_rz_ante30d": {
+   "n_pairs": 270,
+   "mean_diff": 0.0088,
+   "frac_event_wetter": 0.5,
+   "sign_test_p": 1.0
+  },
+  "sm_surf_ante3d": {
+   "n_pairs": 270,
+   "mean_diff": 0.0254,
+   "frac_event_wetter": 0.611,
+   "sign_test_p": 0.0003
+  }
+ }
+}
