@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap">
 <link rel="stylesheet" href="/static/leaflet.css">
 <script src="/static/leaflet.js"></script>
+<script src="/static/qrcode.js"></script>
 <style>
   :root{
     --ink:#1F2420; --paper:#EDEAE0; --paper-raised:#F5F3EB;
@@ -63,6 +64,11 @@
     font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.03em;
     color:var(--muted); border:1px solid var(--line); padding:5px 10px; text-decoration:none; white-space:nowrap;
   }
+  .review-link{ font-family:var(--font-mono); font-size:12px; color:var(--accent); border:1px solid var(--accent); padding:5px 10px; text-decoration:none; white-space:nowrap; }
+  .review-link:hover{ background:var(--accent); color:var(--paper); }
+  .qr-box{ display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:var(--muted); font-family:var(--font-mono); font-size:9.5px; line-height:1.2; }
+  .qr-box svg, .qr-box img{ width:72px; height:72px; background:#fff; padding:3px; display:block; image-rendering:pixelated; }
+  .hdr-right{ display:flex; align-items:center; gap:12px; }
   .health-badge:hover{ color:var(--ink); border-color:var(--ink); }
   .health-badge.hb-ok::before{ content:"● "; color:#3E7A5C; }
   .health-badge.hb-degraded::before{ content:"● "; color:#9C7A1E; }
@@ -594,7 +600,11 @@
     <button data-tab="hotspots">巡查清單與證據</button>
     <button data-tab="dashboard">空間分析平台</button>
   </nav>
-  <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
+  <div class="hdr-right">
+    <a class="review-link" href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
+    <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
+    <a class="qr-box" id="qr-box" href="#" title="掃描 QR Code 以手機開啟本頁"><span>掃描開啟本頁</span></a>
+  </div>
 </header>
 <div id="health-popover"></div>
 <div id="demo-banner" class="demo-banner" style="display:none;"></div>
@@ -637,6 +647,8 @@
       並以 <strong>Sentinel-2 每年一期</strong>（2017 起、乾季雲量最低場景）覆驗。舊版 11 筆人工目視覆核屬於舊熱點位置，
       已全部清空；目前 100 個熱點<strong>皆尚未人工覆核</strong>，資料信心最高只到「中」。A 級代表「優先確認候選」，
       不是災害已確認——人工覆核完成後，覆核結論會優先於自動分數並直接改變分級。</p>
+      <p style="margin:10px 0;"><a class="review-link" href="/review" target="_blank" rel="noopener">→ 開啟人工覆核工作單（A 級候選 31 筆＋對照組 18 筆，盲審優先）</a>
+      <span class="sec-sub" style="margin-left:8px;">判定存在各覆核者的瀏覽器，完成後匯出 ledger.json。</span></p>
       <div class="proof-grid" id="proof-grid"></div>
     </div>
 
@@ -960,6 +972,18 @@
   <span>資料截至 2026-09-22 · 100 個熱點皆附 Sentinel-2 年度比對面板與巡查優先級</span>
 </footer>
 
+<script>
+// 右上角 QR Code：編碼目前頁面網址（去掉 hash／query），離線也能產生（static/qrcode.js 為本地檔，MIT）
+(function(){
+  try{
+    const url = location.origin + location.pathname;
+    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
+    const box = document.getElementById("qr-box");
+    box.href = url;
+    box.insertAdjacentHTML("afterbegin", qr.createSvgTag({cellSize:3, margin:0, scalable:true}));
+  }catch(e){ const b=document.getElementById("qr-box"); if(b) b.style.display="none"; }
+})();
+</script>
 <script>
 const APPLE_ENABLED = {{ 'true' if apple_enabled else 'false' }};
 const VERDICT_COLOR = { ok: "#3E7A5C", warn: "#9C7A1E", bad: "#7A3A38" };
