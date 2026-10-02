@@ -20,6 +20,7 @@
 <body>
 <div id="cesium"></div>
 <div id="panel">
+  <select id="pick" style="width:100%;margin-bottom:6px;background:#222;color:#eee;border:1px solid #555;padding:3px"></select>
   <h1 id="title">載入中…</h1>
   <div id="method"></div>
   <div class="warn" id="quality"></div>
@@ -36,6 +37,18 @@
   const qs = new URLSearchParams(location.search);
   const id = (qs.get("id") || "639247251496169680").replace(/\D/g, "");
   const status = t => { document.getElementById("status").textContent = t; };
+
+  const pick = document.getElementById("pick");
+  try{
+    const list = await (await fetch("/api/uav_registrations")).json();
+    for(const it of list){
+      const o = document.createElement("option");
+      o.value = it.id; o.textContent = `${it.title}（檢核 RMSE ${it.holdout_rmse_m} m）`;
+      if(it.id === id) o.selected = true;
+      pick.appendChild(o);
+    }
+  } catch(e){ pick.style.display = "none"; }
+  pick.onchange = () => { location.search = "?id=" + pick.value; };
 
   let meta;
   try{
@@ -96,11 +109,20 @@
     document.getElementById("exag-v").textContent = e.target.value + "×";
   };
 
-  // ── 視角：相機放在海面側（東南）往西北看。UAV 原本朝南拍，但這一帶內陸山高 1000 m 以上，
-  // 從北往南看相機會落在山體裡面（整片只看到地表綠色）。
+  // ── 視角：先取中心點地形高度再擺相機（山區中心高程可達上千公尺，固定高度會讓相機掉進山體）。
+  // 預設從正南方以 55° 俯角看；meta.view 可個別覆寫（樣本 1 需從海面側看，否則被山擋住）。
   const [lon, lat] = meta.center_lonlat;
-  viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(lon, lat, 100),
-    new Cesium.HeadingPitchRange(Cesium.Math.toRadians(310), Cesium.Math.toRadians(-30), 1800));
+  let h0 = 0;
+  try{
+    // 直接問本地 DTM（sampleTerrainMostDetailed 對 CustomHeightmapTerrainProvider 取不到值，會落回 0 m）
+    const d = 1e-4, r = await fetch(`/api/dtm_heights?west=${lon-d}&south=${lat-d}&east=${lon+d}&north=${lat+d}&n=2`);
+    if (r.ok){ const z = new Float32Array(await r.arrayBuffer()); h0 = (z[0]+z[1]+z[2]+z[3]) / 4; }
+  } catch(e){}
+  const diag = Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(b.west, b.south), Cesium.Cartesian3.fromDegrees(b.east, b.north));
+  const v = meta.view || {};
+  viewer.camera.lookAt(Cesium.Cartesian3.fromDegrees(lon, lat, h0),
+    new Cesium.HeadingPitchRange(Cesium.Math.toRadians(v.heading ?? 0), Cesium.Math.toRadians(v.pitch ?? -55),
+                                 v.range ?? Math.max(900, diag * 1.6)));
   viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
 
   status("完成：UAV 影像已疊在 DTM 地形上（滑鼠拖曳旋轉、滾輪縮放）");
