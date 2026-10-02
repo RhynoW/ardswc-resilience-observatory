@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>坡地韌性哨兵｜React Aria 無障礙版本</title>
-<meta name="description" content="水保署歷史通報整理成複發熱點，結合衛星影像變化候選與人工覆核的巡查優先級決策輔助原型。無障礙版入口頁。">
+<title>坡地韌性哨兵｜無障礙入口頁</title>
+<meta name="description" content="用白話說明：水保署歷史災害紀錄如何整理成反覆出事的熱點，再配合衛星照片與人工確認，排出巡查順序。含名詞說明與防空疏散避難點圖層連結。">
 <style>
   /* 設計語彙取自 Adobe React Aria 文件站：中性色、細框圓角、清楚的焦點環、文件式版面。
      未引入其函式庫（見頁尾「關於本版」）。 */
@@ -23,10 +23,11 @@
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font);-webkit-font-smoothing:antialiased}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 var(--font);-webkit-font-smoothing:antialiased}
   a{color:var(--accent);text-underline-offset:.18em}
   a:hover{text-decoration-thickness:2px}
   :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  code{font-family:var(--mono);background:var(--surface);padding:1px 6px;border-radius:4px;font-size:.92em}
   .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:var(--accent-text);padding:8px 14px;border-radius:var(--radius);z-index:10;text-decoration:none;font-weight:600}
   .skip:focus{top:12px}
   .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
@@ -49,7 +50,7 @@
   .hero{padding:48px 0 28px}
   .eyebrow{font-size:14px;color:var(--muted);margin:0 0 8px}
   h1{font-size:clamp(28px,4.2vw,40px);line-height:1.25;margin:0 0 16px;letter-spacing:-.005em}
-  .lead{font-size:18px;max-width:46em;margin:0 0 24px}
+  .lead{font-size:18px;max-width:44em;margin:0 0 24px}
   .actions{display:flex;gap:12px;flex-wrap:wrap}
   .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius);font:inherit;font-weight:600;text-decoration:none;border:1px solid var(--accent);min-height:44px}
   .btn.primary{background:var(--accent);color:var(--accent-text)}
@@ -61,18 +62,34 @@
   h2{font-size:24px;margin:0 0 6px;line-height:1.3}
   .sub{color:var(--muted);margin:0 0 20px;max-width:46em}
   h3{font-size:17px;margin:0 0 6px}
+  .story{max-width:46em}
+  .story p{margin:0 0 12px}
 
   .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));list-style:none;padding:0;margin:0}
-  .card{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:6px;height:100%}
+  .card{position:relative;background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:6px;height:100%}
   .card p{margin:0;color:var(--muted);font-size:15px}
   .card a.stretch{color:var(--text);text-decoration:none;font-weight:700;font-size:17px}
   .card a.stretch::after{content:"";position:absolute;inset:0}
-  .card{position:relative}
   .card:hover{border-color:var(--accent)}
   .card:focus-within{outline:2px solid var(--focus);outline-offset:2px}
   .card a.stretch:focus-visible{outline:none}
   .num{font-family:var(--mono);font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
   .tier-A .num{color:var(--bad)} .tier-B .num{color:var(--warn)} .tier-C .num{color:var(--ok)} .tier-D .num{color:var(--muted)}
+
+  .step{display:grid;grid-template-columns:40px 1fr;gap:12px;margin:0 0 14px;max-width:48em}
+  .step .no{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;display:grid;place-items:center;border:1px solid var(--accent)}
+  .step h3{margin:0 0 2px;font-size:17px} .step p{margin:0;color:var(--muted)}
+
+  dl.gloss{margin:0;max-width:52em}
+  dl.gloss div{border-bottom:1px solid var(--border);padding:12px 0}
+  dl.gloss dt{font-weight:700;font-size:16px}
+  dl.gloss dt .en{font-weight:400;color:var(--muted);font-family:var(--mono);font-size:13px;margin-left:8px}
+  dl.gloss dd{margin:4px 0 0}
+  dl.gloss dd .why{display:block;color:var(--muted);font-size:14.5px;margin-top:4px}
+
+  .cities{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));list-style:none;padding:0;margin:12px 0 0}
+  .cities a{display:block;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--text);text-align:center;min-height:44px}
+  .cities a:hover{border-color:var(--accent);background:var(--accent-soft)}
 
   table{border-collapse:collapse;width:100%;font-size:15px}
   caption{text-align:left;color:var(--muted);padding-bottom:8px;font-size:14px}
@@ -80,12 +97,8 @@
   thead th{background:var(--surface);font-weight:700}
   td.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
   .scroll{overflow-x:auto}
-
-  ol.steps{margin:0;padding-left:1.4em;max-width:46em} ol.steps li{margin:0 0 8px}
   .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:14px 18px;max-width:48em}
-  .callout h3{margin-bottom:8px} .callout ul{margin:0;padding-left:1.2em} .callout li{margin:0 0 6px}
-  dl.meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0;max-width:48em}
-  dl.meta dt{font-weight:700} dl.meta dd{margin:0;color:var(--muted)}
+  .callout h2{margin-bottom:8px} .callout ul{margin:0;padding-left:1.2em} .callout li{margin:0 0 6px}
   footer{border-top:1px solid var(--border);background:var(--surface);padding:24px 0;font-size:14px;color:var(--muted)}
   footer p{margin:0 0 8px;max-width:52em}
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -97,7 +110,7 @@
 <a class="skip" href="#main">跳到主要內容</a>
 
 <div class="notice" role="note">
-  <div class="wrap">這是<strong>React Aria 無障礙版本</strong>的入口頁（設計與無障礙原則參考 Adobe React Aria）。完整互動系統請使用「進入決策系統」，其地圖與圖表部分尚未達到相同的無障礙程度，詳見頁尾。</div>
+  <div class="wrap">這是<strong>React Aria 無障礙版本</strong>的新入口頁，文字也改寫成國中生就能讀懂的說明。設計與無障礙原則參考 Adobe React Aria；完整互動系統（地圖、3D）還不能只靠鍵盤操作，詳見頁尾。</div>
 </div>
 
 <header class="site">
@@ -105,10 +118,11 @@
     <a class="brand" href="/accessible" aria-label="坡地韌性哨兵，回到本頁">坡地韌性哨兵<small>隊伍 TASTI_SatDashboard · OSSInt 2026</small></a>
     <nav aria-label="主要導覽">
       <ul>
-        <li><a href="#overview" aria-current="page">概覽</a></li>
+        <li><a href="#overview" aria-current="page">這是什麼</a></li>
+        <li><a href="#how">怎麼運作</a></li>
+        <li><a href="#words">名詞說明</a></li>
+        <li><a href="#shelter">避難點圖層</a></li>
         <li><a href="#status">目前狀態</a></li>
-        <li><a href="#tools">工具</a></li>
-        <li><a href="#method">方法與限制</a></li>
         <li><a href="/">原版首頁</a></li>
       </ul>
     </nav>
@@ -120,69 +134,137 @@
   <div class="wrap">
     <div class="hero" id="overview">
       <p class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026</p>
-      <h1>讓巡查人員先看最值得看的地方</h1>
-      <p class="lead">我們把水保署歷史影像平台的災害通報整理成「反覆出事的熱點」，再用衛星影像的變化訊號與人工覆核排出巡查優先級。系統提供的是候選排序與證據，不是災害判定。</p>
+      <h1>颱風、地震之後，巡查人員應該先去哪裡看？</h1>
+      <p class="lead">臺灣山區很多，可是巡查人員每天能跑的地方有限。我們做了一套工具，幫忙回答「哪些地方最值得先去看」。它會列出清單和理由，<strong>最後仍由人來判斷</strong>，不是電腦直接宣布哪裡出事。</p>
       <div class="actions">
         <a class="btn primary" href="/">進入決策系統</a>
+        <a class="btn secondary" href="#shelter">查看防空疏散避難點</a>
         <a class="btn secondary" href="/review">人工覆核工作單</a>
-        <a class="btn secondary" href="/static/uav_cesium.html?id=639247251496169680">UAV 空拍 3D 範例</a>
       </div>
     </div>
 
+    <section id="why" aria-labelledby="why-h">
+      <h2 id="why-h">為什麼需要這個系統</h2>
+      <div class="story">
+        <p>水保署有一個公開的「歷史影像平台」，收藏了十萬多筆照片和災害紀錄。這些紀錄很珍貴，但太多了，一個人看不完。</p>
+        <p>我們觀察到：<strong>有些地方會一再出事</strong>，例如同一面山坡幾年後又崩一次。如果能先找出這些「反覆出事的地方」，再用衛星照片看看最近有沒有新變化，巡查人員就能把時間花在最有可能需要處理的地方。</p>
+        <p>衛星每幾天就會重新拍一次同一個地方，而且是免費公開的。把兩次拍的照片放在一起比較，就能發現「這裡以前是樹林，現在變成裸露的土」。</p>
+      </div>
+    </section>
+
+    <section id="how" aria-labelledby="how-h">
+      <h2 id="how-h">它怎麼運作</h2>
+      <p class="sub">一共五個步驟。遇到不懂的名詞，可以到下面的「名詞說明」查。</p>
+      <div class="step"><div class="no" aria-hidden="true">1</div><div><h3>整理災害紀錄</h3><p>把水保署平台上的災害事件整理乾淨。同一場颱風留下的好幾張照片，只算一次災害（我們叫它「獨立事件」）。</p></div></div>
+      <div class="step"><div class="no" aria-hidden="true">2</div><div><h3>找出反覆出事的地方（熱點）</h3><p>把地圖切成 250 公尺的小方格，數每一格有幾次獨立事件，取最多的 100 個地方。</p></div></div>
+      <div class="step"><div class="no" aria-hidden="true">3</div><div><h3>用衛星照片找變化（候選訊號）</h3><p>比較同一個地方前後兩年的衛星照片，看植物有沒有變少。電腦只能說「這裡可能有變化」，所以叫做「候選」。</p></div></div>
+      <div class="step"><div class="no" aria-hidden="true">4</div><div><h3>人來看照片確認（人工覆核）</h3><p>覆核的人先不看電腦的分數，自己判斷照片有沒有變化，再對答案。這樣才能算出電腦到底準不準。</p></div></div>
+      <div class="step"><div class="no" aria-hidden="true">5</div><div><h3>排出巡查順序（A 到 D 級）</h3><p>綜合「出事幾次」「最近有沒有變化」「地形多陡」「資料夠不夠可靠」，把 100 個地方分成四級。</p></div></div>
+    </section>
+
+    <section id="words" aria-labelledby="words-h">
+      <h2 id="words-h">名詞說明</h2>
+      <p class="sub">網站和報告裡會出現一些專業名詞。這裡用日常的說法解釋。</p>
+      <dl class="gloss">
+        <div><dt>熱點<span class="en">hotspot</span></dt><dd>反覆出事的地方。我們的標準是「獨立災害事件次數多」。<span class="why">熱點不等於「最危險」，因為有人、有路的地方比較容易被拍照通報。</span></dd></div>
+        <div><dt>獨立事件</dt><dd>一場災害算一次。颱風過後工程人員可能去拍了十張照片，但只算一次事件，不然「拍得多」會被誤認成「災害多」。</dd></div>
+        <div><dt>Sentinel-2 衛星<span class="en">Sentinel-2</span></dt><dd>歐洲太空總署的免費地球觀測衛星。大約每 5 天拍一次同一個地方，一個像素約 10 公尺。<span class="why">雲太多的時候拍不到地面，這是它最大的缺點。</span></dd></div>
+        <div><dt>SSIM（結構相似度）<span class="en">Structural Similarity</span></dt><dd>一種讓電腦比較「兩張照片長得有多像」的算法，結果是 0 到 1 之間的數字，越接近 1 代表越像。如果兩年的照片差很多，數字就會變小。<span class="why">問題是雲的影子、拍攝時間不同造成的顏色差異，也會讓數字變小。所以我們只把它當作「可能有變化」的線索，不能直接當成崩塌的證據。</span></dd></div>
+        <div><dt>NBR／NDVI（植生指標）<span class="en">dNBR, NDVI</span></dt><dd>用衛星拍到的「看不見的光」（近紅外線）來算植物長得好不好。健康的樹會反射很多近紅外線，裸露的土不會。前後兩年相減，數字掉很多，就代表植物變少了（dNBR 就是 NBR 的前後差）。<span class="why">這兩個指標都來自同一顆衛星，所以互相驗證的力量有限。</span></dd></div>
+        <div><dt>候選訊號</dt><dd>電腦算出來的「這裡可能有事」。它不是結論，只是請人去看的提醒。</dd></div>
+        <div><dt>偽陽性<span class="en">false positive</span></dt><dd>電腦說「有變化」，其實沒有。例如把農田翻土、雲影或工程整地當成崩塌。人工覆核最重要的工作，就是算出偽陽性有多少。</dd></div>
+        <div><dt>盲審</dt><dd>覆核的人先不看電腦的答案，自己判斷，再去對答案。就像考試先寫完，再對解答。</dd></div>
+        <div><dt>降雨量（IMERG）<span class="en">GPM IMERG</span></dt><dd>美國太空總署用衛星估計的雨量，約每 10 公里一格。我們的分析發現：3 天累積雨量超過 100 毫米以後，事件發生的機率比沒下雨時高很多。</dd></div>
+        <div><dt>土壤濕度（SMAP）<span class="en">SMAP L4</span></dt><dd>另一顆衛星估計的泥土含水量。土壤已經很濕又下大雨，坡地更容易出問題。<span class="why">我們的檢查發現，它在 9 公里的尺度下，單獨使用時預測力不明顯。</span></dd></div>
+        <div><dt>DTM（數值地形模型）<span class="en">Digital Terrain Model</span></dt><dd>把地面高度做成一張數字地圖，每 20 公尺一個高度值。可以用來算坡度，也能把空拍照片「攤平」貼到地形上。</dd></div>
+        <div><dt>UAV（無人機）<span class="en">空拍</span></dt><dd>水保署影像平台上有無人機拍的照片。我們把它們貼到 3D 地形上，看崩塌的樣子。</dd></div>
+        <div><dt>曝險偏差</dt><dd>有人住、有路的地方比較容易有人通報災害，所以「通報很多」不一定代表「真的比較危險」。我們檢查過：單看「附近房子多不多」，就能把通報熱點分出來，準確度相當高。</dd></div>
+        <div><dt>AUC</dt><dd>0.5 到 1 之間的分數，衡量一個指標「分得開兩種情況」的能力。0.5 等於亂猜，1 是完全分得開。<span class="why">例如：雨量能分開「出事的日子」和「沒出事的日子」，AUC 約 0.8。</span></dd></div>
+        <div><dt>精確率與召回率<span class="en">precision, recall</span></dt><dd>發出警報時，真的出事的比例叫精確率；所有出事的案例中，有被警報抓到的比例叫召回率。兩個通常很難同時很高。</dd></div>
+      </dl>
+    </section>
+
+    <section id="shelter" aria-labelledby="shelter-h">
+      <h2 id="shelter-h">防空疏散避難點圖層</h2>
+      <p class="sub">找到需要注意的地方之後，還要知道「附近可以去哪裡避難」。下面的地圖把各縣市的防空疏散避難點畫在地圖上，可以勾選多個縣市一起看。</p>
+      <div class="story"><p>請特別留意：防空疏散避難點原本是為了空襲設計的，<strong>不一定是土石流或淹水時安全的避難所</strong>。2025 年有高中生研究發現，臺東縣超過一半的避難所，位在土石流紅色警戒範圍內。所以看到避難點時，也要看它旁邊有沒有溪流、陡坡。</p></div>
+      <h3 style="margin-top:20px">直轄市（已設定好地圖位置）</h3>
+      <ul class="cities">
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=25.04&amp;lng=121.55&amp;z=13&amp;ov=ad_taipei" target="_blank" rel="noopener">臺北市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=25.01&amp;lng=121.46&amp;z=12&amp;ov=ad_newtaipei" target="_blank" rel="noopener">新北市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=24.15&amp;lng=120.67&amp;z=13&amp;ov=ad_taichung" target="_blank" rel="noopener">臺中市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=22.63&amp;lng=120.30&amp;z=12&amp;ov=ad_kaohsiung" target="_blank" rel="noopener">高雄市<span class="vh">（新分頁開啟）</span></a></li>
+      </ul>
+      <h3 style="margin-top:20px">其他縣市</h3>
+      <ul class="cities">
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=24.95&amp;lng=121.22&amp;z=11&amp;ov=ad_taoyuan" target="_blank" rel="noopener">桃園市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=23.00&amp;lng=120.22&amp;z=11&amp;ov=ad_tainan" target="_blank" rel="noopener">臺南市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=25.13&amp;lng=121.74&amp;z=12&amp;ov=ad_keelung" target="_blank" rel="noopener">基隆市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=24.81&amp;lng=120.97&amp;z=12&amp;ov=ad_hsinchu_city" target="_blank" rel="noopener">新竹市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=24.70&amp;lng=121.10&amp;z=11&amp;ov=ad_hsinchu_county" target="_blank" rel="noopener">新竹縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=24.07&amp;lng=120.54&amp;z=11&amp;ov=ad_changhua" target="_blank" rel="noopener">彰化縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=23.90&amp;lng=120.97&amp;z=10&amp;ov=ad_nantou" target="_blank" rel="noopener">南投縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=23.48&amp;lng=120.45&amp;z=12&amp;ov=ad_chiayi_city" target="_blank" rel="noopener">嘉義市<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=22.55&amp;lng=120.55&amp;z=10&amp;ov=ad_pingtung" target="_blank" rel="noopener">屏東縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=22.98&amp;lng=121.10&amp;z=10&amp;ov=ad_taitung" target="_blank" rel="noopener">臺東縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=23.75&amp;lng=121.45&amp;z=9&amp;ov=ad_hualien" target="_blank" rel="noopener">花蓮縣<span class="vh">（新分頁開啟）</span></a></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/viewer/?lat=23.57&amp;lng=119.58&amp;z=11&amp;ov=ad_penghu" target="_blank" rel="noopener">澎湖縣<span class="vh">（新分頁開啟）</span></a></li>
+      </ul>
+      <p class="sub" style="margin-top:14px">想同時看好幾個縣市，可以在網址的 <code>ov=</code> 後面用逗號接起來，例如 <code>ov=ad_taipei,ad_newtaipei,ad_keelung</code>。目前沒有圖層的縣市：苗栗縣、雲林縣、嘉義縣、宜蘭縣、金門縣、連江縣。這個地圖放在另一個專案裡，載入時間可能較長。</p>
+    </section>
+
     <section id="status" aria-labelledby="status-h">
-      <h2 id="status-h">目前狀態</h2>
-      <p class="sub">100 個長期複發熱點依四項透明規則分級。每個分級可直接進入清單。<span class="vh">數字載入完成後會更新。</span></p>
+      <h2 id="status-h">目前狀態：100 個熱點分成四級</h2>
+      <p class="sub">點任何一張卡片，就會進入對應等級的清單。<span class="vh">數字載入完成後會更新。</span></p>
       <ul class="grid" id="tiers" aria-live="polite">
-        <li><div class="card tier-A"><span class="num" data-n="A">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=A">A 級　優先現勘</a><p>複發性高，近期有影像變化候選，待人工確認。</p></div></li>
-        <li><div class="card tier-B"><span class="num" data-n="B">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=B">B 級　建議複核</a><p>有候選訊號，但信心不足，需要人工複核。</p></div></li>
-        <li><div class="card tier-C"><span class="num" data-n="C">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=C">C 級　持續監測</a><p>複發性高，但近期沒有可靠的變化證據。</p></div></li>
-        <li><div class="card tier-D"><span class="num" data-n="D">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=D">D 級　資料待確認</a><p>資料不足，無法支持任何判斷。</p></div></li>
+        <li><div class="card tier-A"><span class="num" data-n="A">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=A">A 級　優先現勘</a><p>常出事，而且最近照片有變化，先請人確認。</p></div></li>
+        <li><div class="card tier-B"><span class="num" data-n="B">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=B">B 級　建議複核</a><p>有變化的線索，但不太確定，需要再看一次。</p></div></li>
+        <li><div class="card tier-C"><span class="num" data-n="C">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=C">C 級　持續監測</a><p>常出事，但最近沒看到明確的變化。</p></div></li>
+        <li><div class="card tier-D"><span class="num" data-n="D">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=D">D 級　資料待確認</a><p>資料太少，現在還不能下判斷。</p></div></li>
       </ul>
-      <p class="sub" style="margin-top:16px">人工覆核進度：目前 100 個熱點<strong>尚未完成人工覆核</strong>，A 級只代表「優先確認候選」。覆核完成後才能公布命中率與偽陽性。</p>
+      <p class="sub" style="margin-top:16px"><strong>重要：</strong>目前還沒有完成人工覆核。所以 A 級只是「優先請人確認的名單」，不代表一定發生了災害。</p>
     </section>
 
-    <section id="tools" aria-labelledby="tools-h">
-      <h2 id="tools-h">工具</h2>
-      <p class="sub">每個工具都對應流程中的一個環節。</p>
-      <ul class="grid">
-        <li><div class="card"><a class="stretch" href="/">巡查清單與證據</a><p>100 個熱點、A–D 分級拆解、Sentinel-2 逐年比對，可匯出 CSV 與 Markdown。</p></div></li>
-        <li><div class="card"><a class="stretch" href="/review">人工覆核工作單</a><p>A 級 31 筆加對照組 18 筆。盲審優先、NLSC 與 Wayback 年度滑桿、雨量與土壤濕度背景。</p></div></li>
-        <li><div class="card"><a class="stretch" href="/static/uav_cesium.html?id=639247251496169680">UAV 空拍 3D 疊合</a><p>空拍影像以 DTM 與相機姿態糾正後，疊在 3D 地形上。共 10 個樣本。</p></div></li>
-        <li><div class="card"><a class="stretch" href="https://github.com/RhynoW/ardswc-resilience-observatory">原始碼與分析腳本</a><p>事件快篩（雷達先行）、雨量門檻、曝險控制實驗；全部可重現。</p></div></li>
+    <section id="results" aria-labelledby="res-h">
+      <h2 id="res-h">我們量到了什麼（用白話說）</h2>
+      <ul class="story" style="padding-left:1.2em">
+        <li><strong>下大雨，出事的機會真的變高。</strong>3 天累積雨量不到 5 毫米時，每千個「熱點日」只有 0.14 次事件；超過 250 毫米時，是 10.85 次，大約差了 80 倍。</li>
+        <li><strong>只看雨量還不夠。</strong>就算 3 天雨量超過 100 毫米，發出的警報裡也只有約 2% 真的出現通報事件。所以雨量只能幫忙「提高警覺」，還需要其他線索。</li>
+        <li><strong>通報多的地方，不一定比較危險。</strong>我們發現「附近房子多不多」就能預測哪裡有通報。這代表通報資料會偏向有人的地方，要小心解讀。</li>
+        <li><strong>衛星變化訊號還沒被驗證。</strong>它的門檻值還沒有用人工覆核的結果校正。這就是下一步最重要的工作。</li>
       </ul>
-    </section>
-
-    <section id="method" aria-labelledby="method-h">
-      <h2 id="method-h">方法與限制</h2>
-      <ol class="steps">
-        <li>下載水保署影像平台的災害事件與媒體報導紀錄，同一場災害的後續追蹤合併為一次獨立事件。</li>
-        <li>以 250 m 網格找出獨立事件最多的 100 個地點，作為長期複發熱點。</li>
-        <li>用 Sentinel-2 與 Google Earth Engine 計算前後期植生損失，作為候選訊號。</li>
-        <li>人工覆核者在不先看訊號的情況下判讀影像，結果寫入覆核帳本。</li>
-        <li>依複發性、近期變化、地形起伏與資料信心四項規則，排出 A 到 D 級。</li>
-      </ol>
-
-      <h3 style="margin-top:28px">已量化的結果</h3>
       <div class="scroll">
         <table>
-          <caption>雨量與事件的關係（200 個熱點，2016–2024 逐日，IMERG 降雨）</caption>
-          <thead><tr><th scope="col">3 日累積雨量</th><th scope="col" class="n">熱點日</th><th scope="col" class="n">事件</th><th scope="col" class="n">每千熱點日事件數</th></tr></thead>
+          <caption>雨量與事件的關係（200 個熱點，2016–2024 每天，約 66 萬個熱點日）</caption>
+          <thead><tr><th scope="col">3 天累積雨量</th><th scope="col" class="n">熱點日</th><th scope="col" class="n">事件</th><th scope="col" class="n">每千熱點日事件數</th></tr></thead>
           <tbody>
-            <tr><th scope="row">0–5 mm</th><td class="n">412,582</td><td class="n">57</td><td class="n">0.14</td></tr>
-            <tr><th scope="row">20–50 mm</th><td class="n">74,208</td><td class="n">42</td><td class="n">0.57</td></tr>
-            <tr><th scope="row">100–150 mm</th><td class="n">10,221</td><td class="n">35</td><td class="n">3.42</td></tr>
-            <tr><th scope="row">250 mm 以上</th><td class="n">1,198</td><td class="n">13</td><td class="n">10.85</td></tr>
+            <tr><th scope="row">0–5 毫米</th><td class="n">412,582</td><td class="n">57</td><td class="n">0.14</td></tr>
+            <tr><th scope="row">20–50 毫米</th><td class="n">74,208</td><td class="n">42</td><td class="n">0.57</td></tr>
+            <tr><th scope="row">100–150 毫米</th><td class="n">10,221</td><td class="n">35</td><td class="n">3.42</td></tr>
+            <tr><th scope="row">250 毫米以上</th><td class="n">1,198</td><td class="n">13</td><td class="n">10.85</td></tr>
           </tbody>
         </table>
       </div>
+    </section>
 
-      <div class="callout" style="margin-top:24px" role="note" aria-labelledby="lim-h">
-        <h3 id="lim-h">已知限制</h3>
+    <section id="tools" aria-labelledby="tools-h">
+      <h2 id="tools-h">可以使用的工具</h2>
+      <ul class="grid">
+        <li><div class="card"><a class="stretch" href="/">巡查清單與證據</a><p>100 個熱點的清單、每一級的理由、逐年衛星照片比對，可以下載成表格。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/review">人工覆核工作單</a><p>給覆核的人用：比對老照片與衛星照片、看兩次拍照之間的雨量和土壤濕度。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/static/uav_cesium.html?id=639247251496169680">無人機空拍 3D 範例</a><p>把空拍照片貼在 3D 地形上，從不同角度看崩塌的樣子。共 10 個地點。</p></div></li>
+        <li><div class="card"><a class="stretch" href="https://github.com/RhynoW/ardswc-resilience-observatory">原始碼與分析程式</a><p>所有分析都公開，任何人都可以重新算一次。</p></div></li>
+      </ul>
+    </section>
+
+    <section id="limits" aria-labelledby="lim-h">
+      <div class="callout" role="note">
+        <h2 id="lim-h" style="font-size:18px">這個系統不能做什麼</h2>
         <ul>
-          <li>通報有曝險偏差：有人、有路的地方才有通報。建成面積比單獨就能以 AUC 0.80 區分通報熱點，純地形在控制曝險後沒有訊號。</li>
-          <li>僅靠降雨門檻，作業用精確率很低：3 日 ≥100 mm 時，每次警報約 2% 出現通報事件，召回約 42%。</li>
-          <li>候選訊號的閾值尚未經人工覆核校正，兩個訊號（dNBR、NDVI）都來自 Sentinel-2，並不獨立。</li>
-          <li>本系統是輔助原型，不作為民眾安全判斷工具。</li>
+          <li>它不是預報系統，不會告訴你「明天哪裡會崩塌」。</li>
+          <li>它不能拿來決定民眾要不要撤離。安全判斷請依照政府的正式警報。</li>
+          <li>衛星看到的「變化」，有可能是農田翻土、雲影或工程，不一定是崩塌。</li>
+          <li>它是競賽中的原型，還在持續改進。</li>
         </ul>
       </div>
     </section>
@@ -193,7 +275,7 @@
   <div class="wrap">
     <h2 style="font-size:16px;margin:0 0 8px;color:var(--text)">關於本版</h2>
     <p>本頁的版面與互動遵循 Adobe React Aria 的設計語彙與無障礙原則（<a href="https://react-aria.adobe.com/">react-aria.adobe.com</a>）：語意化標記、地標與跳至主要內容連結、可見的鍵盤焦點環、整張卡片可點且鍵盤可達、深淺色與高對比模式、減少動態偏好。<strong>未引入 React Aria 函式庫</strong>，也未經第三方無障礙稽核；若發現問題請回報。</p>
-    <p>無障礙的已知缺口：完整系統中的 Leaflet 地圖與 Cesium 3D、影像比對滑桿目前不能只靠鍵盤與螢幕閱讀器完整操作；各分級清單可用表格閱讀，並可匯出 CSV。</p>
+    <p>無障礙的已知缺口：完整系統中的 Leaflet 地圖與 Cesium 3D、影像比對滑桿目前不能只靠鍵盤與螢幕閱讀器完整操作；各分級清單可用表格閱讀，並可匯出 CSV。避難點地圖屬另一個專案，其無障礙程度未檢查。</p>
     <p>資料來源：農業部農村發展及水土保持署歷史影像平台、Copernicus Sentinel-1/2、NASA GPM IMERG 與 SMAP、內政部國土測繪中心、內政部 20 m DTM、Esri Wayback、國立成功大學 UAV 空拍（CC-BY）。</p>
   </div>
 </footer>

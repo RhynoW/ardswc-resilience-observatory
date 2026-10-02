@@ -181,7 +181,7 @@ function card(it){
   el.querySelector("textarea").oninput=e=>{s.note=e.target.value;save()};
   const sel=el.querySelector(".pair"); if(sel) sel.onchange=()=>{s.pair=+sel.value;const q=it.pairs[s.pair];
     el.querySelectorAll(".imgs img").forEach(im=>im.src=q.img[im.dataset.k]);if(el._nl&&el._nl.refresh)el._nl.refresh();if(el._cl&&el._cl.refresh)el._cl.refresh();save()};
-  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._nl,ctls[ctls.length-1]);el._cl=climatePanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._cl,el._nl)}
+  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);const last=ctls[ctls.length-1];el.insertBefore(el._nl,last);el._cl=climatePanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._cl,last)}
   el.querySelectorAll(".imgs img").forEach(im=>im.onclick=()=>{const lb=document.getElementById("lightbox");lb.querySelector("img").src=im.src;lb.style.display="flex"});
   return el}
 const root=document.getElementById("root");
