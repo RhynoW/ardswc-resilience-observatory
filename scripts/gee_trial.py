@@ -94,7 +94,8 @@ def ssim_reference(rank):
 def main():
     ap = argparse.ArgumentParser(description="GEE 乾季 composite + dNBR 試跑")
     ap.add_argument("--project", default=os.environ.get("GEE_PROJECT"), help="Earth Engine Cloud project ID（或環境變數 GEE_PROJECT）")
-    ap.add_argument("--ranks", default="20,22,72")
+    ap.add_argument("--ranks", default="20,22,72", help="逗號分隔，或 a-b 範圍（如 101-200）")
+    ap.add_argument("--hotspots", default=str(DATA / "top100_consolidated.json"), help="熱點清單 JSON（擴充到 200 時指向 top200 版）")
     ap.add_argument("--years", default="2017-2025", help="起迄年（含），各年用前一年 11 月～當年 3 月")
     ap.add_argument("--radius-m", type=float, default=750.0, help="熱點緩衝區半徑；預設 750 m ＝ Sentinel Hub 1.5 km 見方框的半邊長，使 NBR 與 SSIM 看同一塊範圍（試跑 300 m 時抓不到框內其他坡面的崩塌）")
     ap.add_argument("--min-images", type=int, default=MIN_IMAGES, help="任一期 composite 至少需要的影像張數")
@@ -105,10 +106,13 @@ def main():
     if not args.project:
         sys.exit("請以 --project 或環境變數 GEE_PROJECT 指定 Earth Engine Cloud project ID")
     y_lo, y_hi = (int(x) for x in args.years.split("-"))
-    ranks = [int(x) for x in args.ranks.split(",")]
+    ranks = []
+    for tok in args.ranks.split(","):
+        a, _, b = tok.partition("-")
+        ranks += list(range(int(a), int(b) + 1)) if b else [int(a)]
 
     ee = init_ee(args.project)
-    hotspots = {h["rank"]: h for h in json.loads((DATA / "top100_consolidated.json").read_text(encoding="utf-8"))}
+    hotspots = {h["rank"]: h for h in json.loads(Path(args.hotspots).read_text(encoding="utf-8"))}
     results = []
     for rank in ranks:
         h = hotspots[rank]

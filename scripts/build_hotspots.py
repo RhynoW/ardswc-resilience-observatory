@@ -189,6 +189,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--raw-dir", required=True, type=Path)
     ap.add_argument("--refresh", action="store_true")
+    ap.add_argument("--n", type=int, default=N_HOTSPOTS, help="取前 N 個熱點（預設 100）")
+    ap.add_argument("--out", type=Path, default=OUT, help="輸出目錄（預設 data/ardswc_hotspots；擴充試算請指到別處以免覆寫）")
     args = ap.parse_args()
 
     raw = {pt: fetch_type(pt, args.raw_dir, args.refresh) for pt in PHOTO_TYPES}
@@ -240,16 +242,17 @@ def main():
             "events": s["indep"],
             "method": "sentinel2", "change_score": None, "deep_verify_caveat": None,
         })
-        if len(chosen) == N_HOTSPOTS:
+        if len(chosen) == args.n:
             break
 
-    OUT.mkdir(parents=True, exist_ok=True)
+    out_dir = args.out
+    out_dir.mkdir(parents=True, exist_ok=True)
     # 網站只用 id/lat/lon/photo_type/year（類別標籤由 app 補上）；其餘欄位只在聚合時用，不寫檔——
     # 公開部署（HF）拒收 >10 MiB 的非 LFS 檔，座標取 5 位小數（約 1 m）。
     slim = [{"id": e["id"], "lat": round(e["lat"], 5), "lon": round(e["lon"], 5),
              "photo_type": e["photo_type"], "year": e["year"]} for e in events]
-    (OUT / "events_trimmed.json").write_text(json.dumps(slim, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    (OUT / "top100_consolidated.json").write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out_dir / "events_trimmed.json").write_text(json.dumps(slim, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (out_dir / "top100_consolidated.json").write_text(json.dumps(chosen, ensure_ascii=False, indent=1), encoding="utf-8")
     meta = {
         "source": API, "fetched": fetched, "platform_total_records": total_all,
         "geolocated_records": len(events),
@@ -263,7 +266,7 @@ def main():
         "records_before_dedup_top100": sum(h["n_events"] for h in chosen),
         "independent_events_top100": sum(h["n_independent_events"] for h in chosen),
     }
-    (OUT / "dataset_meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out_dir / "dataset_meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(meta, ensure_ascii=False, indent=1))
 
 
