@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>影像紀錄 3D 集群分析</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.126.0/Build/Cesium/Widgets/widgets.css">
+<style>
+  html, body, #cesium { margin:0; width:100%; height:100%; overflow:hidden; background:#111; font-family:system-ui,"Noto Sans TC",sans-serif; }
+  #panel { position:absolute; top:10px; left:10px; z-index:10; width:330px; max-height:calc(100% - 50px); overflow:auto;
+           background:rgba(20,24,28,.9); color:#eee; padding:10px 12px; border-radius:6px; font-size:12.5px; line-height:1.55; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  #panel h1 { font-size:14.5px; margin:0 0 4px; }
+  #panel h2 { font-size:12.5px; margin:10px 0 3px; color:#9fd0ff; }
+  #panel label { display:flex; align-items:center; gap:6px; margin-top:4px; }
+  #panel input[type=range] { flex:1; }
+  #panel select { background:#222; color:#eee; border:1px solid #555; padding:2px; }
+  #panel a { color:#8ecbff; }
+  .warn { color:#ffd38a; }
+  .sw { display:inline-block; width:11px; height:11px; margin-right:4px; vertical-align:-1px; border-radius:2px; }
+  table { border-collapse:collapse; width:100%; } td { padding:1px 4px; border-bottom:1px solid #333; }
+  #info { margin-top:8px; padding:6px 8px; background:#1d2a36; border-radius:4px; min-height:2.4em; }
+  #status { position:absolute; bottom:10px; left:10px; z-index:10; background:rgba(20,24,28,.85); color:#ddd; font-size:12px; padding:4px 8px; border-radius:4px; }
+  @media (max-width:640px){ #panel{ width:auto; right:10px; max-height:46%; } }
+</style>
+</head>
+<body>
+<div id="cesium"></div>
+<div id="panel">
+  <h1>影像紀錄 3D 集群分析</h1>
+  <div>水保署歷史影像平台：災害事件＋媒體報導（有座標 32,600 筆）依 5 km／2 km 網格彙整（可切換）；柱高＝拍攝張數，顏色＝空間統計結果；可依年度檢視。</div>
+  <div class="warn" id="caveat"></div>
+
+  <h2>顯示</h2>
+  <label>著色　<select id="mode">
+    <option value="lisa">LISA 群集類型</option>
+    <option value="gi">Getis-Ord Gi* z 分數</option>
+    <option value="trend">熱點趨勢（持續／新興／消退）</option></select></label>
+  <label>網格尺度　<select id="scale">
+    <option value="5">5 km（全島，含 LISA）</option>
+    <option value="2">2 km（細格，Gi*）</option></select></label>
+  <label><input type="checkbox" id="chk-cells" checked> 網格柱（張數）</label>
+  <label><input type="checkbox" id="chk-hot" checked> 反覆熱點 top100</label>
+  <label><input type="checkbox" id="chk-db"> DBSCAN 集群（2 km、≥20 點）</label>
+  <label>柱高倍率 <input type="range" id="hscale" min="0.2" max="3" step="0.1" value="1"><span id="hscale-v">1×</span></label>
+  <label>地形誇大 <input type="range" id="exag" min="1" max="3" step="0.5" value="1"><span id="exag-v">1×</span></label>
+  <label>柱不透明度 <input type="range" id="alpha" min="20" max="100" value="75"></label>
+
+  <h2>時間（5 km 格）</h2>
+  <label>時間模式　<select id="tmode">
+    <option value="all">全期間</option>
+    <option value="year">單一年度</option>
+    <option value="cum">累積至該年</option></select></label>
+  <label>年度 <input type="range" id="yr" min="0" max="0" value="0"><b id="yr-v" style="min-width:3em"></b><button id="play" type="button" title="播放／暫停">▶</button></label>
+  <div id="tchart"></div>
+  <div id="tinfo"></div>
+  <div class="warn" id="tnote"></div>
+
+  <h2>關鍵字集群（與時間）</h2>
+  <label>關鍵字篩選　<select id="kw"><option value="-1">全部紀錄</option></select></label>
+  <label><input type="checkbox" id="chk-cent"> 顯示該關鍵字逐年重心軌跡（藍→黃＝早→晚）</label>
+  <div id="kwhint" class="warn"></div>
+  <div id="kwheat"></div>
+  <div id="kwclusters"></div>
+  <div id="kwshare"></div>
+  <div id="kwtable"></div>
+
+  <h2>圖例</h2>
+  <div id="legend"></div>
+
+  <h2>統計摘要</h2>
+  <div id="stats">載入中…</div>
+
+  <h2>點選的物件</h2>
+  <div id="info">點擊柱、熱點或集群查看細節。</div>
+
+  <div style="margin-top:8px">地形：內政部地政司 20 m DTM；底圖：Esri World Imagery。　<a href="/analytics">回到大數據分析</a>　<a href="/">決策首頁</a></div>
+</div>
+<div id="status">初始化…</div>
+<script src="https://cdn.jsdelivr.net/npm/cesium@1.126.0/Build/Cesium/Cesium.js"></script>
+<script>
+(async function(){
+  const status = t => { document.getElementById("status").textContent = t; };
+  let D, lastErr = "";
+  if (location.protocol === "file:") {
+    status("請透過伺服器開啟（不能直接雙擊 HTML）：在 webapp/change_detect_viewer 執行 python app.py，再開 http://127.0.0.1:5000/static/spatial3d.html");
+    return;
+  }
+  for (const u of ["spatial_analysis.json", "/static/spatial_analysis.json"]) {      // 先找與本頁同目錄的，再找 /static/
+    try { const r = await fetch(u); if (r.ok) { D = await r.json(); break; } lastErr = `${u} → HTTP ${r.status}`; }
+    catch(e){ lastErr = `${u} → ${e.message}`; }
+  }
+  if (!D) { status("讀不到 spatial_analysis.json（" + lastErr + "）。本機：先執行 scripts/spatial_analysis.py；線上：此檔尚未部署"); return; }
+  const $ = id => document.getElementById(id);
+  $("caveat").textContent = "⚠ " + D.method_note;
+
+  // ── 地形（同 UAV 3D 頁：本地 20 m DTM，不需 Cesium ion token）
+  const N = 65, TW = { w: 119.2, s: 21.7, e: 122.3, n: 25.5 };
+  const scheme = new Cesium.GeographicTilingScheme();
+  const flat = () => new Float32Array(N * N);
+  const terrain = new Cesium.CustomHeightmapTerrainProvider({
+    width: N, height: N, tilingScheme: scheme,
+    callback: async (x, y, level) => {
+      const r = scheme.tileXYToRectangle(x, y, level);
+      const west = Cesium.Math.toDegrees(r.west), east = Cesium.Math.toDegrees(r.east);
+      const south = Cesium.Math.toDegrees(r.south), north = Cesium.Math.toDegrees(r.north);
+      if (east < TW.w || west > TW.e || north < TW.s || south > TW.n || (east - west) > 4) return flat();
+      try{
+        const res = await fetch(`/api/dtm_heights?west=${west}&south=${south}&east=${east}&north=${north}&n=${N}`);
+        return res.ok ? new Float32Array(await res.arrayBuffer()) : flat();
+      } catch(e){ return flat(); }
+    }
+  });
+  const viewer = new Cesium.Viewer("cesium", {
+    baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      maximumLevel: 19, credit: "Esri, Maxar, Earthstar Geographics" })),
+    terrainProvider: terrain,
+    baseLayerPicker: false, geocoder: false, homeButton: false, sceneModePicker: false, navigationHelpButton: false,
+    animation: false, timeline: false, fullscreenButton: false, infoBox: false, selectionIndicator: false
+  });
+  window.__viewer = viewer;          // 除錯／自動截圖用
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+  viewer.scene.globe.enableLighting = false;
+
+  // ── 顏色
+  const LISA = { HH:"#d73027", LL:"#4575b4", HL:"#fdae61", LH:"#74add1", ns:"#9a9a9a" };
+  const LISA_TXT = { HH:"高值群（高密度鄰高密度）", LL:"低值群", HL:"高值離群（高密度被低密度包圍）", LH:"低值離群", ns:"不顯著（p≥0.05）" };
+  function giColor(z){            // −3 藍 → 0 灰 → +3 紅
+    const t = Math.max(-1, Math.min(1, z / 3));
+    const a = t < 0 ? [69,117,180] : [215,48,39], g = [190,190,190], k = Math.abs(t);
+    return `rgb(${[0,1,2].map(i => Math.round(g[i] + (a[i] - g[i]) * k)).join(",")})`;
+  }
+  const TR = { persistent:"#b2182b", emerging:"#f4a582", declining:"#4393c3", none:"#9a9a9a" };
+  const TR_TXT = { persistent:"持續熱點（長期且近年仍熱）", emerging:"新興熱點（近 3 年才變熱）", declining:"消退（早期熱、近 3 年不再）", none:"其他" };
+  const T = D.temporal, NY = T.years.length;
+  const tIdx = () => parseInt($("yr").value, 10);
+  const cellVal = c => { if (KSEL >= 0) return SEL.cnt[c._i];
+    const m = $("tmode").value; if (m === "year") return c.y[tIdx()];
+    if (m === "cum") { let s = 0; for (let i = 0; i <= tIdx(); i++) s += c.y[i]; return s; } return c.n; };
+  const cellGi = c => { if (KSEL >= 0) return SEL.gi[c._i];
+    const m = $("tmode").value; return m === "year" ? c.g[tIdx()] : m === "cum" ? c.gc[tIdx()] : c.gi_z; };
+  const cellColor = (c, mode) => Cesium.Color.fromCssColorString(mode === "lisa" ? LISA[c.lisa] : giColor(c.gi_z));
+
+  let G2 = null, prim2 = null, t2 = null;
+  let KSEL = -1, KD = null, SEL = { cnt: null, gi: null };      // 關鍵字篩選：目前選的關鍵字索引、關鍵字資料、該（關鍵字×時間）的各格張數與 Gi*      // 2 km 細格（延遲載入）
+
+  // ── 網格柱：高度 = k·√張數（相對地面），輕微縮小避免相鄰柱黏在一起
+  const cellEnts = []; D.cells.forEach((c, i) => { c._i = i; });
+  const HALF = 0.0235;
+  for (const c of D.cells){
+    const e = viewer.entities.add({
+      polygon: {
+        hierarchy: Cesium.Cartesian3.fromDegreesArray([c.lon-HALF,c.lat-HALF, c.lon+HALF,c.lat-HALF, c.lon+HALF,c.lat+HALF, c.lon-HALF,c.lat+HALF]),
+        height: c.zmin, extrudedHeight: c.zmax + 60,
+        material: cellColor(c, "lisa").withAlpha(0.75), outline: false },
+      properties: { kind: "cell", c }
+    });
+    cellEnts.push([e, c]);
+  }
+  function restyleCells(){
+    if ($("scale").value === "2") { schedule2km(); return; }
+    const mode = $("mode").value, hs = parseFloat($("hscale").value), al = $("alpha").value / 100, ex = viewer.scene.verticalExaggeration;
+    const tm = $("tmode").value, on = $("chk-cells").checked;
+    for (const [e, c] of cellEnts){          // 絕對高度：底＝格內最低地形、頂＝最高地形＋√張數柱高（地形誇大時一併放大）
+      const v = cellVal(c);
+      e.show = on && (tm === "all" || v > 0);
+      e.polygon.height = c.zmin * ex;
+      e.polygon.extrudedHeight = c.zmax * ex + Math.max(60, Math.sqrt(v) * 120 * hs);
+      let col, sig;                           // 不顯著的格子調淡，突顯群集
+      if (mode === "trend" && KSEL < 0) { col = Cesium.Color.fromCssColorString(TR[c.trend]); sig = c.trend !== "none"; }
+      else if (mode === "lisa" && tm === "all" && KSEL < 0) { col = cellColor(c, "lisa"); sig = c.lisa !== "ns"; }
+      else { const z = cellGi(c); col = Cesium.Color.fromCssColorString(giColor(z)); sig = Math.abs(z) >= 1.96; }
+      e.polygon.material = col.withAlpha(sig ? al : al * 0.35);
+    }
+    $("hscale-v").textContent = hs + "×";
+  }
+  restyleCells();
+
+  // ── 2 km 細格：用單一 Primitive 批次繪製（數千個擠出多邊形，比 Entity 快很多）；只用 Gi*（細格的 LISA 置換檢定太重，未計算）
+  async function load2km(){
+    if (G2) return G2;
+    let err = "";
+    for (const u of ["spatial_grid2km.json", "/static/spatial_grid2km.json"]) {
+      try { const r = await fetch(u); if (r.ok) { G2 = await r.json(); return G2; } err = `${u} → HTTP ${r.status}`; }
+      catch(e){ err = `${u} → ${e.message}`; }
+    }
+    status("讀不到 spatial_grid2km.json（" + err + "）"); return null;
+  }
+  function schedule2km(){ clearTimeout(t2); t2 = setTimeout(build2km, 200); }
+  async function build2km(){
+    const g = await load2km(); if (!g) return;
+    const hs = parseFloat($("hscale").value), al = $("alpha").value / 100, ex = viewer.scene.verticalExaggeration;
+    const hd = g.cell_deg * 0.47, inst = [];
+    for (const [la, lo, n, gz, zmin, zmax] of g.cells) {
+      const sig = Math.abs(gz) >= 1.96;
+      const col = Cesium.Color.fromCssColorString(giColor(gz)).withAlpha(sig ? al : al * 0.35);
+      inst.push(new Cesium.GeometryInstance({
+        geometry: new Cesium.PolygonGeometry({
+          polygonHierarchy: new Cesium.PolygonHierarchy(Cesium.Cartesian3.fromDegreesArray([lo-hd,la-hd, lo+hd,la-hd, lo+hd,la+hd, lo-hd,la+hd])),
+          height: zmin * ex, extrudedHeight: zmax * ex + Math.max(30, Math.sqrt(n) * 60 * hs),
+          vertexFormat: Cesium.PerInstanceColorAppearance.VERTEX_FORMAT }),
+        attributes: { color: Cesium.ColorGeometryInstanceAttribute.fromColor(col) },
+        id: { kind: "cell2", la, lo, n, gz, zmin, zmax } }));
+    }
+    const old = prim2;
+    prim2 = viewer.scene.primitives.add(new Cesium.Primitive({ geometryInstances: inst,
+      appearance: new Cesium.PerInstanceColorAppearance({ translucent: true, closed: true }), asynchronous: true }));
+    prim2.show = $("scale").value === "2" && $("chk-cells").checked;
+    if (old) viewer.scene.primitives.remove(old);
+    status(`2 km 格 ${g.n_cells} 個（Gi* 95% 熱格 ${g.hot95}，99% ${g.hot99}）；柱高 ∝ √張數`);
+  }
+  function applyScale(){
+    const two = $("scale").value === "2", on = $("chk-cells").checked;
+    cellEnts.forEach(([x]) => x.show = !two && on);
+    if (two) build2km(); else { if (prim2) prim2.show = false; restyleCells(); }
+    legend();
+  }
+
+  // ── 反覆熱點 top100：貼地的點＋標籤（顏色：落在 Gi* 熱格＝紅圈，否則白圈）
+  const hotEnts = [];
+  for (const h of D.top100_hotspots){
+    const inHot = h.gi_z != null && h.gi_z > 1.96;
+    const e = viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(h.lon, h.lat),
+      point: { pixelSize: 9, color: inHot ? Cesium.Color.RED : Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 1.5,
+               heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND, disableDepthTestDistance: 1.5e6 },
+      label: { text: String(h.rank), font: "12px sans-serif", fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 3,
+               style: Cesium.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new Cesium.Cartesian2(0,-14), heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+               distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 250000), disableDepthTestDistance: 1.5e6 },
+      properties: { kind: "hot", h }
+    });
+    hotEnts.push(e);
+  }
+
+  // ── DBSCAN 集群：圓（半徑 ∝ √點數），預設隱藏
+  const dbEnts = [];
+  for (const c of D.dbscan.clusters){
+    const e = viewer.entities.add({
+      show: false,
+      position: Cesium.Cartesian3.fromDegrees(c.center[1], c.center[0]),
+      ellipse: { semiMajorAxis: 900 + Math.sqrt(c.n) * 110, semiMinorAxis: 900 + Math.sqrt(c.n) * 110,
+                 material: Cesium.Color.CYAN.withAlpha(0.25), outline: true, outlineColor: Cesium.Color.CYAN,
+                 heightReference: Cesium.HeightReference.CLAMP_TO_GROUND },
+      properties: { kind: "db", c }
+    });
+    dbEnts.push(e);
+  }
+
+  // ── 時間：逐年張數（柱）＋ Gi* 熱格數（線）；點柱可跳到該年
+  const svgNS = "http://www.w3.org/2000/svg";
+  const sv = (tag, attrs) => { const el = document.createElementNS(svgNS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); return el; };
+  function drawChart(){
+    const W = 306, Hh = 100, bw = W / NY, maxT = Math.max(...T.total), maxH = Math.max(...T.hot95), cur = tIdx(), svg = sv("svg", { viewBox: `0 0 ${W} ${Hh}`, width: "100%" });
+    T.years.forEach((y, i) => {
+      const hh = T.total[i] / maxT * 66;
+      const r = sv("rect", { x: i * bw + 1, y: Hh - 16 - hh, width: Math.max(1, bw - 2), height: hh, fill: i === cur ? "#ffd38a" : "#5b88b8" });
+      r.style.cursor = "pointer"; r.addEventListener("click", () => setYear(i));
+      const t = sv("title", {}); t.textContent = `${y}：${T.total[i]} 張；熱格 ${T.hot95[i]}`; r.append(t); svg.append(r);
+      if (i % 3 === 0 || i === NY - 1) { const tx = sv("text", { x: i * bw + bw / 2, y: Hh - 4, "font-size": 8, fill: "#bbb", "text-anchor": "middle" }); tx.textContent = String(y).slice(2); svg.append(tx); }
+    });
+    svg.append(sv("polyline", { points: T.hot95.map((v, i) => `${i * bw + bw / 2},${Hh - 16 - v / maxH * 66}`).join(" "), fill: "none", stroke: "#ff7a6b", "stroke-width": 1.6 }));
+    $("tchart").replaceChildren(svg);
+    const y = T.years[cur];
+    $("tinfo").textContent = `藍柱＝逐年張數、紅線＝Gi* 熱格數（95%）。${y} 年：${T.total[cur]} 張；熱格 ${T.hot95[cur]}／冷格 ${T.cold95[cur]}；Moran's I ${T.moran_I[cur]}（p=${T.moran_p[cur]}）`;
+    $("yr-v").textContent = y;
+    $("tnote").textContent = (KSEL >= 0 && $("scale").value === "2" ? "關鍵字篩選目前只支援 5 km 格。" : "") + ($("scale").value === "2" && $("tmode").value !== "all" ? "時間分析目前只支援 5 km 格（2 km 細格沒有逐年資料）。" : "") +
+      `僅納入每年 ≥ ${T.min_year_points} 筆的 ${NY} 個年份（${T.years[0]}–${T.years[NY - 1]}，不連續）；累積＝這些年份的累計。` + T.note;
+  }
+  function setYear(i){ $("yr").value = i; drawChart(); if (typeof kwRefresh === "function" && KD) kwRefresh(); else restyleCells(); }
+  let playTimer = null;
+  $("yr").min = 0; $("yr").max = NY - 1; $("yr").value = NY > 1 && T.years[NY - 1] >= 2026 ? NY - 2 : NY - 1;
+  $("yr").oninput = () => { drawChart(); if (KD) kwRefresh(); else restyleCells(); };
+  $("tmode").onchange = () => { drawChart(); if (KD) kwRefresh(); else restyleCells(); legend(); };
+  $("play").onclick = () => {
+    if (playTimer) { clearInterval(playTimer); playTimer = null; $("play").textContent = "▶"; return; }
+    if ($("tmode").value === "all") { $("tmode").value = "year"; $("tmode").onchange(); }
+    let i = tIdx() >= NY - 1 ? 0 : tIdx(); setYear(i);
+    $("play").textContent = "⏸";
+    playTimer = setInterval(() => { i++; if (i >= NY) { clearInterval(playTimer); playTimer = null; $("play").textContent = "▶"; return; } setYear(i); }, 1000);
+  };
+
+  // ── 關鍵字集群分析：載入 → 熱圖／折線／表格 → 篩選（客戶端即時算 Gi*）→ 重心軌跡
+  const CLC = ["#e6550d", "#3182bd", "#31a354", "#9467bd", "#d62728", "#8c8c3a"];       // 集群 1–6
+  const centEnts = [];
+  function selectKw(k){
+    KSEL = k; $("kw").value = String(k);
+    if (k >= 0 && KD){
+      const n = D.cells.length, T1 = KD.years.length, cnt = new Float32Array(n), m = $("tmode").value, cur = tIdx();
+      const a = KD.cy[k];
+      for (let q = 0; q < a.length; q += 3){ const i = a[q], t = a[q+1], v = a[q+2];
+        if (m === "all" || (m === "year" && t === cur) || (m === "cum" && t <= cur)) cnt[i] += v; }
+      const x = new Float64Array(n); let mean = 0; for (let i = 0; i < n; i++){ x[i] = Math.log1p(cnt[i]); mean += x[i]; } mean /= n;
+      let vv = 0; for (let i = 0; i < n; i++) vv += (x[i] - mean) ** 2; const S = Math.sqrt(vv / n), gi = new Float32Array(n);
+      for (let i = 0; i < n; i++){ let sx = x[i], w = 1; for (const j of KD.nbr[i]){ sx += x[j]; w++; }
+        gi[i] = S > 0 ? (sx - mean * w) / (S * Math.sqrt((n * w - w * w) / (n - 1))) : 0; }
+      SEL = { cnt, gi };
+    }
+    restyleCells(); legend(); drawKw(); drawCentroids();
+  }
+  function drawCentroids(){
+    centEnts.forEach(e => viewer.entities.remove(e)); centEnts.length = 0;
+    if (KSEL < 0 || !KD || !$("chk-cent").checked) return;
+    const cs = KD.centroids[KSEL], pts = [];
+    cs.forEach((c, i) => { if (c) pts.push([KD.years[i], c, i]); });
+    pts.forEach(([y, c, i], q) => {
+      const f = pts.length > 1 ? q / (pts.length - 1) : 1, col = Cesium.Color.fromHsl(0.62 - 0.5 * f, 0.9, 0.55);
+      centEnts.push(viewer.entities.add({ position: Cesium.Cartesian3.fromDegrees(c[1], c[0]),
+        point: { pixelSize: 8 + Math.min(10, Math.sqrt(c[2]) / 2), color: col, outlineColor: Cesium.Color.BLACK, outlineWidth: 1.5,
+                 heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND, disableDepthTestDistance: 2e6 },
+        label: { text: String(y).slice(2), font: "11px sans-serif", fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 3,
+                 style: Cesium.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new Cesium.Cartesian2(0, -14), heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+                 disableDepthTestDistance: 2e6 } }));
+    });
+    if (pts.length > 1) centEnts.push(viewer.entities.add({ polyline: { positions: Cesium.Cartesian3.fromDegreesArrayHeights(pts.flatMap(([, c]) => [c[1], c[0], 6000])),
+      width: 3, material: Cesium.Color.WHITE.withAlpha(0.8) } }));
+  }
+  function drawKw(){
+    if (!KD) return;
+    const K = KD.keywords.length, ord = KD.order, cs = 17, L = 60, W = L + K * cs, svg = sv("svg", { viewBox: `0 0 ${W} ${L + K * cs}`, width: "100%" });
+    const col = v => { const t = Math.max(-1, Math.min(1, v)), a = t < 0 ? [69,117,180] : [215,48,39], k = Math.abs(t); return `rgb(${[0,1,2].map(i => Math.round(235 + (a[i] - 235) * k)).join(",")})`; };
+    ord.forEach((ki, r) => {
+      const lab = sv("text", { x: L - 3, y: L + r * cs + 12, "font-size": 9, fill: ki === KSEL ? "#ffd38a" : "#ddd", "text-anchor": "end" }); lab.textContent = KD.keywords[ki];
+      lab.style.cursor = "pointer"; lab.addEventListener("click", () => selectKw(ki === KSEL ? -1 : ki)); svg.append(lab);
+      svg.append(sv("rect", { x: L - 2, y: L + r * cs + 1, width: 2, height: cs - 2, fill: CLC[KD.cluster[ki] - 1] }));
+      const tl = sv("text", { x: L + r * cs + cs / 2, y: L - 3, "font-size": 9, fill: ki === KSEL ? "#ffd38a" : "#ddd", transform: `rotate(-60 ${L + r * cs + cs / 2} ${L - 3})` }); tl.textContent = KD.keywords[ki]; svg.append(tl);
+      ord.forEach((kj, c) => { const rc = sv("rect", { x: L + c * cs, y: L + r * cs, width: cs - 1, height: cs - 1, fill: col(KD.sim[ki][kj]) });
+        const t = sv("title", {}); t.textContent = `${KD.keywords[ki]} × ${KD.keywords[kj]}：合併 ${KD.sim[ki][kj]}（時間 ${KD.corr_time[ki][kj]}、空間 ${KD.corr_space[ki][kj]}）`; rc.append(t); svg.append(rc); });
+    });
+    $("kwheat").replaceChildren(Object.assign(document.createElement("div"), { textContent: "相似度熱圖（紅＝常一起出現／同地同時間，藍＝相反；左側色條＝集群）：" }), svg);
+    const cl = document.createElement("div");
+    for (let c = 1; c <= Math.max(...KD.cluster); c++){
+      const m = ord.filter(k => KD.cluster[k] === c).map(k => KD.keywords[k]); if (!m.length) continue;
+      const d = document.createElement("div"), s = document.createElement("span"); s.className = "sw"; s.style.background = CLC[c - 1]; d.append(s, `集群 ${c}：${m.join("、")}`); cl.append(d);
+    }
+    $("kwclusters").replaceChildren(cl);
+    // 逐年占比折線（集群色；選中的加粗）
+    const NYk = KD.years.length, W2 = 306, H2 = 120, ms = Math.max(...KD.share.flat().filter(v => v < 0.99), 0.3), s2 = sv("svg", { viewBox: `0 0 ${W2} ${H2}`, width: "100%" });
+    KD.keywords.forEach((kw, k) => {
+      if (kw === "颱風" || kw === "地震") return;                         // 占比近 100% 的詞（災害名稱本身）會壓扁其他線，不畫
+      const pl = sv("polyline", { points: KD.share[k].map((v, i) => `${i * W2 / (NYk - 1)},${H2 - 14 - Math.min(v, ms) / ms * (H2 - 22)}`).join(" "), fill: "none",
+        stroke: CLC[KD.cluster[k] - 1], "stroke-width": k === KSEL ? 3 : 1.1, opacity: KSEL < 0 || k === KSEL ? 0.9 : 0.25 });
+      const t = sv("title", {}); t.textContent = kw; pl.append(t); pl.style.cursor = "pointer"; pl.addEventListener("click", () => selectKw(k === KSEL ? -1 : k)); s2.append(pl);
+    });
+    const cur = tIdx(); s2.append(sv("line", { x1: cur * W2 / (NYk - 1), x2: cur * W2 / (NYk - 1), y1: 0, y2: H2 - 14, stroke: "#ffd38a", "stroke-dasharray": "3 2" }));
+    [0, Math.floor(NYk / 2), NYk - 1].forEach(i => { const tx = sv("text", { x: i * W2 / (NYk - 1), y: H2 - 3, "font-size": 8, fill: "#bbb", "text-anchor": i === 0 ? "start" : i === NYk - 1 ? "end" : "middle" }); tx.textContent = KD.years[i]; s2.append(tx); });
+    $("kwshare").replaceChildren(Object.assign(document.createElement("div"), { textContent: "逐年占比（關鍵字筆數／當年紀錄數；已略去占比近 100% 的「颱風」「地震」；點線可選取）：" }), s2);
+    // 趨勢表
+    const tb2 = document.createElement("table");
+    const hd = tb2.insertRow(); ["關鍵字", "筆數", "尖峰年", "趨勢"].forEach(x => { const c = hd.insertCell(); c.textContent = x; c.style.color = "#9fd0ff"; });
+    [...KD.keywords.keys()].sort((a, b) => KD.total[b] - KD.total[a]).forEach(k => {
+      const r = tb2.insertRow(); r.style.cursor = "pointer"; if (k === KSEL) r.style.background = "#27425a"; r.onclick = () => selectKw(k === KSEL ? -1 : k);
+      const t = KD.trend[k], c0 = r.insertCell(), sw = document.createElement("span"); sw.className = "sw"; sw.style.background = CLC[KD.cluster[k] - 1]; c0.append(sw, KD.keywords[k]);
+      r.insertCell().textContent = KD.total[k]; r.insertCell().textContent = `${t.peak_year}（${Math.round(t.peak_share * 100)}%）`;
+      r.insertCell().textContent = t.dir === "up" ? `↑ 上升 (p=${t.p})` : t.dir === "down" ? `↓ 下降 (p=${t.p})` : `— 無明顯 (p=${t.p})`;
+    });
+    $("kwtable").replaceChildren(tb2);
+  }
+  (async () => {
+    let err = "";
+    for (const u of ["keyword_cluster.json", "/static/keyword_cluster.json"]) {
+      try { const r = await fetch(u); if (r.ok) { KD = await r.json(); break; } err = `${u} → HTTP ${r.status}`; } catch(e){ err = `${u} → ${e.message}`; }
+    }
+    if (!KD) { $("kwhint").textContent = "讀不到 keyword_cluster.json（" + err + "）；先執行 scripts/keyword_cluster.py"; return; }
+    KD.keywords.forEach((kw, k) => { const o = document.createElement("option"); o.value = k; o.textContent = `${kw}（集群 ${KD.cluster[k]}）`; $("kw").append(o); });
+    $("kwhint").textContent = KD.note;
+    $("kw").onchange = () => selectKw(parseInt($("kw").value, 10));
+    $("chk-cent").onchange = drawCentroids;
+    drawKw();
+  })();
+  const kwRefresh = () => { if (KSEL >= 0) selectKw(KSEL); else drawKw(); };
+
+  // ── 控制
+  $("mode").onchange = () => { restyleCells(); legend(); };
+  $("hscale").oninput = restyleCells; $("alpha").oninput = restyleCells;
+  $("chk-cells").onchange = applyScale;
+  $("scale").onchange = applyScale;
+  $("chk-hot").onchange = e => hotEnts.forEach(x => x.show = e.target.checked);
+  $("chk-db").onchange = e => dbEnts.forEach(x => x.show = e.target.checked);
+  $("exag").oninput = e => { viewer.scene.verticalExaggeration = parseFloat(e.target.value); $("exag-v").textContent = e.target.value + "×"; restyleCells(); };
+
+  function legend(){
+    const el = $("legend"); el.replaceChildren();
+    const row = (col, txt) => { const d = document.createElement("div"); const s = document.createElement("span"); s.className = "sw"; s.style.background = col;
+      d.append(s, txt); el.append(d); };
+    if ($("scale").value === "2") {
+      row(giColor(3), "Gi* z ≥ +3：強熱點"); row(giColor(1.96), "z ≈ +2：熱點（95%）"); row(giColor(0), "z ≈ 0：無特別集中");
+      const q = document.createElement("div"); q.className = "warn"; q.textContent = "2 km 細格只算 Gi*（陸地格為母體）。陸地格多為空格，有紀錄的格 Gi* 容易偏高，請看相對大小。"; el.append(q);
+    } else if (KSEL >= 0) {
+      row(giColor(3), "Gi* z ≥ +3：此關鍵字的強熱點"); row(giColor(1.96), "z ≈ +2：熱點（95%）"); row(giColor(0), "z ≈ 0：無特別集中"); row(giColor(-2), "z ≈ −2：冷點");
+      const q = document.createElement("div"); q.className = "warn"; q.textContent = `已篩選「${KD.keywords[KSEL]}」：柱高＝含此關鍵字的紀錄數，顏色＝該關鍵字（依目前時間設定）的 Gi*；LISA／趨勢著色在篩選時停用。`; el.append(q);
+    } else if ($("mode").value === "trend") {
+      for (const k of ["persistent","emerging","declining","none"]) row(TR[k], `${TR_TXT[k]}（${T.trend_counts[k]} 格）`);
+      const q = document.createElement("div"); q.className = "warn"; q.textContent = "趨勢＝依逐年 Gi* 熱格紀錄的描述性分類，不是統計檢定；樣本年份不連續。"; el.append(q);
+    } else if ($("mode").value === "lisa" && $("tmode").value === "all") for (const k of ["HH","LL","HL","LH","ns"]) row(LISA[k], `${k}：${LISA_TXT[k]}（${D.lisa[k]} 格）`);
+    else { row(giColor(3), "Gi* z ≥ +3：強熱點"); row(giColor(1.96), "z ≈ +2：熱點（95%）"); row(giColor(0), "z ≈ 0：無特別集中"); row(giColor(-2), "z ≈ −2：冷點");
+      if ($("mode").value === "lisa") { const q = document.createElement("div"); q.className = "warn"; q.textContent = "LISA 只有全期間；年度／累積模式改用該年度的 Gi*。"; el.append(q); } }
+    const p = document.createElement("div"); p.textContent = "● 紅點＝落在 Gi* 熱格的 top100 熱點；白點＝不在熱格。柱高 ∝ √張數。"; el.append(p);
+  }
+  legend();
+  drawChart();
+
+  const g = D.global_moran, x = D.top100_crosscheck;
+  const rows = [
+    ["全域 Moran's I", `${g.I}（置換 z=${g.z_perm}，p=${g.p_one_sided}）`],
+    ["Gi* 熱格／冷格（95%）", `${D.gi_star.hot_95}／${D.gi_star.cold_95}（共 ${D.gi_star.n_cells} 格）`],
+    ["DBSCAN 集群", `${D.dbscan.n_clusters} 群，雜訊 ${Math.round(D.dbscan.noise_share*100)}%`],
+    ["top100 落在熱格", `${Math.round(x.share_in_gi95_hot_cells*100)}%（基準 ${Math.round(x.baseline_share_hot_cells*100)}%）`],
+    ["top100 落在高值群 HH", `${Math.round(x.share_in_HH_cluster*100)}%（基準 ${Math.round(x.baseline_share_HH*100)}%）`],
+    ["時間分析", `${NY} 個年份（${T.years[0]}–${T.years[NY-1]}）；趨勢：持續 ${T.trend_counts.persistent}／新興 ${T.trend_counts.emerging}／消退 ${T.trend_counts.declining}`],
+    ["張數 vs 熱點數 Spearman ρ", `${x.spearman_photo_count_vs_hotspots_per_cell.rho}`],
+  ];
+  const tb = document.createElement("table");
+  for (const [k, v] of rows){ const tr = tb.insertRow(); tr.insertCell().textContent = k; tr.insertCell().textContent = v; }
+  $("stats").replaceChildren(tb);
+
+  // ── 點選
+  const info = $("info");
+  const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  handler.setInputAction(m => {
+    const p = viewer.scene.pick(m.position);
+    if (p && p.id && p.id.kind === "cell2") { const c = p.id;
+      info.textContent = `2 km 格 (${c.la}°N, ${c.lo}°E)：${c.n} 張；Gi* z=${c.gz}；地形 ${c.zmin}–${c.zmax} m`; return; }
+    const pr = p && p.id && p.id.properties;
+    if (!pr) { info.textContent = "點擊柱、熱點或集群查看細節。"; return; }
+    const kind = pr.kind.getValue();
+    if (kind === "cell"){ const c = pr.c.getValue();
+      info.textContent = `網格 (${c.lat}°N, ${c.lon}°E)：${c.n} 張；Gi* z=${c.gi_z}；LISA＝${c.lisa}（${LISA_TXT[c.lisa]}）；趨勢＝${TR_TXT[c.trend]}（${c.hy}/${NY} 個年份為熱格）`;
+      const mx = Math.max(1, ...c.y), w = 306 / NY, s = sv("svg", { viewBox: "0 0 306 44", width: "100%" });
+      c.y.forEach((v, i) => { const bh = v / mx * 34, r = sv("rect", { x: i * w + 1, y: 38 - bh, width: Math.max(1, w - 2), height: bh, fill: c.g[i] > 1.96 ? "#ff7a6b" : "#8aa4bf" });
+        const t = sv("title", {}); t.textContent = `${T.years[i]}：${v} 張；Gi* z=${c.g[i]}`; r.append(t); s.append(r); });
+      const cap = document.createElement("div"); cap.textContent = "此格逐年張數（紅＝該年為熱格）：";
+      info.append(cap, s); }
+    else if (kind === "hot"){ const h = pr.h.getValue();
+      info.textContent = `反覆熱點 #${h.rank}（${h.county || ""}${h.district || ""}）：${h.n_events} 次獨立事件；所在網格 ${h.cell_n ?? "?"} 張，Gi* z=${h.gi_z ?? "?"}，LISA＝${h.lisa ?? "?"}`; }
+    else { const c = pr.c.getValue();
+      info.textContent = `DBSCAN 集群 #${c.id}：${c.n} 點，中心 (${c.center[0]}°N, ${c.center[1]}°E)；主要事件：` + c.top_events.map(t => `${t[0]}×${t[1]}`).join("、"); }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+  // ── 視角：從東南方斜看全島
+  viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(122.4, 21.3, 300000),
+    orientation: { heading: Cesium.Math.toRadians(340), pitch: Cesium.Math.toRadians(-33), roll: 0 } });
+  status(`網格 ${D.cells.length} 格、熱點 ${D.top100_hotspots.length} 個、集群 ${D.dbscan.n_clusters} 群（資料日期 ${D.generated}）`);
+})();
+</script>
+</body>
+</html>

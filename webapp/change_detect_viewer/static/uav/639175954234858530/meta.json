@@ -1,0 +1,46 @@
+{
+ "id": "639175954234858530",
+ "title": "南投縣竹山鎮大鞍里（UAV 空拍，2026-06-20）",
+ "description": "1150620_加走寮溪堰塞湖",
+ "source_page": "https://photo.ardswc.gov.tw/Repository/ViewEvent/639175954234858530",
+ "attribution": "易圖科技股份有限公司（照片授權方式：姓名標示，CC-BY）；農業部農村發展及水土保持署歷史影像平台",
+ "bounds_merc": {
+  "minx": 13435752.196333785,
+  "maxy": 2713184.4234607224,
+  "maxx": 13436613.051328117,
+  "miny": 2711897.235079851
+ },
+ "view": {
+  "heading": 0,
+  "pitch": -35,
+  "range": 1800
+ },
+ "corners_lonlat_homography": null,
+ "image": "rect.webp",
+ "bounds_lonlat": {
+  "west": 120.69541551609068,
+  "south": 23.65889096730019,
+  "east": 120.70314870807887,
+  "north": 23.669481686036256
+ },
+ "center_lonlat": [
+  120.699282,
+  23.664186
+ ],
+ "method": "DTM 合成斜視圖匹配：以 20 m DTM＋Esri 底圖渲染合成斜視圖（相機姿態粗搜），LoFTR 匹配真實照片與合成圖 → 合成圖的 3D 位置 → 相機姿態解算（PnP + 穩健最小二乘）→ 沿相機光線與 DTM 求交的正射重採樣；UAV 無 EXIF，純影像內容對位",
+ "quality": {
+  "joint_inliers": 82,
+  "fit_rmse_m": null,
+  "holdout_rmse_m": 4.87,
+  "holdout_median_m": 3.56,
+  "homography_holdout_median_m": 1703.99,
+  "gsd_m_per_px": 0.5,
+  "camera": {
+   "f_px": 1467.6,
+   "k1": -0.016,
+   "agl_m": 369
+  },
+  "note": "（斜拍照，經合成斜視圖匹配）留出點（佔 30%）地面誤差 RMSE 4.9 m、中位數 3.6 m（同批點上單應矩陣平面假設的中位數為 1704.0 m；該批點由相機模型篩選，對單應矩陣偏不利，僅供參考）。已用 DTM 與相機姿態處理地形視差，但限制仍在：DTM 為 20 m 解析度、遮擋以 DTM 近似（樹冠、建物未建模）、底圖本身有數公尺定位誤差、焦距與相機高度在地形起伏小時互相補償（無 EXIF）；遠景、被山遮擋與拉伸過度的區域已裁掉（透明）。屬『較精確的地形糾正』，非測量級正射。",
+  "support_cover": 0.33
+ }
+}

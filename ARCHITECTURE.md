@@ -314,7 +314,7 @@ z12 38 m/px）補回被遮蔽像素（`sentinel_assist._fill_watermark`）：上
   方法、授權標示與品質指標。示範案例：花蓮秀林石公溪小清水溪（2026/08/29，成大 CC-BY）已改用地形糾正版
   （足跡內地形起伏達數百公尺，單應矩陣的平面假設在此失效）：留出 30% 對應點、地面誤差 **RMSE ≈ 4 m、中位數 ≈ 3 m**；
   誤差與單應矩陣的比較見 `meta.json` 的 `quality.note`（比較集合由相機模型篩選，對單應矩陣偏不利）。
-  限制：20 m DTM、遮擋以 DTM 近似、無 EXIF 時焦距與高度互相補償。其餘樣本為單應矩陣版（`rect.webp`），目前共 28 個：2026 年 2 個、2025 年 17 個、2022／2024 年 9 個；擴充時把留出點 RMSE 門檻放寬到 10 m（`UAV_HOLD_MAX`），2025 年候選試了約 170 個後暫停（通過率低於 15%，停在 28 個，未達 30），勘災團隊的斜拍照 LoFTR 粗對位內點僅 5–9 個而失敗。批次以 `run_chunks.py` 分批、可續跑，並以 `thermal_guard.py` 做 GPU 過熱保護（≥70°C 暫停、≤58°C 繼續，並按推論時間限流）。
+  限制：20 m DTM、遮擋以 DTM 近似、無 EXIF 時焦距與高度互相補償。其餘樣本多為單應矩陣版（`rect.webp`），目前共 30 個：2026 年 4 個、2025 年 17 個、2022／2024 年 9 個；擴充時把留出點 RMSE 門檻放寬到 10 m（`UAV_HOLD_MAX`）。勘災團隊的斜拍照 LoFTR 直接配正射底圖的粗對位內點僅 5–9 個而失敗，改用 **DTM 合成斜視圖法**（`scripts/uav_synth.py`，批次 `uav_register/run_synth.py`）：以 API 座標為相機位置（石公溪實測相機距 API 座標約 40–110 m，離地約 250–450 m，故 API 座標＝拍攝位置而非目標）、掃方位角×俯角×高度渲染合成斜視圖（GPU ray-marching 對 2 m 重採樣的 DTM，貼 Esri 底圖），與真實照片 LoFTR 匹配，以 PnP 內點數評分選姿態，合成圖的 3D 位置圖把匹配點變 2D–3D 對應，再接既有的相機解算與 DTM 正射；石公溪驗證留出 RMSE 4.75 m（舊流程 4.12 m），單應矩陣在同張照片誤差約 1.2 km。限制：只適用離地數百公尺的空拍斜視；近距離／地面特寫（拍攝範圍僅數十公尺）超出 20 m DTM 與底圖的解析度而無法匹配，通過率約 2 成。批次以 `run_chunks.py`／`run_synth.py` 分批、可續跑，並以 `thermal_guard.py` 做 GPU 過熱保護（≥70°C 暫停、≤58°C 繼續，並按推論時間限流）。
 - **3D 檢視（`static/uav_cesium.html?id=<事件 id>`）**：CesiumJS（jsDelivr CDN）+
   `CustomHeightmapTerrainProvider`，逐 tile 向 `/api/dtm_heights` 取本地 20 m DTM 的 float32
   高程——**不需要 Cesium ion token**。底圖 Esri World Imagery，UAV 影像以 `SingleTileImageryProvider`
@@ -573,3 +573,10 @@ Cesium 地形 token 靜默過期兩次事故，皆非現場能立即排除的問
 - 57 個事件（21%）發生在 r3d < 5 mm 的日子：可能是通報日期落後於崩塌、IMERG 在山區低估、地震或工程等非降雨觸發，需逐筆查（可併入人工覆核）。
 - 預警（保守）操作點的取捨：r7d ≥ 150 mm 約召回 44%、每熱點每年 2.8 次警報；若要召回 ≥ 60% 需 r3d ≥ 50 mm，但每熱點每年 8.6 次警報，實務上不可接受。
 - 限制：事件為通報；熱點因出過事才入選（基準率與 precision 為樂觀上限，不能外推到全臺任意山坡）；IMERG 0.1° 山區低估；警報精確率的分子是「通報」不是「判釋崩塌」；同颱風多熱點不獨立（已聚類 bootstrap）。
+
+## 14. 影像紀錄的空間分析與 3D 集群頁（`/static/spatial3d.html`）
+
+- **空間分析（`scripts/spatial_analysis.py` → `data/spatial_analysis.json`）**：以 `analytics.json` 的 5 km 網格（災害事件＋媒體報導 32,600 筆）算全域 Moran's I（0.34，置換 p=0.001）、Getis-Ord Gi*、LISA（HH 87 格）、事件標準差橢圓、DBSCAN，並與 top100 反覆熱點交叉（39% 落在 Gi* 熱格，基準 14%）。另有 2 km 細格（只在陸地格算 Gi*，`spatial_grid2km.json`）與逐年／累積 Gi*、逐年 Moran's I、熱點趨勢（持續／新興／消退，描述性規則）。
+- **關鍵字集群（`scripts/keyword_cluster.py` → `data/keyword_cluster.json`）**：16 個關鍵字的逐年占比、時間＋空間相關的合併相似度、平均連結階層分群（6 群）、Kendall τ 趨勢、逐年空間重心軌跡；頁面可依關鍵字篩選並即時算 Gi*。
+- **3D 頁**：CesiumJS＋本地 20 m DTM，網格柱高 ∝ √張數，顏色＝LISA／Gi*／趨勢；年度滑桿與播放、5 km／2 km 切換、關鍵字熱圖與重心軌跡。
+- **限制（重要）**：筆數是拍攝張數，受道路可達性與調查人力影響（2 km 圖可見高值格沿中橫、南橫成線），這是「紀錄密度」的空間集中，不是致災風險；2 km 與關鍵字篩選不互通；關鍵字為子字串比對；年份僅含每年 ≥300 筆者（不連續）。

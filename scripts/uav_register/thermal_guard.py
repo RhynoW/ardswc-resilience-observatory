@@ -18,7 +18,7 @@ def gpu_temp():
         return None
 
 
-DUTY = float(os.environ.get("UAV_GPU_DUTY", "1.5"))   # 每次推論後休息 = 推論時間 × DUTY（無管理員權限不能降功耗上限，改用軟體限流）
+DUTY = float(os.environ.get("UAV_GPU_DUTY", "1.0"))   # 每次推論後休息 = 推論時間 × DUTY（無管理員權限不能降功耗上限，改用軟體限流）
 
 
 def duty_sleep(busy_s):
