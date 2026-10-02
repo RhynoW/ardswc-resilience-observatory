@@ -363,6 +363,9 @@
   .pc-tier .pt-n{ font-family:var(--font-mono); font-weight:700; font-size:30px; font-variant-numeric:tabular-nums; line-height:1; }
   .pc-tier .pt-label{ font-size:11.5px; margin-top:8px; font-weight:600; }
   .pc-tier .pt-desc{ font-size:10.5px; color:var(--muted); margin-top:3px; line-height:1.4; }
+  .pc-tier[data-tier]{ cursor:pointer; transition:background .12s; }
+  .pc-tier[data-tier]:hover, .pc-tier[data-tier]:focus-visible{ background:var(--paper-raised); outline:none; box-shadow:inset 0 0 0 1px var(--accent); }
+  .pc-tier .pt-go{ font-family:var(--font-mono); font-size:10.5px; color:var(--accent); margin-top:8px; }
   .pc-tier.pt-A .pt-n{ color:var(--accent); }
   .pc-tier.pt-B .pt-n{ color:#9C7A1E; }
   .pc-tier.pt-C .pt-n{ color:var(--accent-2); }
@@ -372,6 +375,8 @@
     border:1px solid var(--accent); padding:9px 18px; cursor:pointer; letter-spacing:.02em;
   }
   .pc-goto:hover{ opacity:.88; }
+  .pc-goto[data-tier]:not(#pc-goto-a){ background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  .pc-goto[data-tier]:not(#pc-goto-a):hover{ background:var(--accent); color:var(--paper); opacity:1; }
   .vd-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin:10px 0 8px; }
   .vd-cell{ background:var(--paper-raised); padding:14px 16px; }
   .vd-cell h4{ margin:0 0 8px; font-size:12px; font-family:var(--font-mono); color:var(--muted); letter-spacing:.03em; font-weight:600; }
@@ -635,7 +640,10 @@
         <div style="padding:16px; color:var(--muted); font-size:12.5px;">載入優先級統計中…</div>
       </div>
       <div class="pc-actions">
-        <button id="pc-goto-a" class="pc-goto">→ 查看 A 級「建議優先現勘」完整名單</button>
+        <button id="pc-goto-a" class="pc-goto" data-tier="A">→ 查看 A 級「建議優先現勘」完整名單</button>
+        <button class="pc-goto" data-tier="B">B 級「建議複核」</button>
+        <button class="pc-goto" data-tier="C">C 級「持續監測」</button>
+        <button class="pc-goto" data-tier="D">D 級「資料待確認」</button>
         <a class="export-btn" href="/api/inspection/export?tier=A&format=csv" download>⬇ 匯出 A 級巡查清單（CSV）</a>
         <a class="export-btn" href="/api/inspection/export?tier=A&format=md" download>⬇ Markdown</a>
       </div>
@@ -2133,17 +2141,25 @@ function renderPriorityTiers(){
   const counts = { A: 0, B: 0, C: 0, D: 0 };
   for(const p of items) if(counts[p.tier] !== undefined) counts[p.tier]++;
   wrap.innerHTML = ["A","B","C","D"].map(t => `
-    <div class="pc-tier pt-${t}">
+    <div class="pc-tier pt-${t}" data-tier="${t}" role="link" tabindex="0" title="前往「巡查清單與證據」，只顯示 ${t} 級">
       <div class="pt-n">${counts[t]}</div>
       <div class="pt-label">${t} 級・${TIER_ACTION[t]}</div>
       <div class="pt-desc">${PC_TIER_DESC[t]}</div>
+      <div class="pt-go">→ 查看 ${t} 級名單</div>
     </div>`).join("");
+  wrap.querySelectorAll(".pc-tier[data-tier]").forEach(el => {
+    el.onclick = () => gotoTier(el.dataset.tier);
+    el.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); gotoTier(el.dataset.tier); } };
+  });
 }
-document.getElementById("pc-goto-a").onclick = () => {
+// 首頁 → 「巡查清單與證據」並套用優先級篩選（A/B/C/D）
+function gotoTier(t){
   switchTab("hotspots");
-  const btnA = document.querySelector('#tier-filter button[data-tier="A"]');
-  if(btnA) btnA.click();
-};
+  const btn = document.querySelector(`#tier-filter button[data-tier="${t}"]`);
+  if(btn) btn.click();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.querySelectorAll(".pc-goto[data-tier]").forEach(b => { b.onclick = () => gotoTier(b.dataset.tier); });
 
 // ── 決策首頁：人工覆核案例（候選排序＋證據鏈的具體示範）──
 // 案例必須以人工覆核結論為依據。2026-09-22 熱點依平台即時資料重建、台帳清空後尚無覆核結論，
