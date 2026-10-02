@@ -234,7 +234,7 @@ details.nl>summary{cursor:pointer;font-weight:600}
 <div id="root"></div></main>
 <div id="lightbox" onclick="this.style.display='none'"><img></div>
 <script>
-const A_ITEMS=__A__, BASE_ITEMS=__BASE__, INIT=__INIT__, CLIM=__CLIM__;
+const A_ITEMS=__A__, BASE_ITEMS=__BASE__, INIT=__INIT__, CLIM=__CLIM__, OFFICIAL=__OFF__;
 const KEY="review_queue_v1";
 let st={}; try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
 INIT.forEach(l=>{ if(!st[l.rank]) st[l.rank]={verdict:l.verdict,treated:!!l.treated,improved:!!l.improved,note:l.note||"",pair:null,ts:l.reviewed_at||null}; });
@@ -247,6 +247,39 @@ function fmt(d){return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6)}
 
 
 // ── 降雨／土壤濕度背景（data/climate_series.json：IMERG 日雨量、SMAP L4 根系層含水量；單點最近像元）──
+// ── 官方衛星判釋崩塌（BigGIS；衛星影像判釋，非現地確認）：熱點 1.5 km 內的多邊形；落在「兩期影像之間」的事件標紅 ──
+function officialPanel(it,getPi){
+  const d=document.createElement("details");d.className="nl of";d.open=true;
+  const polys=OFFICIAL&&OFFICIAL.ranks&&OFFICIAL.ranks[it.rank];
+  if(!OFFICIAL||!polys){d.innerHTML=`<summary>官方衛星判釋崩塌（BigGIS）</summary><div class="meta">未嵌入官方判釋資料（執行 scripts/fetch_biggis_interp.py 後重建本頁）。</div>`;return d}
+  d.innerHTML=`<summary>官方衛星判釋崩塌（BigGIS，1.5 km 內共 ${polys.length} 塊）——兩期影像之間的事件標紅</summary><div class="ofbody"></div>`;
+  const body=d.querySelector(".ofbody");
+  const area=xy=>{let s=0;for(let i=0;i<xy.length;i+=2){const j=(i+2)%xy.length;s+=xy[i]*xy[j+1]-xy[j]*xy[i+1]}return Math.abs(s)/2/10000};
+  function draw(){
+    const q=it.pairs[getPi()];if(!q){body.innerHTML='<div class="meta">沒有比對期別</div>';return}
+    const R=1500,W=320,sc=W/(2*R),ns="http://www.w3.org/2000/svg";
+    const svg=document.createElementNS(ns,"svg");svg.setAttribute("viewBox",`0 0 ${W} ${W}`);svg.setAttribute("width",W);svg.style.background="#f3f1ea";svg.style.border="1px solid #999";
+    const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e};
+    [-1000,-500,0,500,1000].forEach(v=>{mk("line",{x1:W/2+v*sc,y1:0,x2:W/2+v*sc,y2:W,stroke:"#d6d2c4","stroke-width":.6});mk("line",{x1:0,y1:W/2-v*sc,x2:W,y2:W/2-v*sc,stroke:"#d6d2c4","stroke-width":.6})});
+    mk("circle",{cx:W/2,cy:W/2,r:1000*sc,fill:"none",stroke:"#8aa","stroke-dasharray":"4 3","stroke-width":.8});
+    const win={};let nIn=0;
+    polys.forEach(([ei,xy])=>{
+      const ed=OFFICIAL.events[ei][0].replace(/-/g,"");const inW=ed>q.a&&ed<=q.b;
+      let pts="";for(let i=0;i<xy.length;i+=2)pts+=`${(W/2+xy[i]*sc).toFixed(1)},${(W/2-xy[i+1]*sc).toFixed(1)} `;
+      const e=mk("polygon",{points:pts,fill:inW?"#d73027":"#6b7fa3","fill-opacity":inW?.6:.3,stroke:inW?"#a50f15":"#3a4a6b","stroke-width":inW?.9:.5});
+      const t=document.createElementNS(ns,"title");t.textContent=`${OFFICIAL.events[ei][0]} ${OFFICIAL.events[ei][1]}（約 ${area(xy).toFixed(2)} 公頃）`;e.appendChild(t);
+      if(inW){nIn++;const w=win[ei]||(win[ei]={n:0,ha:0});w.n++;w.ha+=area(xy)}
+    });
+    mk("line",{x1:W/2-7,y1:W/2,x2:W/2+7,y2:W/2,stroke:"#000","stroke-width":1.4});mk("line",{x1:W/2,y1:W/2-7,x2:W/2,y2:W/2+7,stroke:"#000","stroke-width":1.4});
+    const tx=mk("text",{x:6,y:W-6,"font-size":9,fill:"#555"});tx.textContent="北在上；格線 500 m；虛線圓＝1 km；＋＝熱點位置";
+    const evs=Object.entries(win).map(([ei,w])=>`${OFFICIAL.events[ei][0]} ${OFFICIAL.events[ei][1].replace(/^[0-9]{8}_/,"")}：${w.n} 塊、約 ${w.ha.toFixed(1)} 公頃`);
+    body.innerHTML=`<div class="meta">兩期影像：${fmt(q.a)} → ${fmt(q.b)}。<b>${nIn?`期間內有 ${evs.length} 個官方判釋事件落在 1.5 km 內（紅色）：${evs.join("；")}。`:`期間內沒有官方判釋事件落在 1.5 km 內。`}</b></div>`;
+    body.appendChild(svg);
+    const n=document.createElement("div");n.className="meta";
+    n.innerHTML="判讀提示：紅色＝這兩期之間有官方衛星判釋出的新增崩塌，可作為「兩期影像的新裸露是崩塌」的獨立佐證；藍灰＝其他時間的官方判釋。<b>這是官方衛星判釋，不是現地確認；官方只判釋颱風、豪雨、地震等大事件，所以「沒有紅色」不代表沒有崩塌。</b>資料：農業部農村發展及水土保持署 BigGIS（"+OFFICIAL.fetched+" 抓取；2017 年前的期別沒有 Sentinel-2 比對）。";
+    body.appendChild(n)}
+  d.refresh=()=>{if(d.open)draw()};d.addEventListener("toggle",()=>{if(d.open)draw()});draw();return d}
+
 function climatePanel(it,getPi){
   const c=CLIM&&CLIM.ranks&&CLIM.ranks[it.rank];
   const d=document.createElement("details");d.className="nl cl";
@@ -370,8 +403,8 @@ function card(it){
   el.querySelector(".im").onchange=e=>{s.improved=e.target.checked;save()};
   el.querySelector("textarea").oninput=e=>{s.note=e.target.value;save()};
   const sel=el.querySelector(".pair"); if(sel) sel.onchange=()=>{s.pair=+sel.value;const q=it.pairs[s.pair];
-    el.querySelectorAll(".imgs img").forEach(im=>im.src=q.img[im.dataset.k]);if(el._nl&&el._nl.refresh)el._nl.refresh();if(el._cl&&el._cl.refresh)el._cl.refresh();save()};
-  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);const last=ctls[ctls.length-1];el.insertBefore(el._nl,last);el._cl=climatePanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._cl,last)}
+    el.querySelectorAll(".imgs img").forEach(im=>im.src=q.img[im.dataset.k]);if(el._nl&&el._nl.refresh)el._nl.refresh();if(el._cl&&el._cl.refresh)el._cl.refresh();if(el._of&&el._of.refresh)el._of.refresh();save()};
+  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);const last=ctls[ctls.length-1];el.insertBefore(el._nl,last);el._cl=climatePanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._cl,last);el._of=officialPanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._of,last)}
   el.querySelectorAll(".imgs img").forEach(im=>im.onclick=()=>{const lb=document.getElementById("lightbox");lb.querySelector("img").src=im.src;lb.style.display="flex"});
   return el}
 const root=document.getElementById("root");
@@ -411,10 +444,26 @@ def main():
     if clim:                                   # 只嵌入覆核清單內的熱點
         keep = {str(it["rank"]) for it in a_items + base_items}
         clim["ranks"] = {r: v for r, v in clim["ranks"].items() if r in keep}
+    off = None
+    pj = REPO / "data" / "biggis_interp" / "polygons.json"
+    if pj.exists():                            # 官方衛星判釋崩塌：每個覆核熱點 1.5 km 內的多邊形（以熱點為原點的公尺座標，整數）
+        import math
+        J = json.loads(pj.read_text(encoding="utf-8"))
+        ranks = {}
+        for it in a_items + base_items:
+            lon0, lat0 = it["lon"], it["lat"]; k = math.cos(math.radians(lat0)); lst = []
+            for ei, ar, flat in J["polys"]:
+                xy = [((flat[i] - lon0) * 111320 * k, (flat[i + 1] - lat0) * 110570) for i in range(0, len(flat), 2)]
+                if min(p[0] for p in xy) > 1600 or max(p[0] for p in xy) < -1600 or min(p[1] for p in xy) > 1600 or max(p[1] for p in xy) < -1600:
+                    continue
+                lst.append([ei, [int(round(v)) for p in xy for v in p]])
+            ranks[str(it["rank"])] = lst
+        off = {"fetched": J["meta"]["fetched"], "events": [[e["date"], e["event"]] for e in J["events"]], "ranks": ranks}
     page = (HTML.replace("__A__", json.dumps(a_items, ensure_ascii=False))
                 .replace("__BASE__", json.dumps(base_items, ensure_ascii=False))
                 .replace("__INIT__", json.dumps(init, ensure_ascii=False))
-                .replace("__CLIM__", json.dumps(clim, ensure_ascii=False, separators=(",", ":"))))
+                .replace("__CLIM__", json.dumps(clim, ensure_ascii=False, separators=(",", ":")))
+                .replace("__OFF__", json.dumps(off, ensure_ascii=False, separators=(",", ":"))))
     out.write_text(page, encoding="utf-8")
     print(f"A 級 {len(a_items)} 個、對照組 {len(base_items)} 個 → {out}")
 

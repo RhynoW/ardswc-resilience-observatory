@@ -421,6 +421,18 @@
   }
   .export-btn:hover{ background:var(--ink); color:var(--paper); }
   .tier-filter .export-group{ margin-left:auto; display:flex; gap:6px; align-items:center; }
+  .ec-official{ margin-top:10px; padding:8px 10px; border-left:3px solid var(--accent); background:var(--chip-bg); font-size:12.5px; line-height:1.55; }
+  .ec-official a{ color:var(--accent-2); cursor:pointer; text-decoration:underline; }
+  .official-section{ margin:26px 0; padding:18px 20px; border:1px solid var(--line); border-top:3px solid var(--accent); background:var(--paper-raised); }
+  .official-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0; }
+  @media (max-width:900px){ .official-grid{ grid-template-columns:repeat(2,1fr); } }
+  .og-card{ border:1px solid var(--line-soft); padding:10px 12px; background:var(--paper); }
+  .og-num{ font-family:var(--font-serif); font-size:25px; font-weight:700; color:var(--accent); line-height:1.2; }
+  .og-lab{ font-weight:700; font-size:13px; margin-top:2px; }
+  .og-sub{ color:var(--muted); font-size:12px; margin-top:2px; }
+  .og-list{ margin:8px 0 0; padding-left:20px; max-width:90ch; font-size:13.5px; line-height:1.65; }
+  .og-list .og-no{ color:var(--sem-warn); }
+  .official-actions{ margin:12px 0 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .ec-export{ margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:11.5px; color:var(--muted); }
 
   .proof-section{ margin:0 0 32px; }
@@ -659,6 +671,26 @@
       </div>
     </div>
 
+    <div class="official-section" id="official-section">
+      <h3 style="margin-top:0;">官方衛星判釋——本站最重要的外部依據</h3>
+      <p class="sec-sub" style="max-width:86ch; margin-bottom:6px;">水保署 BigGIS 的「災害事件衛星影像判識成果」，是專業人員在颱風、豪雨、地震後，以衛星影像圈繪出的<strong>新增崩塌範圍</strong>
+      （<a href="https://gis.ardswc.gov.tw/" target="_blank" rel="noopener">BigGIS</a> 公開 API）。它涵蓋全台、橫跨 2013–2026 年，且<strong>獨立於本站的衛星演算法，也不取決於「有沒有人拍照」</strong>——
+      所以本站用它來<strong>驗證訊號、揭露照片通報的偏差</strong>，也是日後重做預警模型時優先採用的標籤來源。
+      <span class="og-no">⚠ 這是衛星判釋，不是現地確認；它只判釋大事件，「附近沒有官方多邊形」不等於沒有崩塌。</span></p>
+      <div class="official-grid">
+        <div class="og-card"><div class="og-num" id="og-scale">—</div><div class="og-lab">官方判釋規模</div><div class="og-sub" id="og-scale-sub">載入中…</div></div>
+        <div class="og-card"><div class="og-num" id="og-hot">—</div><div class="og-lab">熱點佐證（1 km 內）</div><div class="og-sub" id="og-hot-sub"></div></div>
+        <div class="og-card"><div class="og-num" id="og-auc">—</div><div class="og-lab">衛星變遷訊號佐證（AUC）</div><div class="og-sub" id="og-auc-sub"></div></div>
+        <div class="og-card"><div class="og-num" id="og-cov">—</div><div class="og-lab">照片通報涵蓋率</div><div class="og-sub" id="og-cov-sub"></div></div>
+      </div>
+      <ul class="og-list" id="og-list"></ul>
+      <p class="official-actions">
+        <button class="pc-goto" id="og-map">在地圖上疊出官方判釋崩塌 →</button>
+        <a class="export-btn" href="https://github.com/RhynoW/ardswc-resilience-observatory/blob/master/data/biggis_interp/VALIDATION.md" target="_blank" rel="noopener">驗證報告（完整方法、結果與限制）</a>
+        <span class="sec-sub" id="og-fetched" style="margin:0;"></span>
+      </p>
+    </div>
+
     <div class="proof-section">
       <h3>人工覆核狀態——新資料集待覆核</h3>
       <p class="sec-sub" style="max-width:80ch;">100 個熱點與影像證據已於 <strong>2026-09-22</strong> 依水保署平台即時資料全面重建，
@@ -705,12 +737,12 @@
   <!-- ── 參考資訊（2026-10-02 追加）─────────────────── -->
   <section id="tab-references" class="tabpanel">
     <h2>參考資訊——本專案引用的來源</h2>
-    <p class="sec-sub" style="max-width:82ch;">下列是本專案用到的資料、背景報導、方法文獻與工具。連結皆開在新分頁；連結整理於 2026-10-02，當時皆可連線，之後各站台若改版或下架，請以原站為準。資料授權與限制見各來源頁面。</p>
+    <p class="sec-sub" style="max-width:82ch;">下列是本專案用到的資料、背景報導、方法文獻與工具。連結皆開在新分頁；連結整理於 2026-10-02。資料授權與限制見各來源頁面。</p>
     <div class="ref-group">
       <h3>專題報導與背景資料</h3>
       <ul class="ref-list">
-        <li><a href="https://www.e-info.org.tw/node/242559" target="_blank" rel="noopener">《環境資訊中心》專訪（2025 年 11 月 25 日）：〈10 年 10 萬張歷史照片 堰塞湖、土砂災害在台灣：陳振宇用資料庫強化防災意識〉</a><span class="ref-desc">報導指出陳振宇投入台灣崩塌監測逾 20 年，並分享其推動歷史影像平台的初衷與防災經驗。</span></li>
-        <li><a href="https://cychen59.blogspot.com/p/peer-reviewed-paper-1-2014-453-20140530.html" target="_blank" rel="noopener">部落格「土石流防災－陳振宇的公職記事」</a><span class="ref-desc">水保署水土保持專業人員陳振宇的土石流與崩塌防災記事與研究文章。</span></li>
+        <li><a href="https://www.e-info.org.tw/node/242559" target="_blank" rel="noopener">《環境資訊中心》專訪（2025 年 11 月 25 日）：〈10 年 10 萬張歷史照片 堰塞湖、土砂災害在台灣：陳振宇用資料庫強化防災意識〉</a><span class="ref-desc">報導指出農業部農村發展及水土保持署減災監測組組長 陳振宇博士投入台灣崩塌監測逾 20 年，並分享其推動歷史影像平台的初衷與防災經驗。</span></li>
+        <li><a href="https://cychen59.blogspot.com/p/peer-reviewed-paper-1-2014-453-20140530.html" target="_blank" rel="noopener">部落格「土石流防災－陳振宇的公職記事」</a><span class="ref-desc">農業部農村發展及水土保持署減災監測組組長 陳振宇博士的土石流與崩塌防災記事與研究文章。</span></li>
         <li><a href="https://cychen59.blogspot.com/2026/06/" target="_blank" rel="noopener">部落格文章：堰塞湖怎麼「快速評估」？從壩體穩定到溢淹範圍的一次完整推演</a><span class="ref-desc">馬太鞍溪堰塞湖事件工具（Sentinel-1／2 事件監測）的評估流程參考。</span></li>
         <li><a href="https://cychen59.blogspot.com/2026/06/gee-smap.html" target="_blank" rel="noopener">部落格文章：以 Google Earth Engine 取得 SMAP 土壤濕度</a><span class="ref-desc">巡查清單與證據頁的降雨與土壤濕度面板（SMAP L4）取得方式參考。</span></li>
       </ul>
@@ -720,6 +752,7 @@
       <ul class="ref-list">
         <li><a href="https://photo.ardswc.gov.tw/Repository/Database" target="_blank" rel="noopener">農業部農村發展及水土保持署歷史影像平台</a><span class="ref-desc">十萬多筆照片與災害紀錄；本站的熱點、UAV 空拍樣本與大數據分析都以此為資料來源（空拍成果依各提供者的 CC-BY 標示）。</span></li>
         <li><a href="https://data.ardswc.gov.tw/Data/OpenData/Api" target="_blank" rel="noopener">農業部農村發展及水土保持署開放資料——公開 API</a><span class="ref-desc">歷史影像平台的公開 API 說明；本站的影像紀錄資料取自此 API。</span></li>
+        <li><a href="https://gis.ardswc.gov.tw/api/ardswc/eventfiles" target="_blank" rel="noopener">BigGIS「災害事件衛星影像判識成果清單」API（/api/ardswc/eventfiles）</a><span class="ref-desc">官方衛星判釋崩塌（KML／KMZ）的來源；本站用它驗證熱點與衛星變遷訊號（驗證報告見 <a href="https://github.com/RhynoW/ardswc-resilience-observatory/blob/master/data/biggis_interp/VALIDATION.md" target="_blank" rel="noopener">VALIDATION.md</a>）。這是衛星影像判釋，不是現地確認；使用條款待確認。</span></li>
         <li><a href="https://tech.ardswc.gov.tw/Results/ResultsPaper" target="_blank" rel="noopener">農業部農村發展及水土保持署技術研究發展平台</a><span class="ref-desc">水保署技術研究成果與論文。</span></li>
         <li><a href="https://gis.ardswc.gov.tw/" target="_blank" rel="noopener">BigGIS 巨量空間資訊系統</a><span class="ref-desc">水保署的空間資訊整合平台；本專案與它的分工（不重造輪子）見專案文件 §13。</span></li>
         <li><a href="https://gis.ardswc.gov.tw/competition/results/2026" target="_blank" rel="noopener">BigGIS 空間資訊創新應用競賽 2026 競賽成果</a>、<a href="https://gis.ardswc.gov.tw/competition/results/2025/" target="_blank" rel="noopener">2025 競賽成果</a><span class="ref-desc">歷屆得獎案例，作為「災害預警專家系統輔助工具」與功能取捨的參考。</span></li>
@@ -744,6 +777,21 @@
         <li><a href="https://gis.sinica.edu.tw/" target="_blank" rel="noopener">中央研究院人文社會科學研究中心 GIS 專題中心</a><span class="ref-desc">歷史地圖與底圖服務。</span></li>
         <li><a href="https://www.geologycloud.tw/" target="_blank" rel="noopener">地質資料整合查詢（地質雲）</a><span class="ref-desc">土石流潛勢溪流、山崩與地滑地質敏感區、歷史崩塌等公開圖層（實驗中與災害紀錄做空間關聯）。</span></li>
         <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/" target="_blank" rel="noopener">Rust WMTS 圖磚伺服器示範（防空疏散避難點圖層）</a><span class="ref-desc">本專案團隊的圖磚服務示範，首頁導覽的避難點圖層來源。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>日本的類似平台（他山之石）</h3>
+      <p class="sec-sub" style="margin:0 0 8px; max-width:84ch;">日本的地形與災害型態和台灣相近。以下是依公開搜尋結果整理的類似平台，<strong>尚未逐一深入檢視其內容與使用條款</strong>；搜尋結果中沒有看到結合「長期照片紀錄、複發熱點、巡查分級與人工覆核台帳」的同類網站，但這不能證明不存在。</p>
+      <ul class="ref-list">
+        <li><a href="https://www.gsi.go.jp/bousai.html" target="_blank" rel="noopener">国土地理院「防災・災害対応」</a>（例：<a href="https://www.gsi.go.jp/BOUSAI/20240101_noto_earthquake.html" target="_blank" rel="noopener">令和6年能登半島地震</a>、<a href="https://www.gsi.go.jp/BOUSAI/R6_noto_heavyrain.html" target="_blank" rel="noopener">令和6年9月20日からの大雨</a>）<span class="ref-desc"><b>做什麼：</b>災後提供空中寫真，以及依航照判釋的斜面崩壊・堆積分布圖與資料；每個事件一個頁面，成果經「地理院地圖」公開，並依使用規約標示出處。這是最接近水保署官方衛星判釋的日本做法。<br><b>對我們的啟示：</b>官方判釋應「每事件一頁、格式標準、授權與出處清楚」。本站已把水保署的官方判釋當成驗證依據並標明「衛星判釋、非現地確認」；下一步要先確認 BigGIS 的使用條款，再比照標示來源。</span></li>
+        <li><a href="https://www.mlit.go.jp/mizukokudo/sabo/saigai_sokuhou.html" target="_blank" rel="noopener">国土交通省 砂防：災害情報</a>、<a href="https://www.mlit.go.jp/mizukokudo/sabo/r7doshasaitop.html" target="_blank" rel="noopener">令和7年に発生した災害</a>、<a href="https://www.mlit.go.jp/mizukokudo/sabo/movie_library.html" target="_blank" rel="noopener">土砂災害の動画アーカイブ</a><span class="ref-desc"><b>做什麼：</b>逐年彙整土砂災害速報與事件頁，並提供影片庫。<br><b>對我們的啟示：</b>資訊以「事件」為單位組織（照片、判釋、影像放在同一個事件下）。本站目前以「地點」為單位，人工覆核頁已能依兩期影像之間的事件對照官方判釋；後續可補「事件視角」的入口。</span></li>
+        <li><a href="https://www.mlit.go.jp/common/001227722.pdf" target="_blank" rel="noopener">災害時の人工衛星活用ガイドブック 土砂災害版</a>（国土交通省砂防部與 JAXA，2018）<span class="ref-desc"><b>做什麼：</b>說明如何以 ALOS-2 等 SAR 衛星判釋土砂移動，並區分災害速報圖（變狀域）與被害區域圖（詳細判讀的推定發災域）等產品。<br><b>對我們的啟示：</b>把判釋準則與產品等級寫清楚。本站的 Sentinel-1／2 事件監測目前只標示為「候選訊號」；可仿此分成「速報」與「確認範圍」兩種產出，並公開判釋準則與誤判類型（例如雷達暗區不等於水）。</span></li>
+        <li><a href="https://www.j-shis.bosai.go.jp/landslidemap" target="_blank" rel="noopener">防災科研／J-SHIS 地すべり地形分布図</a>（<a href="https://www.j-shis.bosai.go.jp/wms-landslide" target="_blank" rel="noopener">WMS 服務</a>）與 <a href="https://www.bosai.go.jp/activity_special/data/earth-and-sand.html" target="_blank" rel="noopener">防災科研 土砂関連データ公開一覧</a><span class="ref-desc"><b>做什麼：</b>全國性的崩塌地形分布資料庫，提供地圖、Web API 與 WMS，由原本獨立的資料庫整併進 J-SHIS。<br><b>對我們的啟示：</b>靜態的崩塌地形分布可當另一個獨立的驗證與背景圖層（台灣對應山崩與地滑地質敏感區）。本站可用這次對官方判釋所做的同一套檢核——「反覆熱點是否座落其中」——再驗證一次。</span></li>
+        <li><a href="https://www.jma.go.jp/jma/kishou/books/doshamesh/index.html" target="_blank" rel="noopener">気象庁 土砂キキクル（大雨警報〔土砂災害〕の危険度分布）</a>說明<span class="ref-desc"><b>做什麼：</b>以 1 km 網格、5 級顏色顯示土砂災害危險度，約每 10 分鐘更新；依據是「土壤雨量指數」（以水槽模型估算土壤含水量），不是單看降雨量。<br><b>對我們的啟示：</b>改用土壤含水量類的指數，而不只看原始雨量：本站實驗中，3 日雨量 ≥100 mm 的警報精確率僅約 2%。本站已有 SMAP 土壤濕度面板，可進一步做水槽模型指數；呈現上也可學它「網格＋分級顏色」的直觀作法。</span></li>
+        <li><a href="https://disaportal.gsi.go.jp/hazardmapportal/hazardmap/copyright/opendata.html" target="_blank" rel="noopener">ハザードマップポータルサイト：オープンデータ配信</a>與 <a href="https://nlftp.mlit.go.jp/ksj/index.html" target="_blank" rel="noopener">国土数値情報ダウンロードサイト</a><span class="ref-desc"><b>做什麼：</b>把土砂災害警戒區域等風險圖層以開放資料提供，授權與下載方式清楚（部分為 CC BY 4.0），並可疊在地圖與照片上。<br><b>對我們的啟示：</b>整合公開圖層時，授權與出處要逐項確認並標註。本站目前的圖層授權清單還不完整，需補齊（包含 BigGIS 判釋資料）；格式上也應優先採用可下載、可疊圖的開放格式。</span></li>
+        <li><a href="https://www.saigaichousa-db-isad.jp/" target="_blank" rel="noopener">災害写真データベース</a>（消防防災科學中心）與 <a href="https://www.sabo.pref.hiroshima.lg.jp/saboarchive/saboarchivemap/index.aspx" target="_blank" rel="noopener">土砂災害ポータルひろしま：地域の砂防情報アーカイブ</a><span class="ref-desc"><b>做什麼：</b>日本的災害照片資料庫（2024 年登錄約 3,388 筆）與地圖式的過往土砂災害紀錄，與水保署歷史影像平台性質最接近。<br><b>對我們的啟示：</b>日本的照片庫僅數千筆，水保署十萬多筆是難得的資產；但本站發現照片通報有可達性偏差（官方判釋崩塌附近只有約 22% 有照片紀錄），資料庫的價值在於「與衛星與官方判釋搭配」，而不是單靠照片張數。</span></li>
+        <li><a href="https://sorabatake.jp/27822/" target="_blank" rel="noopener">Sorabatake：災害時の衛星画像や解析結果を共有する取り組み</a>與 <a href="https://sorabatake.jp/768/" target="_blank" rel="noopener">Tellus 土砂崩れ検出コンテスト</a><span class="ref-desc"><b>做什麼：</b>日本的衛星資料社群：集中分享災害衛星影像與解析結果，並舉辦以 SAR 偵測崩塌為題的競賽。<br><b>對我們的啟示：</b>把驗證資料與題目公開，能引來更多偵測方法。本站可公開「熱點×年份對官方判釋」的驗證表與評分方式，作為社群可重現、可競賽的基準。</span></li>
+        <li><a href="https://internet.watch.impress.co.jp/docs/column/chizu3/1559006.html" target="_blank" rel="noopener">INTERNET Watch：【令和6年能登半島地震】被災狀況可視化地圖資訊網站彙整</a><span class="ref-desc"><b>做什麼：</b>整理能登地震後各機關與民間提供的災害地圖網站（航照、建物受損推估、道路通行、避難所等），顯示日本是多個單位各自提供、再由媒體彙整。<br><b>對我們的啟示：</b>使用者要在許多網站間切換很不方便。本站定位是整合入口，與 BigGIS 分工、不重造輪子；把外部來源集中在這個參考資訊頁並附說明，也呼應這個需求。</span></li>
       </ul>
     </div>
     <div class="ref-group">
@@ -986,6 +1034,7 @@
             <th class="num" data-key="n_independent_events" title="同一災害的後續追蹤與重複拍攝已合併">獨立事件數</th>
             <th data-key="method">比對方法</th>
             <th class="num" data-key="change_score" title="自動篩選/排序用分數，非人工驗證結果——僅供排序，不代表災害確定性或嚴重度">自動篩選分數</th>
+            <th class="num" data-key="official_n" title="2 km 內有官方衛星判釋崩塌的事件數（BigGIS，2013–2026）；0 不代表沒有崩塌，官方只判釋大事件">官方判釋</th>
             <th data-key="tier">巡查優先級</th>
             <th>台帳</th>
           </tr>
@@ -1172,6 +1221,69 @@ function tierBadgeHtml(rank){
 // 高=值得注意（三個風險類因子：複發/變遷/地形起伏，高→紅）；資料信心的極性相反（高信心=好→綠）。
 const RISK_BAND_CLASS = { "高": "v-bad", "中": "v-warn", "低": "v-ok", "未知": "" };
 const CONF_BAND_CLASS = { "高": "v-ok", "中": "v-warn", "低": "v-bad", "未知": "" };
+// ── 官方衛星判釋（BigGIS 崩塌判釋）──────────────────────────────
+let BIGGIS = null, BIGGIS_VAL = null;
+const pc0 = x => Math.round(x * 100) + "%";
+function officialHtml(rank){
+  const s = BIGGIS && BIGGIS.hotspots && BIGGIS.hotspots[rank];
+  if(!s) return "";
+  const evs = s.top_events.slice(0, 3).map(e => `${e[0]} ${String(e[1]).replace(/^\d{8}_/, "")}（${e[2]} 公頃）`).join("；");
+  const body = s.n_ev_2km
+    ? `2 km 內有 <b>${s.n_ev_2km}</b> 個事件的官方判釋崩塌（合計約 ${s.area_ha_2km} 公頃），最近 ${s.dist_km} km。${evs}。`
+    : `2 km 內沒有官方判釋崩塌（最近 ${s.dist_km} km）。這不代表沒有崩塌——官方只判釋大事件。`;
+  return `<div class="ec-official"><b>官方衛星判釋（BigGIS）</b>：${body} <a onclick="showBiggisOnMap(${rank})">在地圖上看 →</a>
+    <span style="color:var(--muted);">（衛星判釋，非現地確認）</span></div>`;
+}
+function renderOfficialSection(){
+  const v = BIGGIS_VAL, $ = id => document.getElementById(id);
+  $("og-map").onclick = () => showBiggisOnMap();
+  if(!v){ $("og-scale-sub").textContent = "（讀不到驗證摘要）"; return; }
+  $("og-scale").textContent = v.n_polygons.toLocaleString();
+  $("og-scale-sub").textContent = `${v.n_events} 個事件、${v.n_files} 個判釋檔（2013–2026）`;
+  $("og-hot").textContent = pc0(v.A.top.share);
+  $("og-hot-sub").textContent = `隨機災害紀錄點 ${pc0(v.A.random_reports.share)}、隨機山區點 ${pc0(v.A.mountain.share)}`;
+  $("og-auc").textContent = v.B2.auc_pooled.toFixed(2);
+  $("og-auc-sub").textContent = `同熱點內比較 ${v.B2.auc_within_site_mean.toFixed(2)}（${v.B2.n_pairs} 筆熱點×年份）`;
+  $("og-cov").textContent = pc0(v.D.share);
+  $("og-cov-sub").textContent = "官方判釋崩塌附近有任何照片紀錄的比例";
+  $("og-fetched").textContent = `官方資料抓取日 ${v.fetched}`;
+  const f = v.A.fisher, li = [];
+  li.push(["熱點佐證", `top100 反覆熱點有 ${pc0(v.A.top.share)}（95% 區間 ${pc0(v.A.top.ci95[0])}–${pc0(v.A.top.ci95[1])}）座落在官方判釋崩塌 1 km 內，隨機災害紀錄點 ${pc0(v.A.random_reports.share)}、隨機山區點 ${pc0(v.A.mountain.share)}（勝算比 ${f["vs 隨機災害紀錄點"].odds_ratio}／${f["vs 隨機山區點"].odds_ratio}，p<0.001）——支持「反覆熱點是真實的崩塌敏感處」。`]);
+  li.push(["衛星訊號佐證", `在 ${v.B2.n_pairs} 筆「熱點×相鄰年份」中，官方判釋崩塌出現的期間，Sentinel-2 變遷量明顯較高：AUC ${v.B2.auc_pooled}（95% 區間 ${v.B2.auc_pooled_ci95_site_bootstrap[0]}–${v.B2.auc_pooled_ci95_site_bootstrap[1]}）；排除地點差異後，同一熱點內平均 AUC ${v.B2.auc_within_site_mean}（置換檢定 p=${v.B2.within_site_perm_p}）。官方標籤有漏報，實際鑑別力可能更高。`]);
+  li.push(["照片偏差", `官方判釋崩塌多邊形中，事件後 60 天、2 km 內有任何照片紀錄的只有 ${pc0(v.D.share)}——照片通報只捕捉約五分之一，且偏向道路可達處，這是本站改以官方判釋當驗證依據的原因。`]);
+  li.push(["尚未獲得支持", `熱點的「複發性」與附近官方判釋事件數沒有顯著相關（ρ=${v.recurrence_rho.spearman_rho}，p=${v.recurrence_rho.p}）：官方只判釋 ${v.n_events} 個大事件，無法檢驗「每年反覆」；巡查優先級 A–D 也尚未被官方判釋獨立驗證，需逐事件、同時間的比較。`]);
+  const ul = $("og-list"); ul.replaceChildren();
+  li.forEach(([k, t], i) => { const e = document.createElement("li"); if(i === 3) e.className = "og-no"; const b = document.createElement("b"); b.textContent = k + "："; e.append(b, t); ul.append(e); });
+}
+// 官方判釋疊圖：延遲載入（約 2.3 MB），依事件年份上色
+let biggisLoaded = false;
+function makeBiggisLayer(){
+  const g = L.layerGroup(), rend = L.canvas({ padding: 0.5 });
+  if(!biggisLoaded){
+    biggisLoaded = true;
+    fetch("/static/biggis_interp.json").then(r => r.json()).then(J => {
+      const yr = i => +J.events[i].date.slice(0, 4);
+      J.polys.forEach(([ei, ha, flat]) => {
+        const ll = []; for(let i = 0; i < flat.length; i += 2) ll.push([flat[i + 1], flat[i]]);
+        const y = yr(ei), col = `hsl(${Math.round(250 - 250 * (y - 2013) / 13)},85%,45%)`;
+        const ev = J.events[ei];
+        L.polygon(ll, { renderer: rend, color: col, weight: 1, fillColor: col, fillOpacity: 0.35 })
+          .bindPopup(`<b>官方衛星判釋崩塌</b>（BigGIS，非現地確認）<br>${ev.date} ${String(ev.event).replace(/^\d{8}_/, "")}<br>約 ${ha} 公頃<br><span style="font-size:11px;">${ev.dis}</span>`).addTo(g);
+      });
+    }).catch(() => { biggisLoaded = false; });
+  }
+  return g;
+}
+function showBiggisOnMap(rank){
+  switchTab("dashboard");
+  setTimeout(() => {
+    const cb = document.querySelector('input[data-key="biggis"]');
+    if(cb && !cb.checked) cb.click();
+    const h = rank != null ? HOTSPOTS.find(x => x.rank === rank) : null;
+    if(h && map) map.setView([h.lat, h.lon], 14);
+  }, 120);
+}
+
 function renderEvidenceCard(rank){
   const slot = document.getElementById("evidence-card-slot");
   const p = PRIORITY_BY_RANK[rank];
@@ -1192,6 +1304,7 @@ function renderEvidenceCard(rank){
         <div class="ec-factor"><div class="ec-flabel">地形起伏（0.3km 內）</div><div class="ec-fvalue">${relief}</div><div class="ec-fband ${RISK_BAND_CLASS[f.terrain_relief_m.band]}">${f.terrain_relief_m.band}</div></div>
         <div class="ec-factor"><div class="ec-flabel">資料信心</div><div class="ec-fvalue" style="font-size:12px;">${confSourceLabel}</div><div class="ec-fband ${CONF_BAND_CLASS[f.confidence.band]}">${f.confidence.band}</div></div>
       </div>
+      ${officialHtml(rank)}
       <div class="ec-export">
         <a class="export-btn" href="/api/hotspots/${rank}/summary" download>📄 匯出巡查摘要（Markdown）</a>
         <span>含位置、證據、分級理由、建議現勘確認事項、現勘回饋欄與資料版本</span>
@@ -1294,6 +1407,7 @@ document.querySelectorAll("nav.tabs button").forEach(btn=>{
 function handleDeepLink(){
   const view = new URLSearchParams(location.search).get("view");
   if(view === "references"){ switchTab("references"); return; }
+  if(view === "biggis"){ showBiggisOnMap(); return; }
   if(view === "categories"){
     switchTab("dashboard");
     document.getElementById("ext-categories").open = true;
@@ -1337,6 +1451,7 @@ let histYear = "100";
 
 // 疊圖（透明，可複選）。zIndex 需高於底圖，理由同等高線圖層。
 const OVERLAY_DEFS = [
+  { key:"biggis", label:"🟥 官方衛星判釋崩塌（BigGIS，2013–2026；顏色＝年份，藍舊紅新）", make: () => makeBiggisLayer() },
   { key:"nlsc_contour", label:"🏔️ 等高線（國土測繪中心，z10+）", make: ()=> L.tileLayer.wms(NLSC_WMS, { layers:"MOI_CONTOUR_2", format:"image/png", transparent:true, minZoom:10, maxZoom:20, zIndex:640, attribution:NLSC_ATTR }) },
   { key:"nlsc_slope", label:"⛰️ 坡度分級", make: ()=> L.tileLayer.wms(NLSC_WMS, { layers:"MOI_SLOPEP_LV7_2", format:"image/png", transparent:true, opacity:0.6, maxZoom:20, zIndex:641, attribution:NLSC_ATTR }) },
   { key:"nlsc_liq", label:"🌊 土壤液化潛勢", make: ()=> L.tileLayer(NLSC_WMTS + "/SoilLiquefaction2/default/GoogleMapsCompatible/{z}/{y}/{x}", { minZoom:6, maxZoom:20, maxNativeZoom:18, opacity:0.5, zIndex:642, attribution:NLSC_ATTR }) },
@@ -1921,7 +2036,7 @@ function initOverlayToggles(panel){
   OVERLAY_DEFS.forEach(def=>{
     const label = document.createElement("label");
     const cb = document.createElement("input");
-    cb.type = "checkbox";
+    cb.type = "checkbox"; cb.dataset.key = def.key;
     cb.onchange = () => {
       if(cb.checked){
         overlayObjs[def.key] = overlayObjs[def.key] || def.make();
@@ -2342,6 +2457,7 @@ function renderHotspotsTable(){
       <td class="num">${h.n_independent_events ?? h.n_distinct_years ?? "—"}</td>
       <td>${methodLabel(h.method)}</td>
       <td class="num"><span class="score-cell"><span class="score-track"><span class="score-fill" style="width:${scorePct}%"></span></span>${h.change_score != null ? h.change_score.toFixed(3) : "—"}</span></td>
+      <td class="num">${h.official_n == null ? "—" : `${h.official_n} 件<span style="font-size:11px; color:var(--muted);"> · ${BIGGIS.hotspots[h.rank].dist_km} km</span>`}</td>
       <td>${tierBadgeHtml(h.rank)}</td>
       <td>${l ? `<span class="verdict ${VERDICT_LABEL_CLASS[l.verdict]}">${l.verdict_label}</span>` : '<span class="no-verdict">尚未人工覆核</span>'}</td>
     `;
@@ -2641,6 +2757,10 @@ async function init(){
   [HOTSPOTS, LEDGER, priority] = await Promise.all([api("/api/hotspots"), api("/api/ledger"), api("/api/priority")]);
   LEDGER_BY_RANK = Object.fromEntries(LEDGER.map(l=>[l.rank, l]));
   PRIORITY_BY_RANK = Object.fromEntries(priority.items.map(p=>[p.rank, p]));
+  try{ BIGGIS = await (await fetch("/static/biggis_hotspot_support.json")).json(); }catch(e){ BIGGIS = null; }
+  try{ BIGGIS_VAL = await (await fetch("/static/biggis_validation.json")).json(); }catch(e){ BIGGIS_VAL = null; }
+  HOTSPOTS.forEach(x => { x.official_n = BIGGIS && BIGGIS.hotspots[x.rank] ? BIGGIS.hotspots[x.rank].n_ev_2km : null; });
+  renderOfficialSection();
   renderStats();
   renderMap();
   renderHotspotsTable();

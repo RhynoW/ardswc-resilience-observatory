@@ -67,3 +67,5 @@ Sentinel-2（Sentinel Hub WMTS 512 圖磚、10 m、每年一期，`scripts/s2_ve
 Google／ESRI／Bing／OSM／Apple（選配）／內政部國土測繪中心 1/50000 地形圖與航照正射
 影像；地形資料 © 內政部地政司 2025年版全臺灣20公尺網格DTM（政府資料開放授權條款第1版；無本地檔時備援為 Cesium World Terrain，非商用）；原始事件資料來自農業部農村發展及
 水土保持署 ARDSWC 影像平台公開 API；衛星影像 © Copernicus Sentinel-2（Copernicus Data Space Ecosystem）。
+
+> **官方衛星判釋驗證（2026-10-02）**：以水保署 BigGIS 公開的災後衛星崩塌判釋（13,905 個多邊形）檢核——熱點 66% 在判釋崩塌 1 km 內（隨機 41–45%）、衛星變遷量與官方判釋期間一致（AUC 0.69）；但複發性排序與 A–D 優先級尚未獲獨立驗證。報告：`data/biggis_interp/VALIDATION.md`；官方判釋是衛星判釋、非現地確認。

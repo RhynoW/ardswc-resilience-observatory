@@ -1,0 +1,307 @@
+{
+ "generated": "2026-10-02",
+ "source_meta": {
+  "source": "https://gis.ardswc.gov.tw/api/ardswc/eventfiles",
+  "fetched": "2026-10-02",
+  "n_files": 77,
+  "n_polygons": 13905,
+  "n_failed": 0,
+  "note": "BigGIS 災害事件衛星影像判釋成果（崩塌判釋 KML/KMZ）；官方衛星判釋，非現地確認；同事件多檔可能重疊；僅外環；使用條款待確認。",
+  "attribution": "農業部農村發展及水土保持署 BigGIS 巨量空間資訊系統（gis.ardswc.gov.tw）"
+ },
+ "A_hotspots": {
+  "n_events": 69,
+  "n_polygons": 13901,
+  "groups": {
+   "top100 反覆熱點": {
+    "within_0.5km": {
+     "share": 0.46,
+     "ci95": [
+      0.366,
+      0.557
+     ]
+    },
+    "within_1km": {
+     "share": 0.66,
+     "ci95": [
+      0.563,
+      0.745
+     ]
+    },
+    "within_2km": {
+     "share": 0.89,
+     "ci95": [
+      0.814,
+      0.937
+     ]
+    },
+    "median_km": 0.57
+   },
+   "隨機災害紀錄點(600)": {
+    "within_0.5km": {
+     "share": 0.285,
+     "ci95": [
+      0.25,
+      0.322
+     ]
+    },
+    "within_1km": {
+     "share": 0.452,
+     "ci95": [
+      0.412,
+      0.492
+     ]
+    },
+    "within_2km": {
+     "share": 0.642,
+     "ci95": [
+      0.603,
+      0.679
+     ]
+    },
+    "median_km": 1.23
+   },
+   "隨機山區點 DTM>300 m(600)": {
+    "within_0.5km": {
+     "share": 0.182,
+     "ci95": [
+      0.153,
+      0.215
+     ]
+    },
+    "within_1km": {
+     "share": 0.407,
+     "ci95": [
+      0.368,
+      0.446
+     ]
+    },
+    "within_2km": {
+     "share": 0.668,
+     "ci95": [
+      0.63,
+      0.705
+     ]
+    },
+    "median_km": 1.29
+   }
+  },
+  "fisher_1km": {
+   "vs 隨機災害紀錄點": {
+    "odds_ratio": 2.36,
+    "p": 0.00014
+   },
+   "vs 隨機山區點": {
+    "odds_ratio": 2.83,
+    "p": 3.7e-06
+   }
+  },
+  "recurrence_vs_official_events_2km": {
+   "spearman_rho": -0.147,
+   "p": 0.14
+  }
+ },
+ "B_scores": {
+  "label": "100 個熱點是否在官方判釋崩塌 1 km 內",
+  "n_pos": 66,
+  "auc_change_score": 0.451,
+  "n_with_change_score": 100,
+  "by_tier": {
+   "A": {
+    "n": 31,
+    "within_1km": 0.645,
+    "within_2km": 0.871,
+    "mean_official_events_2km": 3.1
+   },
+   "B": {
+    "n": 37,
+    "within_1km": 0.622,
+    "within_2km": 0.946,
+    "mean_official_events_2km": 2.84
+   },
+   "C": {
+    "n": 29,
+    "within_1km": 0.724,
+    "within_2km": 0.828,
+    "mean_official_events_2km": 2.17
+   },
+   "D": {
+    "n": 3,
+    "within_1km": 0.667,
+    "within_2km": 1.0,
+    "mean_official_events_2km": 2.33
+   }
+  },
+  "A_vs_rest_fisher": {
+   "odds_ratio": 0.91,
+   "p": 0.82
+  },
+  "B2_time_aligned": {
+   "design": "每個熱點每一對相鄰年份（Sentinel-2 乾季影像）為一筆；正例＝該期間內有官方判釋崩塌與熱點 1.5 km 方框相交；預測量＝整體變遷比例（overall_change_fraction）",
+   "n_pairs": 892,
+   "n_pos": 96,
+   "auc_pooled": 0.693,
+   "auc_pooled_ci95_site_bootstrap": [
+    0.633,
+    0.749
+   ],
+   "auc_within_site_mean": 0.783,
+   "n_sites_with_both": 57,
+   "within_site_perm_p": 0.001,
+   "share_positive_top_tertile_ocf": 0.194,
+   "share_positive_rest": 0.064,
+   "auc_by_ssim": 0.707
+  }
+ },
+ "C_event_watch": [
+  {
+   "name": "caoling_2025",
+   "event": "2025-07-05",
+   "aoi_half_km": 5.0,
+   "official_events_in_aoi": [
+    {
+     "date": "2025-07-06",
+     "event": "20250706_丹娜絲颱風、薇帕颱風暨0721豪雨",
+     "n_polygons": 12,
+     "area_ha": 44.3,
+     "largest_ha": 28.0
+    }
+   ],
+   "our_optical_loss_ha": 134.1,
+   "our_loss_clusters": [
+    {
+     "area_ha": 40.3,
+     "lon": 120.6718,
+     "lat": 23.5822
+    }
+   ]
+  },
+  {
+   "name": "mataian_2025",
+   "event": "2025-07-20",
+   "aoi_half_km": 15.0,
+   "official_events_in_aoi": [
+    {
+     "date": "2025-07-06",
+     "event": "20250706_丹娜絲颱風、薇帕颱風暨0721豪雨",
+     "n_polygons": 1,
+     "area_ha": 717.4,
+     "largest_ha": 717.4
+    },
+    {
+     "date": "2025-07-28",
+     "event": "20250728_豪雨",
+     "n_polygons": 3,
+     "area_ha": 0.9,
+     "largest_ha": 0.4
+    },
+    {
+     "date": "2025-08-12",
+     "event": "20250812_楊柳颱風",
+     "n_polygons": 2,
+     "area_ha": 0.5,
+     "largest_ha": 0.4
+    },
+    {
+     "date": "2025-09-22",
+     "event": "20250922_樺加沙颱風",
+     "n_polygons": 14,
+     "area_ha": 6.6,
+     "largest_ha": 1.4
+    }
+   ],
+   "our_optical_loss_ha": 845.6,
+   "our_loss_clusters": [
+    {
+     "area_ha": 585.8,
+     "lon": 121.3021,
+     "lat": 23.7033
+    }
+   ]
+  }
+ ],
+ "D_report_coverage": {
+  "method": "事件日 −3～+60 天、2 km 內有任一筆照片紀錄（災害事件＋媒體報導）",
+  "overall": {
+   "covered": 2994,
+   "total": 13901,
+   "share": 0.215,
+   "ci95": [
+    0.209,
+    0.222
+   ]
+  },
+  "by_year": {
+   "2013": {
+    "covered": 38,
+    "total": 206,
+    "share": 0.184
+   },
+   "2014": {
+    "covered": 0,
+    "total": 56,
+    "share": 0.0
+   },
+   "2015": {
+    "covered": 97,
+    "total": 340,
+    "share": 0.285
+   },
+   "2016": {
+    "covered": 6,
+    "total": 79,
+    "share": 0.076
+   },
+   "2017": {
+    "covered": 42,
+    "total": 154,
+    "share": 0.273
+   },
+   "2018": {
+    "covered": 4,
+    "total": 45,
+    "share": 0.089
+   },
+   "2019": {
+    "covered": 3,
+    "total": 121,
+    "share": 0.025
+   },
+   "2020": {
+    "covered": 0,
+    "total": 16,
+    "share": 0.0
+   },
+   "2021": {
+    "covered": 28,
+    "total": 199,
+    "share": 0.141
+   },
+   "2022": {
+    "covered": 36,
+    "total": 123,
+    "share": 0.293
+   },
+   "2023": {
+    "covered": 634,
+    "total": 1704,
+    "share": 0.372
+   },
+   "2024": {
+    "covered": 1832,
+    "total": 9291,
+    "share": 0.197
+   },
+   "2025": {
+    "covered": 187,
+    "total": 1280,
+    "share": 0.146
+   },
+   "2026": {
+    "covered": 87,
+    "total": 287,
+    "share": 0.303
+   }
+  }
+ }
+}
