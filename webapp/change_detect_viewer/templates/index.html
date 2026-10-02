@@ -99,6 +99,11 @@
   h2{ font-family:var(--font-serif); font-size:23px; font-weight:700; margin:0 0 6px; }
   h3{ font-size:16px; margin:0 0 10px; }
   .sec-sub{ color:var(--muted); margin:0 0 22px; max-width:70ch; }
+  .ref-group{ margin:0 0 22px; max-width:90ch; }
+  .ref-list{ list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+  .ref-list li{ padding:9px 2px; border-bottom:1px solid var(--line-soft); }
+  .ref-list a{ color:var(--accent-2); font-weight:600; }
+  .ref-desc{ display:block; color:var(--muted); font-size:13.5px; margin-top:2px; }
 
   .statgrid{ display:grid; grid-template-columns:repeat(5,1fr); border:1px solid var(--line); margin-bottom:20px; }
   @media (max-width:780px){ .statgrid{ grid-template-columns:repeat(2,1fr); } }
@@ -606,8 +611,9 @@
   </div>
   <nav class="tabs">
     <button data-tab="guide" class="active">決策首頁</button>
-    <button data-tab="hotspots">巡查清單與證據</button>
-    <button data-tab="dashboard">空間分析平台</button>
+    <button data-tab="hotspots">巡查清單</button>
+    <button data-tab="dashboard">空間分析</button>
+    <button data-tab="references">參考資訊</button>
   </nav>
   <div class="hdr-right">
     <a class="review-link" href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
@@ -688,7 +694,7 @@
       <div class="explore-links">
         <button class="explore-link" data-tab="hotspots">📋 巡查清單：100 熱點優先級排序與匯出</button>
         <button class="explore-link" data-tab="ledger">🔍 證據與驗證：量化驗證＋人工覆核台帳</button>
-        <button class="explore-link" data-tab="dashboard">🛰️ 空間分析平台：衛星影像變遷偵測・國土測繪中心／中研院底圖・20 m DTM・UAV 自動套合・Cesium 3D</button>
+        <button class="explore-link" data-tab="dashboard">🛰️ 空間分析：衛星影像變遷偵測・國土測繪中心／中研院底圖・20 m DTM・UAV 自動套合・Cesium 3D</button>
       </div>
       <p class="guide-note">⚠ 即時線上擷取（任意座標的 Esri Wayback 歷史影像比對）與 3D 立體檢視為輔助探索工具，
         依賴外部服務即時狀況；正式展示以上方已驗證的巡查優先級與三個案例為準——即時功能是否可用可查右上角「系統狀態」。</p>
@@ -696,8 +702,72 @@
   </section>
 
   <!-- ── 首頁 ───────────────────────────── -->
+  <!-- ── 參考資訊（2026-10-02 追加）─────────────────── -->
+  <section id="tab-references" class="tabpanel">
+    <h2>參考資訊——本專案引用的來源</h2>
+    <p class="sec-sub" style="max-width:82ch;">下列是本專案用到的資料、背景報導、方法文獻與工具。連結皆開在新分頁；連結整理於 2026-10-02，當時皆可連線，之後各站台若改版或下架，請以原站為準。資料授權與限制見各來源頁面。</p>
+    <div class="ref-group">
+      <h3>專題報導與背景資料</h3>
+      <ul class="ref-list">
+        <li><a href="https://www.e-info.org.tw/node/242559" target="_blank" rel="noopener">《環境資訊中心》專訪（2025 年 11 月 25 日）：〈10 年 10 萬張歷史照片 堰塞湖、土砂災害在台灣：陳振宇用資料庫強化防災意識〉</a><span class="ref-desc">報導指出陳振宇投入台灣崩塌監測逾 20 年，並分享其推動歷史影像平台的初衷與防災經驗。</span></li>
+        <li><a href="https://cychen59.blogspot.com/p/peer-reviewed-paper-1-2014-453-20140530.html" target="_blank" rel="noopener">部落格「土石流防災－陳振宇的公職記事」</a><span class="ref-desc">水保署水土保持專業人員陳振宇的土石流與崩塌防災記事與研究文章。</span></li>
+        <li><a href="https://cychen59.blogspot.com/2026/06/" target="_blank" rel="noopener">部落格文章：堰塞湖怎麼「快速評估」？從壩體穩定到溢淹範圍的一次完整推演</a><span class="ref-desc">馬太鞍溪堰塞湖事件工具（Sentinel-1／2 事件監測）的評估流程參考。</span></li>
+        <li><a href="https://cychen59.blogspot.com/2026/06/gee-smap.html" target="_blank" rel="noopener">部落格文章：以 Google Earth Engine 取得 SMAP 土壤濕度</a><span class="ref-desc">巡查清單與證據頁的降雨與土壤濕度面板（SMAP L4）取得方式參考。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>水保署資料與平台</h3>
+      <ul class="ref-list">
+        <li><a href="https://photo.ardswc.gov.tw/Repository/Database" target="_blank" rel="noopener">農業部農村發展及水土保持署歷史影像平台</a><span class="ref-desc">十萬多筆照片與災害紀錄；本站的熱點、UAV 空拍樣本與大數據分析都以此為資料來源（空拍成果依各提供者的 CC-BY 標示）。</span></li>
+        <li><a href="https://data.ardswc.gov.tw/Data/OpenData/Api" target="_blank" rel="noopener">農業部農村發展及水土保持署開放資料——公開 API</a><span class="ref-desc">歷史影像平台的公開 API 說明；本站的影像紀錄資料取自此 API。</span></li>
+        <li><a href="https://tech.ardswc.gov.tw/Results/ResultsPaper" target="_blank" rel="noopener">農業部農村發展及水土保持署技術研究發展平台</a><span class="ref-desc">水保署技術研究成果與論文。</span></li>
+        <li><a href="https://gis.ardswc.gov.tw/" target="_blank" rel="noopener">BigGIS 巨量空間資訊系統</a><span class="ref-desc">水保署的空間資訊整合平台；本專案與它的分工（不重造輪子）見專案文件 §13。</span></li>
+        <li><a href="https://gis.ardswc.gov.tw/competition/results/2026" target="_blank" rel="noopener">BigGIS 空間資訊創新應用競賽 2026 競賽成果</a>、<a href="https://gis.ardswc.gov.tw/competition/results/2025/" target="_blank" rel="noopener">2025 競賽成果</a><span class="ref-desc">歷屆得獎案例，作為「災害預警專家系統輔助工具」與功能取捨的參考。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>衛星、氣象與人口資料（Google Earth Engine 資料集）</h3>
+      <ul class="ref-list">
+        <li><a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED" target="_blank" rel="noopener">Sentinel-2 地表反射率（COPERNICUS/S2_SR_HARMONIZED）</a>、<a href="https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED" target="_blank" rel="noopener">Cloud Score+</a><span class="ref-desc">年度比對、dNBR／NDWI 與雲遮罩。Copernicus Sentinel 資料（歐洲太空總署）。</span></li>
+        <li><a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD" target="_blank" rel="noopener">Sentinel-1 GRD（COPERNICUS/S1_GRD）</a><span class="ref-desc">雷達變遷偵測（堰塞湖事件監測）。</span></li>
+        <li><a href="https://developers.google.com/earth-engine/datasets/catalog/NASA_GPM_L3_IMERG_V07" target="_blank" rel="noopener">NASA GPM IMERG V07</a>、<a href="https://developers.google.com/earth-engine/datasets/catalog/NASA_SMAP_SPL4SMGP_007" target="_blank" rel="noopener">NASA SMAP L4 SPL4SMGP</a><span class="ref-desc">降雨與根系層土壤濕度（雨量門檻、case-crossover、人工覆核頁面板）。</span></li>
+        <li><a href="https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003" target="_blank" rel="noopener">SRTM 30 m 數值高程</a><span class="ref-desc">雷達變遷的坡度遮罩。</span></li>
+        <li><a href="https://ghsl.jrc.ec.europa.eu/" target="_blank" rel="noopener">Global Human Settlement Layer（GHSL）</a><span class="ref-desc">建成區比例，作為曝險代理變數（控制「道路與人口多的地方拍得多」的偏差）。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>底圖、地形與公開圖資</h3>
+      <ul class="ref-list">
+        <li><a href="https://data.gov.tw/" target="_blank" rel="noopener">政府資料開放平臺：內政部地政司 2025 年版全臺灣 20 公尺網格數值地形模型（DTM）</a><span class="ref-desc">政府資料開放授權條款第 1 版；UAV 地形糾正與 3D 檢視使用。</span></li>
+        <li><a href="https://maps.nlsc.gov.tw/" target="_blank" rel="noopener">內政部國土測繪中心：國土測繪圖資服務雲</a><span class="ref-desc">通用版正射影像、1/5000 相片基本圖（年度圖層）與 WMTS／WMS 服務。</span></li>
+        <li><a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank" rel="noopener">Esri World Imagery</a>、<a href="https://livingatlas.arcgis.com/wayback/" target="_blank" rel="noopener">Esri Wayback</a><span class="ref-desc">高解析度底圖與歷史影像版本（Esri、Maxar、Earthstar Geographics）。</span></li>
+        <li><a href="https://gis.sinica.edu.tw/" target="_blank" rel="noopener">中央研究院人文社會科學研究中心 GIS 專題中心</a><span class="ref-desc">歷史地圖與底圖服務。</span></li>
+        <li><a href="https://www.geologycloud.tw/" target="_blank" rel="noopener">地質資料整合查詢（地質雲）</a><span class="ref-desc">土石流潛勢溪流、山崩與地滑地質敏感區、歷史崩塌等公開圖層（實驗中與災害紀錄做空間關聯）。</span></li>
+        <li><a href="https://rhynowu-rust-wmts-server-demo.hf.space/" target="_blank" rel="noopener">Rust WMTS 圖磚伺服器示範（防空疏散避難點圖層）</a><span class="ref-desc">本專案團隊的圖磚服務示範，首頁導覽的避難點圖層來源。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>方法與開源工具</h3>
+      <ul class="ref-list">
+        <li><a href="https://zju3dv.github.io/loftr/" target="_blank" rel="noopener">LoFTR：Detector-Free Local Feature Matching with Transformers</a>（Sun et al., CVPR 2021）與 <a href="https://kornia.github.io/" target="_blank" rel="noopener">Kornia</a><span class="ref-desc">UAV 影像與底圖／合成斜視圖的特徵匹配。</span></li>
+        <li><a href="https://opencv.org/" target="_blank" rel="noopener">OpenCV</a><span class="ref-desc">MAGSAC 單應矩陣、PnP、相機姿態解算與影像重採樣。</span></li>
+        <li>空間統計原始文獻：Moran (1950) <i>Biometrika</i> 37:17–23；Getis &amp; Ord (1992) <i>Geographical Analysis</i> 24(3):189–206；Anselin (1995) LISA，<i>Geographical Analysis</i> 27(2):93–115；Mann (1945) <i>Econometrica</i> 13:245–259<span class="ref-desc">空間分析頁的 Moran's I、Getis-Ord Gi*、局部 Moran（LISA）與 Mann-Kendall 趨勢檢定。</span></li>
+        <li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html" target="_blank" rel="noopener">scikit-learn：DBSCAN</a><span class="ref-desc">事件點的密度集群。</span></li>
+        <li><a href="https://cesium.com/platform/cesiumjs/" target="_blank" rel="noopener">CesiumJS</a>、<a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a>、<a href="https://github.com/kazuhikoarase/qrcode-generator" target="_blank" rel="noopener">qrcode-generator（MIT）</a><span class="ref-desc">3D 檢視、地圖與 QR Code。</span></li>
+        <li><a href="https://react-aria.adobe.com/" target="_blank" rel="noopener">Adobe React Aria</a><span class="ref-desc">無障礙版入口頁的設計參考（鍵盤焦點、語意結構、強制色彩模式等做法；未使用其程式庫）。</span></li>
+      </ul>
+    </div>
+    <div class="ref-group">
+      <h3>本專案</h3>
+      <ul class="ref-list">
+        <li><a href="https://github.com/RhynoW/ardswc-resilience-observatory" target="_blank" rel="noopener">GitHub：RhynoW/ardswc-resilience-observatory</a><span class="ref-desc">原始碼、資料處理腳本與專案文件（ARCHITECTURE.md）。</span></li>
+        <li>隊伍 TASTI_SatDashboard（OSSInt 2026 黑客松）<span class="ref-desc">本站為決策輔助原型：候選排序與證據鏈，需人工覆核，非災害確定性判定。</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section id="tab-dashboard" class="tabpanel">
-    <h2>空間分析平台——巡查決策背後的技術底座</h2>
+    <h2>空間分析——巡查決策背後的技術底座</h2>
     <p class="sec-sub" style="max-width:82ch;">巡查優先級所用的影像證據、地形與底圖，都來自以下五個模組。巡查清單與證據本身完全離線可用、
       不依賴本頁；本頁部分功能需要外部服務（Esri Wayback、Sentinel Hub、圖磚服務、CesiumJS CDN），可用性見右上角「系統狀態」。</p>
 
@@ -1223,6 +1293,7 @@ document.querySelectorAll("nav.tabs button").forEach(btn=>{
 // 不需要口頭說明「請點哪個分頁」。純前端路由，不影響一般網址正常開啟行為。
 function handleDeepLink(){
   const view = new URLSearchParams(location.search).get("view");
+  if(view === "references"){ switchTab("references"); return; }
   if(view === "categories"){
     switchTab("dashboard");
     document.getElementById("ext-categories").open = true;
@@ -2145,7 +2216,7 @@ function renderPriorityTiers(){
   const counts = { A: 0, B: 0, C: 0, D: 0 };
   for(const p of items) if(counts[p.tier] !== undefined) counts[p.tier]++;
   wrap.innerHTML = ["A","B","C","D"].map(t => `
-    <div class="pc-tier pt-${t}" data-tier="${t}" role="link" tabindex="0" title="前往「巡查清單與證據」，只顯示 ${t} 級">
+    <div class="pc-tier pt-${t}" data-tier="${t}" role="link" tabindex="0" title="前往「巡查清單」，只顯示 ${t} 級">
       <div class="pt-n">${counts[t]}</div>
       <div class="pt-label">${t} 級・${TIER_ACTION[t]}</div>
       <div class="pt-desc">${PC_TIER_DESC[t]}</div>

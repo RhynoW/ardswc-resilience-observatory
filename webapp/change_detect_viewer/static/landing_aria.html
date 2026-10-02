@@ -124,6 +124,7 @@
         <li><a href="#shelter">避難點圖層</a></li>
         <li><a href="#status">目前狀態</a></li>
         <li><a href="/analytics">大數據分析</a></li>
+        <li><a href="/?view=references">參考資訊</a></li>
         <li><a href="/">原版首頁</a></li>
       </ul>
     </nav>
@@ -147,7 +148,7 @@
     <section id="why" aria-labelledby="why-h">
       <h2 id="why-h">為什麼需要這個系統</h2>
       <div class="story">
-        <p>水保署有一個公開的「歷史影像平台」，收藏了十萬多筆照片和災害紀錄。這些紀錄很珍貴，但太多了，一個人看不完。</p>
+        <p>水保署有一個公開的「<a href="https://photo.ardswc.gov.tw/Repository/Database" target="_blank" rel="noopener">歷史影像平台<span class="vh">（農業部農村發展及水土保持署，在新分頁開啟）</span></a>」，收藏了十萬多筆照片和災害紀錄。這些紀錄很珍貴，但太多了，一個人看不完。本站的影像紀錄資料取自該平台的<a href="https://data.ardswc.gov.tw/Data/OpenData/Api" target="_blank" rel="noopener">公開 API<span class="vh">（農業部農村發展及水土保持署開放資料，在新分頁開啟）</span></a>。</p>
         <p>我們觀察到：<strong>有些地方會一再出事</strong>，例如同一面山坡幾年後又崩一次。如果能先找出這些「反覆出事的地方」，再用衛星照片看看最近有沒有新變化，巡查人員就能把時間花在最有可能需要處理的地方。</p>
         <p>衛星每幾天就會重新拍一次同一個地方，而且是免費公開的。把兩次拍的照片放在一起比較，就能發現「這裡以前是樹林，現在變成裸露的土」。</p>
       </div>
@@ -251,9 +252,10 @@
     <section id="tools" aria-labelledby="tools-h">
       <h2 id="tools-h">可以使用的工具</h2>
       <ul class="grid">
-        <li><div class="card"><a class="stretch" href="/">巡查清單與證據</a><p>100 個熱點的清單、每一級的理由、逐年衛星照片比對，可以下載成表格。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/">巡查清單</a><p>100 個熱點的清單、每一級的理由、逐年衛星照片比對，可以下載成表格。</p></div></li>
         <li><div class="card"><a class="stretch" href="/review">人工覆核工作單</a><p>給覆核的人用：比對老照片與衛星照片、看兩次拍照之間的雨量和土壤濕度。</p></div></li>
         <li><div class="card"><a class="stretch" href="/analytics">歷史影像大數據分析</a><p>10 萬筆照片紀錄的年度、季節、縣市、關鍵字統計，還能在地圖上挑颱風或地震，看災點在哪裡。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/?view=references">參考資訊</a><p>本專案用到的資料、報導、文獻與工具來源，附連結。</p></div></li>
         <li><div class="card"><a class="stretch" href="/static/uav_cesium.html?id=639247251496169680">無人機空拍 3D 範例</a><p>把空拍照片貼在 3D 地形上，從不同角度看崩塌的樣子。共 30 個地點。</p></div></li>
         <li><div class="card"><a class="stretch" href="https://github.com/RhynoW/ardswc-resilience-observatory">原始碼與分析程式</a><p>所有分析都公開，任何人都可以重新算一次。</p></div></li>
       </ul>
@@ -278,7 +280,7 @@
     <h2 style="font-size:16px;margin:0 0 8px;color:var(--text)">關於本版</h2>
     <p>本頁的版面與互動遵循 Adobe React Aria 的設計語彙與無障礙原則（<a href="https://react-aria.adobe.com/">react-aria.adobe.com</a>）：語意化標記、地標與跳至主要內容連結、可見的鍵盤焦點環、整張卡片可點且鍵盤可達、深淺色與高對比模式、減少動態偏好。<strong>未引入 React Aria 函式庫</strong>，也未經第三方無障礙稽核；若發現問題請回報。</p>
     <p>無障礙的已知缺口：完整系統中的 Leaflet 地圖與 Cesium 3D、影像比對滑桿目前不能只靠鍵盤與螢幕閱讀器完整操作；各分級清單可用表格閱讀，並可匯出 CSV。避難點地圖屬另一個專案，其無障礙程度未檢查。</p>
-    <p>資料來源：農業部農村發展及水土保持署歷史影像平台、Copernicus Sentinel-1/2、NASA GPM IMERG 與 SMAP、內政部國土測繪中心、內政部 20 m DTM、Esri Wayback、國立成功大學 UAV 空拍（CC-BY）。</p>
+    <p>資料來源：<a href="https://photo.ardswc.gov.tw/Repository/Database" target="_blank" rel="noopener">農業部農村發展及水土保持署歷史影像平台<span class="vh">（在新分頁開啟）</span></a>（<a href="https://data.ardswc.gov.tw/Data/OpenData/Api" target="_blank" rel="noopener">公開 API<span class="vh">（在新分頁開啟）</span></a>）、Copernicus Sentinel-1/2、NASA GPM IMERG 與 SMAP、內政部國土測繪中心、內政部 20 m DTM、Esri Wayback、國立成功大學 UAV 空拍（CC-BY）。</p>
   </div>
 </footer>
 
