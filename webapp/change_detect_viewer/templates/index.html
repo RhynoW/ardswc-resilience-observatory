@@ -68,6 +68,7 @@
   .review-link:hover{ background:var(--accent); color:var(--paper); }
   .qr-box{ display:flex; flex-direction:column; align-items:center; gap:2px; text-decoration:none; color:var(--muted); font-family:var(--font-mono); font-size:9.5px; line-height:1.2; }
   .qr-box svg, .qr-box img{ width:72px; height:72px; background:#fff; padding:3px; display:block; image-rendering:pixelated; }
+  .qr-team{ font-size:11px; font-weight:700; color:var(--ink); letter-spacing:.02em; margin-top:2px; }
   .hdr-right{ display:flex; align-items:center; gap:12px; }
   .health-badge:hover{ color:var(--ink); border-color:var(--ink); }
   .health-badge.hb-ok::before{ content:"● "; color:#3E7A5C; }
@@ -608,7 +609,7 @@
   <div class="hdr-right">
     <a class="review-link" href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
     <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
-    <a class="qr-box" id="qr-box" href="#" title="掃描 QR Code 以手機開啟本頁"><span>掃描開啟本頁</span></a>
+    <a class="qr-box" id="qr-box" href="#" title="掃描 QR Code 以手機開啟本頁"><span class="qr-team">TASTI_SatDashboard</span></a>
   </div>
 </header>
 <div id="health-popover"></div>
