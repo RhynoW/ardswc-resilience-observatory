@@ -42,6 +42,7 @@
 <header class="site"><div class="wrap">
   <a class="brand" href="/accessible">坡地韌性哨兵 · 歷史影像大數據分析</a>
   <nav aria-label="主要導覽"><ul><li><a href="/accessible">無障礙入口頁</a></li><li><a href="/">決策系統</a></li><li><a href="/review">人工覆核</a></li><li><a href="/static/spatial3d.html">3D 集群分析</a></li><li><a href="/?view=references">參考資訊</a></li></ul></nav>
+  <div id="site-badge"></div>
 </div></header>
 
 <main id="main" tabindex="-1"><div class="wrap">
@@ -86,6 +87,8 @@
 </div></main>
 <footer><div class="wrap">資料：農業部農村發展及水土保持署歷史影像平台公開 API（metadata，四類 PhotoType），由 <code>scripts/build_analytics.py</code> 彙整。底圖：內政部國土測繪中心。</div></footer>
 
+<script src="/static/qrcode.js"></script>
+<script src="/static/site_badge.js"></script>
 <script src="/static/leaflet.js"></script>
 <script>
 const COL={"災害事件":"var(--c0)","重要地景":"var(--c6)","媒體報導":"var(--c8)","出版品照片":"var(--c10)"}, TYPES=Object.keys(COL);

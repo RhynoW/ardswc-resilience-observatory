@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/static/leaflet.css">
 <script src="/static/leaflet.js"></script>
 <script src="/static/qrcode.js"></script>
+<script src="/static/site_badge.js"></script>
 <style>
   :root{
     --ink:#1F2420; --paper:#EDEAE0; --paper-raised:#F5F3EB;
@@ -630,7 +631,7 @@
   <div class="hdr-right">
     <a class="review-link" href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
     <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
-    <a class="qr-box" id="qr-box" href="#" title="掃描 QR Code 以手機開啟本頁"><span class="qr-team">TASTI_SatDashboard</span></a>
+    <div id="site-badge"></div>
   </div>
 </header>
 <div id="health-popover"></div>
@@ -1103,18 +1104,6 @@
   <span>資料截至 2026-09-22 · 100 個熱點皆附 Sentinel-2 年度比對面板與巡查優先級</span>
 </footer>
 
-<script>
-// 右上角 QR Code：編碼目前頁面網址（去掉 hash／query），離線也能產生（static/qrcode.js 為本地檔，MIT）
-(function(){
-  try{
-    const url = location.origin + location.pathname;
-    const qr = qrcode(0, "M"); qr.addData(url); qr.make();
-    const box = document.getElementById("qr-box");
-    box.href = url;
-    box.insertAdjacentHTML("afterbegin", qr.createSvgTag({cellSize:3, margin:0, scalable:true}));
-  }catch(e){ const b=document.getElementById("qr-box"); if(b) b.style.display="none"; }
-})();
-</script>
 <script>
 const APPLE_ENABLED = {{ 'true' if apple_enabled else 'false' }};
 const VERDICT_COLOR = { ok: "#3E7A5C", warn: "#9C7A1E", bad: "#7A3A38" };

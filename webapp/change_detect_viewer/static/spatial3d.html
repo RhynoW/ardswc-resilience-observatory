@@ -25,6 +25,7 @@
 </head>
 <body>
 <div id="cesium"></div>
+<div id="site-badge" style="position:absolute;top:10px;right:10px;z-index:11;background:rgba(20,24,28,.88);color:#eee;padding:6px 8px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.4)"></div>
 <div id="panel">
   <h1>影像紀錄 3D 集群分析</h1>
   <div>水保署歷史影像平台：災害事件＋媒體報導（有座標 32,600 筆）依 5 km／2 km 網格彙整（可切換）；柱高＝拍攝張數，顏色＝空間統計結果；可依年度檢視。</div>
@@ -76,6 +77,8 @@
   <div style="margin-top:8px">地形：內政部地政司 20 m DTM；底圖：Esri World Imagery。　<a href="/analytics">回到大數據分析</a>　<a href="/">決策首頁</a>　<a href="/?view=references">參考資訊</a></div>
 </div>
 <div id="status">初始化…</div>
+<script src="/static/qrcode.js"></script>
+<script src="/static/site_badge.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/cesium@1.126.0/Build/Cesium/Cesium.js"></script>
 <script>
 (async function(){

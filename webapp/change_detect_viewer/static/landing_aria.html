@@ -103,7 +103,7 @@
   footer p{margin:0 0 8px;max-width:52em}
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (forced-colors: active){ .btn.primary{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight} .card{border:1px solid CanvasText} }
-  @media print{ .skip,nav,.hdr-qr{display:none} }
+  @media print{ .skip,nav,.hdr-qr,.site-badge{display:none} }
 </style>
 </head>
 <body>
@@ -128,7 +128,7 @@
         <li><a href="/">原版首頁</a></li>
       </ul>
     </nav>
-    <a class="hdr-qr" id="qr" href="/accessible" aria-label="本頁 QR Code，掃描以手機開啟本頁"><span>TASTI_SatDashboard</span></a>
+    <div id="site-badge"></div>
   </div>
 </header>
 
@@ -288,15 +288,8 @@
 </footer>
 
 <script src="/static/qrcode.js"></script>
+<script src="/static/site_badge.js"></script>
 <script>
-// QR Code：編碼本頁網址（離線產生）。失敗時隱藏，不影響頁面。
-(function(){
-  try{
-    var url=location.origin+location.pathname, qr=qrcode(0,"M"); qr.addData(url); qr.make();
-    var a=document.getElementById("qr"); a.href=url;
-    a.insertAdjacentHTML("afterbegin", qr.createSvgTag({cellSize:3,margin:0,scalable:true}).replace("<svg","<svg role=\"img\" aria-label=\"QR Code："+url+"\""));
-  }catch(e){ var b=document.getElementById("qr"); if(b) b.hidden=true; }
-})();
 // 分級數量：由 /api/priority 取得；失敗時保留「—」，連結仍可用。
 fetch("/api/priority").then(function(r){return r.json()}).then(function(d){
   var c={A:0,B:0,C:0,D:0};

@@ -213,6 +213,7 @@ button{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:6px 1
 .tag{display:inline-block;padding:1px 8px;border-radius:10px;border:1px solid var(--bd);font-size:12px;margin-right:6px}
 .warnbox{color:var(--bad)}
 h2{margin:28px 0 8px}
+header .site-badge .sb-qr svg{width:46px;height:46px;padding:2px}header .site-badge .sb-team{font-size:10px}
 details.nl{margin:10px 0;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;background:var(--bg)}
 details.nl>summary{cursor:pointer;font-weight:600}
 .nlmaps{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
@@ -225,7 +226,9 @@ details.nl>summary{cursor:pointer;font-weight:600}
 #lightbox img{max-width:96vw;max-height:96vh}
 </style></head><body>
 <header><b>人工覆核工作單</b><span id="prog"></span><button id="exp">匯出 ledger.json</button>
-<span class="meta">判讀只存在你的瀏覽器（localStorage），匯出後覆蓋 data/ardswc_hotspots/ledger.json 才生效。</span></header>
+<span class="meta">判讀只存在你的瀏覽器（localStorage），匯出後覆蓋 data/ardswc_hotspots/ledger.json 才生效。</span><div id="site-badge" style="margin-left:auto"></div></header>
+<script>__QRJS__</script>
+<script>__BADGEJS__</script>
 <main>
 <div class="rules"><b>覆核標準：</b>只有在<u>前後期影像上能指認出明確地貌變化</u>（新崩塌／裸露／河道改道／大面積開發）才標「可信」。
 對位失敗、雲影、季節或色調差異、市區 10 m 解析度紋理雜亂造成的高分，一律不算。看不出變化就標「需複查」或「偽陽性」。
@@ -464,6 +467,8 @@ def main():
                 .replace("__INIT__", json.dumps(init, ensure_ascii=False))
                 .replace("__CLIM__", json.dumps(clim, ensure_ascii=False, separators=(",", ":")))
                 .replace("__OFF__", json.dumps(off, ensure_ascii=False, separators=(",", ":"))))
+    static = REPO / "webapp" / "change_detect_viewer" / "static"      # 徽章用：內嵌本地 qrcode.js（MIT）與徽章腳本，工作單可離線開啟
+    page = page.replace("__QRJS__", (static / "qrcode.js").read_text(encoding="utf-8").replace("</script>", "<\\/script>")).replace("__BADGEJS__", (static / "site_badge.js").read_text(encoding="utf-8"))
     out.write_text(page, encoding="utf-8")
     print(f"A 級 {len(a_items)} 個、對照組 {len(base_items)} 個 → {out}")
 
