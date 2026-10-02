@@ -1,0 +1,151 @@
+{
+ "n_hotspots": 200,
+ "n_events": 270,
+ "n_days": 3288,
+ "base_rate_per_1000_hotspot_days": 0.411,
+ "daily_auc": {
+  "r1d": 0.749,
+  "r3d": 0.789,
+  "r7d": 0.807
+ },
+ "calibration_r3d": [
+  {
+   "r3d_mm": "0-5",
+   "hotspot_days": 412582,
+   "events": 57,
+   "events_per_1000_days": 0.14
+  },
+  {
+   "r3d_mm": "5-20",
+   "hotspot_days": 115573,
+   "events": 53,
+   "events_per_1000_days": 0.46
+  },
+  {
+   "r3d_mm": "20-50",
+   "hotspot_days": 74208,
+   "events": 42,
+   "events_per_1000_days": 0.57
+  },
+  {
+   "r3d_mm": "50-100",
+   "hotspot_days": 36240,
+   "events": 31,
+   "events_per_1000_days": 0.86
+  },
+  {
+   "r3d_mm": "100-150",
+   "hotspot_days": 10221,
+   "events": 35,
+   "events_per_1000_days": 3.42
+  },
+  {
+   "r3d_mm": "150-250",
+   "hotspot_days": 5984,
+   "events": 38,
+   "events_per_1000_days": 6.35
+  },
+  {
+   "r3d_mm": "250-∞",
+   "hotspot_days": 1198,
+   "events": 13,
+   "events_per_1000_days": 10.85
+  }
+ ],
+ "alert_scan": [
+  {
+   "var": "r3d",
+   "threshold_mm": 50,
+   "alerts": 15453,
+   "alerts_per_hotspot_year": 8.58,
+   "alert_precision": 0.01,
+   "event_recall": 0.596
+  },
+  {
+   "var": "r3d",
+   "threshold_mm": 80,
+   "alerts": 9176,
+   "alerts_per_hotspot_year": 5.1,
+   "alert_precision": 0.014,
+   "event_recall": 0.463
+  },
+  {
+   "var": "r3d",
+   "threshold_mm": 100,
+   "alerts": 6389,
+   "alerts_per_hotspot_year": 3.55,
+   "alert_precision": 0.018,
+   "event_recall": 0.419
+  },
+  {
+   "var": "r3d",
+   "threshold_mm": 150,
+   "alerts": 3115,
+   "alerts_per_hotspot_year": 1.73,
+   "alert_precision": 0.023,
+   "event_recall": 0.27
+  },
+  {
+   "var": "r3d",
+   "threshold_mm": 200,
+   "alerts": 1739,
+   "alerts_per_hotspot_year": 0.97,
+   "alert_precision": 0.027,
+   "event_recall": 0.174
+  },
+  {
+   "var": "r7d",
+   "threshold_mm": 100,
+   "alerts": 9228,
+   "alerts_per_hotspot_year": 5.13,
+   "alert_precision": 0.016,
+   "event_recall": 0.556
+  },
+  {
+   "var": "r7d",
+   "threshold_mm": 150,
+   "alerts": 5043,
+   "alerts_per_hotspot_year": 2.8,
+   "alert_precision": 0.023,
+   "event_recall": 0.437
+  },
+  {
+   "var": "r7d",
+   "threshold_mm": 200,
+   "alerts": 2931,
+   "alerts_per_hotspot_year": 1.63,
+   "alert_precision": 0.025,
+   "event_recall": 0.274
+  },
+  {
+   "var": "r7d",
+   "threshold_mm": 300,
+   "alerts": 908,
+   "alerts_per_hotspot_year": 0.5,
+   "alert_precision": 0.034,
+   "event_recall": 0.122
+  }
+ ],
+ "logit": {
+  "coef_log1p_r3d_r7d": [
+   0.664,
+   -0.141
+  ],
+  "intercept": -8.634,
+  "auc_in_sample": 0.762,
+  "top1pct_days_event_rate_per_1000": 7.47
+ },
+ "precision_day_level_r3d_ge_100": {
+  "point": 0.0049,
+  "ci95_cluster_by_day": [
+   0.0036,
+   0.0063
+  ]
+ },
+ "caveats": [
+  "事件為通報（曝險偏差、日期可能晚於崩塌）",
+  "熱點因出過事才被選入，基準率偏高、precision 為樂觀上限",
+  "IMERG 0.1° 山區低估",
+  "同颱風多熱點不獨立（已做日期聚類 bootstrap）"
+ ]
+}
