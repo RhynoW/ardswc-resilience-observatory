@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>坡地韌性哨兵｜React Aria 無障礙版本</title>
+<meta name="description" content="水保署歷史通報整理成複發熱點，結合衛星影像變化候選與人工覆核的巡查優先級決策輔助原型。無障礙版入口頁。">
+<style>
+  /* 設計語彙取自 Adobe React Aria 文件站：中性色、細框圓角、清楚的焦點環、文件式版面。
+     未引入其函式庫（見頁尾「關於本版」）。 */
+  :root{
+    --bg:#ffffff; --surface:#f7f7f8; --raised:#ffffff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f;
+    --accent:#0b5fd4; --accent-text:#ffffff; --accent-soft:#e8f0fc; --focus:#0b5fd4;
+    --ok:#126b3f; --warn:#8a5a00; --bad:#a3262a; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb;
+      --accent:#6aa9ff; --accent-text:#0d1b2f; --accent-soft:#1f2d44; --focus:#8bbcff; --ok:#6fd0a0; --warn:#e6bb62; --bad:#ff9a9d; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-underline-offset:.18em}
+  a:hover{text-decoration-thickness:2px}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:var(--accent-text);padding:8px 14px;border-radius:var(--radius);z-index:10;text-decoration:none;font-weight:600}
+  .skip:focus{top:12px}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)}
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px}
+  .brand{font-weight:700;font-size:17px;color:var(--text);text-decoration:none}
+  .brand small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+  nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap}
+  nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);color:var(--text);text-decoration:none;font-size:15px}
+  nav a:hover{background:var(--accent-soft)}
+  nav a[aria-current="page"]{background:var(--accent-soft);font-weight:600}
+  .hdr-qr{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text);text-decoration:none;font-size:12px;font-weight:700}
+  .hdr-qr svg{width:68px;height:68px;background:#fff;padding:3px;border:1px solid var(--border);border-radius:4px;display:block}
+
+  .notice{background:var(--accent-soft);border-bottom:1px solid var(--border);font-size:14px}
+  .notice .wrap{padding-top:8px;padding-bottom:8px}
+
+  main{padding-bottom:56px}
+  .hero{padding:48px 0 28px}
+  .eyebrow{font-size:14px;color:var(--muted);margin:0 0 8px}
+  h1{font-size:clamp(28px,4.2vw,40px);line-height:1.25;margin:0 0 16px;letter-spacing:-.005em}
+  .lead{font-size:18px;max-width:46em;margin:0 0 24px}
+  .actions{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--radius);font:inherit;font-weight:600;text-decoration:none;border:1px solid var(--accent);min-height:44px}
+  .btn.primary{background:var(--accent);color:var(--accent-text)}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.secondary{background:transparent;color:var(--accent)}
+  .btn.secondary:hover{background:var(--accent-soft)}
+
+  section{padding:32px 0;border-top:1px solid var(--border)}
+  h2{font-size:24px;margin:0 0 6px;line-height:1.3}
+  .sub{color:var(--muted);margin:0 0 20px;max-width:46em}
+  h3{font-size:17px;margin:0 0 6px}
+
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));list-style:none;padding:0;margin:0}
+  .card{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:6px;height:100%}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .card a.stretch{color:var(--text);text-decoration:none;font-weight:700;font-size:17px}
+  .card a.stretch::after{content:"";position:absolute;inset:0}
+  .card{position:relative}
+  .card:hover{border-color:var(--accent)}
+  .card:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+  .card a.stretch:focus-visible{outline:none}
+  .num{font-family:var(--mono);font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .tier-A .num{color:var(--bad)} .tier-B .num{color:var(--warn)} .tier-C .num{color:var(--ok)} .tier-D .num{color:var(--muted)}
+
+  table{border-collapse:collapse;width:100%;font-size:15px}
+  caption{text-align:left;color:var(--muted);padding-bottom:8px;font-size:14px}
+  th,td{border-bottom:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}
+  thead th{background:var(--surface);font-weight:700}
+  td.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{overflow-x:auto}
+
+  ol.steps{margin:0;padding-left:1.4em;max-width:46em} ol.steps li{margin:0 0 8px}
+  .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:14px 18px;max-width:48em}
+  .callout h3{margin-bottom:8px} .callout ul{margin:0;padding-left:1.2em} .callout li{margin:0 0 6px}
+  dl.meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0;max-width:48em}
+  dl.meta dt{font-weight:700} dl.meta dd{margin:0;color:var(--muted)}
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:24px 0;font-size:14px;color:var(--muted)}
+  footer p{margin:0 0 8px;max-width:52em}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (forced-colors: active){ .btn.primary{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight} .card{border:1px solid CanvasText} }
+  @media print{ .skip,nav,.hdr-qr{display:none} }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+
+<div class="notice" role="note">
+  <div class="wrap">這是<strong>React Aria 無障礙版本</strong>的入口頁（設計與無障礙原則參考 Adobe React Aria）。完整互動系統請使用「進入決策系統」，其地圖與圖表部分尚未達到相同的無障礙程度，詳見頁尾。</div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/accessible" aria-label="坡地韌性哨兵，回到本頁">坡地韌性哨兵<small>隊伍 TASTI_SatDashboard · OSSInt 2026</small></a>
+    <nav aria-label="主要導覽">
+      <ul>
+        <li><a href="#overview" aria-current="page">概覽</a></li>
+        <li><a href="#status">目前狀態</a></li>
+        <li><a href="#tools">工具</a></li>
+        <li><a href="#method">方法與限制</a></li>
+        <li><a href="/">原版首頁</a></li>
+      </ul>
+    </nav>
+    <a class="hdr-qr" id="qr" href="/accessible" aria-label="本頁 QR Code，掃描以手機開啟本頁"><span>TASTI_SatDashboard</span></a>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <div class="wrap">
+    <div class="hero" id="overview">
+      <p class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026</p>
+      <h1>讓巡查人員先看最值得看的地方</h1>
+      <p class="lead">我們把水保署歷史影像平台的災害通報整理成「反覆出事的熱點」，再用衛星影像的變化訊號與人工覆核排出巡查優先級。系統提供的是候選排序與證據，不是災害判定。</p>
+      <div class="actions">
+        <a class="btn primary" href="/">進入決策系統</a>
+        <a class="btn secondary" href="/review">人工覆核工作單</a>
+        <a class="btn secondary" href="/static/uav_cesium.html?id=639247251496169680">UAV 空拍 3D 範例</a>
+      </div>
+    </div>
+
+    <section id="status" aria-labelledby="status-h">
+      <h2 id="status-h">目前狀態</h2>
+      <p class="sub">100 個長期複發熱點依四項透明規則分級。每個分級可直接進入清單。<span class="vh">數字載入完成後會更新。</span></p>
+      <ul class="grid" id="tiers" aria-live="polite">
+        <li><div class="card tier-A"><span class="num" data-n="A">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=A">A 級　優先現勘</a><p>複發性高，近期有影像變化候選，待人工確認。</p></div></li>
+        <li><div class="card tier-B"><span class="num" data-n="B">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=B">B 級　建議複核</a><p>有候選訊號，但信心不足，需要人工複核。</p></div></li>
+        <li><div class="card tier-C"><span class="num" data-n="C">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=C">C 級　持續監測</a><p>複發性高，但近期沒有可靠的變化證據。</p></div></li>
+        <li><div class="card tier-D"><span class="num" data-n="D">—</span><a class="stretch" href="/?tab=hotspots&amp;tier=D">D 級　資料待確認</a><p>資料不足，無法支持任何判斷。</p></div></li>
+      </ul>
+      <p class="sub" style="margin-top:16px">人工覆核進度：目前 100 個熱點<strong>尚未完成人工覆核</strong>，A 級只代表「優先確認候選」。覆核完成後才能公布命中率與偽陽性。</p>
+    </section>
+
+    <section id="tools" aria-labelledby="tools-h">
+      <h2 id="tools-h">工具</h2>
+      <p class="sub">每個工具都對應流程中的一個環節。</p>
+      <ul class="grid">
+        <li><div class="card"><a class="stretch" href="/">巡查清單與證據</a><p>100 個熱點、A–D 分級拆解、Sentinel-2 逐年比對，可匯出 CSV 與 Markdown。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/review">人工覆核工作單</a><p>A 級 31 筆加對照組 18 筆。盲審優先、NLSC 與 Wayback 年度滑桿、雨量與土壤濕度背景。</p></div></li>
+        <li><div class="card"><a class="stretch" href="/static/uav_cesium.html?id=639247251496169680">UAV 空拍 3D 疊合</a><p>空拍影像以 DTM 與相機姿態糾正後，疊在 3D 地形上。共 10 個樣本。</p></div></li>
+        <li><div class="card"><a class="stretch" href="https://github.com/RhynoW/ardswc-resilience-observatory">原始碼與分析腳本</a><p>事件快篩（雷達先行）、雨量門檻、曝險控制實驗；全部可重現。</p></div></li>
+      </ul>
+    </section>
+
+    <section id="method" aria-labelledby="method-h">
+      <h2 id="method-h">方法與限制</h2>
+      <ol class="steps">
+        <li>下載水保署影像平台的災害事件與媒體報導紀錄，同一場災害的後續追蹤合併為一次獨立事件。</li>
+        <li>以 250 m 網格找出獨立事件最多的 100 個地點，作為長期複發熱點。</li>
+        <li>用 Sentinel-2 與 Google Earth Engine 計算前後期植生損失，作為候選訊號。</li>
+        <li>人工覆核者在不先看訊號的情況下判讀影像，結果寫入覆核帳本。</li>
+        <li>依複發性、近期變化、地形起伏與資料信心四項規則，排出 A 到 D 級。</li>
+      </ol>
+
+      <h3 style="margin-top:28px">已量化的結果</h3>
+      <div class="scroll">
+        <table>
+          <caption>雨量與事件的關係（200 個熱點，2016–2024 逐日，IMERG 降雨）</caption>
+          <thead><tr><th scope="col">3 日累積雨量</th><th scope="col" class="n">熱點日</th><th scope="col" class="n">事件</th><th scope="col" class="n">每千熱點日事件數</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">0–5 mm</th><td class="n">412,582</td><td class="n">57</td><td class="n">0.14</td></tr>
+            <tr><th scope="row">20–50 mm</th><td class="n">74,208</td><td class="n">42</td><td class="n">0.57</td></tr>
+            <tr><th scope="row">100–150 mm</th><td class="n">10,221</td><td class="n">35</td><td class="n">3.42</td></tr>
+            <tr><th scope="row">250 mm 以上</th><td class="n">1,198</td><td class="n">13</td><td class="n">10.85</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout" style="margin-top:24px" role="note" aria-labelledby="lim-h">
+        <h3 id="lim-h">已知限制</h3>
+        <ul>
+          <li>通報有曝險偏差：有人、有路的地方才有通報。建成面積比單獨就能以 AUC 0.80 區分通報熱點，純地形在控制曝險後沒有訊號。</li>
+          <li>僅靠降雨門檻，作業用精確率很低：3 日 ≥100 mm 時，每次警報約 2% 出現通報事件，召回約 42%。</li>
+          <li>候選訊號的閾值尚未經人工覆核校正，兩個訊號（dNBR、NDVI）都來自 Sentinel-2，並不獨立。</li>
+          <li>本系統是輔助原型，不作為民眾安全判斷工具。</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <h2 style="font-size:16px;margin:0 0 8px;color:var(--text)">關於本版</h2>
+    <p>本頁的版面與互動遵循 Adobe React Aria 的設計語彙與無障礙原則（<a href="https://react-aria.adobe.com/">react-aria.adobe.com</a>）：語意化標記、地標與跳至主要內容連結、可見的鍵盤焦點環、整張卡片可點且鍵盤可達、深淺色與高對比模式、減少動態偏好。<strong>未引入 React Aria 函式庫</strong>，也未經第三方無障礙稽核；若發現問題請回報。</p>
+    <p>無障礙的已知缺口：完整系統中的 Leaflet 地圖與 Cesium 3D、影像比對滑桿目前不能只靠鍵盤與螢幕閱讀器完整操作；各分級清單可用表格閱讀，並可匯出 CSV。</p>
+    <p>資料來源：農業部農村發展及水土保持署歷史影像平台、Copernicus Sentinel-1/2、NASA GPM IMERG 與 SMAP、內政部國土測繪中心、內政部 20 m DTM、Esri Wayback、國立成功大學 UAV 空拍（CC-BY）。</p>
+  </div>
+</footer>
+
+<script src="/static/qrcode.js"></script>
+<script>
+// QR Code：編碼本頁網址（離線產生）。失敗時隱藏，不影響頁面。
+(function(){
+  try{
+    var url=location.origin+location.pathname, qr=qrcode(0,"M"); qr.addData(url); qr.make();
+    var a=document.getElementById("qr"); a.href=url;
+    a.insertAdjacentHTML("afterbegin", qr.createSvgTag({cellSize:3,margin:0,scalable:true}).replace("<svg","<svg role=\"img\" aria-label=\"QR Code："+url+"\""));
+  }catch(e){ var b=document.getElementById("qr"); if(b) b.hidden=true; }
+})();
+// 分級數量：由 /api/priority 取得；失敗時保留「—」，連結仍可用。
+fetch("/api/priority").then(function(r){return r.json()}).then(function(d){
+  var c={A:0,B:0,C:0,D:0};
+  (d.items||[]).forEach(function(p){ if(c[p.tier]!==undefined) c[p.tier]++; });
+  Object.keys(c).forEach(function(k){ var el=document.querySelector('[data-n="'+k+'"]'); if(el) el.textContent=c[k]; });
+}).catch(function(){});
+</script>
+</body>
+</html>

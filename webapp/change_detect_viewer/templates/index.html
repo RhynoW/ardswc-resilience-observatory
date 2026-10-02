@@ -45,6 +45,8 @@
   code{ font-family:var(--font-mono); }
   button{ font-family:var(--font-serif); }
 
+  .a11y-note{ background:var(--chip-bg); border-bottom:1px solid var(--line); padding:6px 26px; font-size:12.5px; color:var(--muted); }
+  .a11y-note a{ color:var(--accent); }
   header{
     border-bottom:1px solid var(--line); background:var(--paper-raised);
     padding:16px 26px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
@@ -596,6 +598,7 @@
 </head>
 <body>
 
+<div class="a11y-note" role="note">本站另有 <a href="/accessible"><strong>React Aria 無障礙版本</strong></a>（新的入口頁：語意化結構、鍵盤焦點、深淺色與高對比）。</div>
 <header>
   <div class="brand">
     <span class="brand-mark">🛰️ OBSERVATORY</span>
@@ -2573,6 +2576,11 @@ async function init(){
   renderLedger();
   renderPriorityTiers();
   renderProofCards();
+  // 深連結：/?tab=hotspots&tier=A（無障礙入口頁使用）
+  try{
+    const q = new URLSearchParams(location.search);
+    if(q.get("tab") === "hotspots"){ const t = q.get("tier"); if(t && "ABCD".includes(t)) gotoTier(t); else switchTab("hotspots"); }
+  }catch(e){}
   loadEventStats();
   renderDataStatus();
   loadHealth();

@@ -52,7 +52,7 @@ import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from flask import Flask, abort, jsonify, render_template, request, send_file
+from flask import Flask, abort, jsonify, render_template, request, send_file, send_from_directory
 from werkzeug.utils import safe_join
 
 HERE = Path(__file__).resolve().parent
@@ -789,6 +789,12 @@ def serve_image(relpath):
 # ── 人工覆核工作單（scripts/review_queue.py 產生的靜態 HTML，與本機 review/review_queue.html 同一份）──
 # 頁面以相對路徑 ../data/ge_captures/ 引用面板影像；線上改指向上方的 /image/ 路由。
 # 判讀只存在使用者瀏覽器的 localStorage（匯出 ledger.json 才生效），此路由唯讀、不寫回伺服器。
+@app.route("/accessible")
+def accessible_landing():
+    """React Aria 無障礙版入口頁（static/landing_aria.html）。"""
+    return send_from_directory(HERE / "static", "landing_aria.html")
+
+
 @app.route("/review")
 def review_queue():
     fp = REPO / "review" / "review_queue.html"
