@@ -88,6 +88,7 @@ def build_items(out_dir):
                                                   if dr and q["a"] == dr["date_a"] and q["b"] == dr["date_b"]), 0),
             "alignment": {"applied": al.get("applied"), "uncertain": al.get("uncertain"), "shift_px": al.get("shift_px")},
             "uav": uav.get(rank, []),
+            "ev_dates": [{"d": e["first_date"], "n": e["name"]} for e in h.get("events", []) if e.get("first_date")],
             "relief_m": (relief.get(rank) or {}).get("relief_m"),
         }
 
@@ -205,6 +206,7 @@ main{max-width:1400px;margin:0 auto;padding:16px}
 .imgs figure{margin:0}.imgs img{width:100%;display:block;border:1px solid var(--bd);cursor:zoom-in}
 .imgs figcaption{font-size:12px;color:var(--mut)}
 @media(max-width:800px){.imgs{grid-template-columns:repeat(2,1fr)}}
+.cltab{border-collapse:collapse;margin:8px 0;font-size:13px}.cltab th,.cltab td{border:1px solid var(--bd);padding:3px 10px;text-align:center}.cltab th{background:var(--bg);font-weight:600}
 .ctl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:8px}
 textarea{width:100%;min-height:52px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:6px;font:inherit}
 button{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:6px 14px;font:inherit;cursor:pointer}
@@ -232,7 +234,7 @@ details.nl>summary{cursor:pointer;font-weight:600}
 <div id="root"></div></main>
 <div id="lightbox" onclick="this.style.display='none'"><img></div>
 <script>
-const A_ITEMS=__A__, BASE_ITEMS=__BASE__, INIT=__INIT__;
+const A_ITEMS=__A__, BASE_ITEMS=__BASE__, INIT=__INIT__, CLIM=__CLIM__;
 const KEY="review_queue_v1";
 let st={}; try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
 INIT.forEach(l=>{ if(!st[l.rank]) st[l.rank]={verdict:l.verdict,treated:!!l.treated,improved:!!l.improved,note:l.note||"",pair:null,ts:l.reviewed_at||null}; });
@@ -242,6 +244,60 @@ function prog(){const done=r=>st[r.rank]&&st[r.rank].verdict;
   document.getElementById("prog").textContent=`A 級 ${A_ITEMS.filter(done).length}/${A_ITEMS.length}　對照組 ${BASE_ITEMS.filter(done).length}/${BASE_ITEMS.length}`;
   document.querySelectorAll(".card").forEach(c=>c.classList.toggle("done",!!(st[c.dataset.rank]&&st[c.dataset.rank].verdict)))}
 function fmt(d){return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6)}
+
+
+// ── 降雨／土壤濕度背景（data/climate_series.json：IMERG 日雨量、SMAP L4 根系層含水量；單點最近像元）──
+function climatePanel(it,getPi){
+  const c=CLIM&&CLIM.ranks&&CLIM.ranks[it.rank];
+  const d=document.createElement("details");d.className="nl cl";
+  if(!c){d.innerHTML=`<summary>降雨／土壤濕度</summary><div class="meta">此熱點無雨量資料（執行 scripts/climate_series.py 產生 data/climate_series.json 後重建本頁）</div>`;return d}
+  const t0=Date.parse(CLIM.start+"T00:00:00Z"), DAY=86400000, N=c.rain.length;
+  const idx=s8=>Math.round((Date.parse(s8.slice(0,4)+"-"+s8.slice(4,6)+"-"+s8.slice(6)+"T00:00:00Z")-t0)/DAY);
+  const idxIso=s10=>Math.round((Date.parse(s10+"T00:00:00Z")-t0)/DAY);
+  const dateOf=i=>new Date(t0+i*DAY).toISOString().slice(0,10);
+  d.innerHTML=`<summary>降雨／土壤濕度（兩期影像之間）</summary><div class="clbody"></div>`;
+  const body=d.querySelector(".clbody");
+  function stats(i0,i1){
+    const r=[];for(let i=i0;i<=i1;i++)r.push(c.rain[i]>=0?c.rain[i]/10:null);
+    const ok=r.filter(v=>v!=null), tot=ok.reduce((a,b)=>a+b,0);
+    const roll=k=>{let m=0,w=0;for(let i=0;i<r.length;i++){w+=r[i]||0;if(i>=k)w-=r[i-k]||0;if(w>m)m=w}return m};
+    // 警報次數：3 日累積 ≥100 mm 的日子，相鄰（間隔 ≤2 天）合併為一次
+    let eps=0,last=-9,w=0;for(let i=0;i<r.length;i++){w+=r[i]||0;if(i>=3)w-=r[i-3]||0;if(w>=100){if(i-last>2)eps++;last=i}}
+    const sm=[];for(let i=i0;i<=i1;i++)if(c.sm[i]>=0)sm.push(c.sm[i]/1000);
+    return {n:r.length,miss:r.length-ok.length,tot,max1:Math.max(0,...ok),max3:roll(3),max7:roll(7),eps,
+      smN:sm.length,smMean:sm.length?sm.reduce((a,b)=>a+b,0)/sm.length:null,smMax:sm.length?Math.max(...sm):null}}
+  function render(){
+    const q=it.pairs[getPi()];if(!q){body.innerHTML='<div class="meta">沒有比對期別</div>';return}
+    const i0=Math.max(0,idx(q.a)), i1=Math.min(N-1,idx(q.b));
+    if(i1<=i0){body.innerHTML=`<div class="meta">兩期影像日期（${fmt(q.a)} → ${fmt(q.b)}）不在資料範圍（${CLIM.start} ～ ${CLIM.last_rain_date}）</div>`;return}
+    const S=stats(i0,i1), n=i1-i0+1, bucket=Math.max(1,Math.ceil(n/450));
+    const W=900,H=170,L=44,R=40,T=10,B=22, pw=W-L-R, ph=H-T-B;
+    const bars=[];let mx=1;
+    for(let i=i0;i<=i1;i+=bucket){let sum=0;for(let k=i;k<Math.min(i+bucket,i1+1);k++)sum+=c.rain[k]>=0?c.rain[k]/10:0;bars.push([i,sum]);if(sum>mx)mx=sum}
+    const X=i=>L+(i-i0)/(n-1||1)*pw, Y=v=>T+ph-v/mx*ph, bw=Math.max(1,pw/bars.length-0.5);
+    const smY=v=>T+ph-v/0.6*ph;
+    let path="",pen=false;
+    for(let i=i0;i<=i1;i++){if(c.sm[i]>=0){path+=(pen?"L":"M")+X(i).toFixed(1)+" "+smY(c.sm[i]/1000).toFixed(1)+" ";pen=true}else pen=false}
+    const evs=(it.ev_dates||[]).map(e=>({i:idxIso(e.d),n:e.n,d:e.d})).filter(e=>e.i>=i0&&e.i<=i1);
+    const ticks=[];const y0=+dateOf(i0).slice(0,4),y1=+dateOf(i1).slice(0,4);
+    for(let y=y0;y<=y1+1;y++){const i=idxIso(y+"-01-01");if(i>=i0+n*0.06&&i<=i1-n*0.06)ticks.push([i,y])}
+    body.innerHTML=`<div class="meta">${fmt(q.a)} → ${fmt(q.b)}（${n} 天）　雨量：NASA GPM IMERG（0.1°，逐日）；土壤濕度：SMAP L4 根系層 0–100 cm（9 km，m³/m³）${bucket>1?`　<b>長條＝每 ${bucket} 日合計</b>`:""}</div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="兩期影像之間的逐日雨量長條與土壤含水量折線" style="width:100%;height:auto;max-height:200px;background:var(--bg);border:1px solid var(--bd)">
+      ${[0,.5,1].map(f=>`<line x1="${L}" x2="${W-R}" y1="${T+ph*(1-f)}" y2="${T+ph*(1-f)}" stroke="#8884" stroke-width="1"/><text x="${L-4}" y="${T+ph*(1-f)+4}" text-anchor="end" font-size="10" fill="#888">${(mx*f).toFixed(0)}</text><text x="${W-R+4}" y="${T+ph*(1-f)+4}" font-size="10" fill="#4a90d9">${(0.6*f).toFixed(2)}</text>`).join("")}
+      ${bars.map(([i,v])=>v>0?`<rect x="${(X(i)-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(T+ph-Y(v)).toFixed(1)}" fill="${v>=80?'#d98f35':'#6fa8dc'}"><title>${dateOf(i)}${bucket>1?"起":""}：${v.toFixed(1)} mm</title></rect>`:"").join("")}
+      <path d="${path}" fill="none" stroke="#2b6cb0" stroke-width="1.6"/>
+      ${evs.map(e=>`<line x1="${X(e.i)}" x2="${X(e.i)}" y1="${T}" y2="${T+ph}" stroke="#c0392b" stroke-dasharray="4 3"><title>通報事件 ${e.d} ${e.n}</title></line>`).join("")}
+      ${ticks.map(([i,y])=>`<text x="${X(i)}" y="${H-6}" font-size="10" fill="#888" text-anchor="middle">${y}</text>`).join("")}
+      <text x="${L}" y="${H-6}" font-size="10" fill="#888">${dateOf(i0)}</text><text x="${W-R}" y="${H-6}" font-size="10" fill="#888" text-anchor="end">${dateOf(i1)}</text>
+      <text x="4" y="12" font-size="10" fill="#888">mm</text><text x="${W-4}" y="12" font-size="10" fill="#4a90d9" text-anchor="end">SM</text>
+    </svg>
+    <div class="meta">圖例：長條＝雨量（橘＝單日（或區間合計）≥80 mm，約為氣象署「大雨」等級以上）；藍線＝根系層含水量；紅虛線＝本熱點的通報事件日。</div>
+    <table class="cltab"><tr><th>期間總雨量</th><th>單日最大</th><th>3 日最大</th><th>7 日最大</th><th>3 日 ≥100 mm 次數</th><th>含水量 均值／最大</th></tr>
+    <tr><td>${S.tot.toFixed(0)} mm</td><td>${S.max1.toFixed(0)} mm</td><td>${S.max3.toFixed(0)} mm</td><td>${S.max7.toFixed(0)} mm</td><td>${S.eps}</td>
+    <td>${S.smN?`${S.smMean.toFixed(3)} ／ ${S.smMax.toFixed(3)}`:"無資料"}</td></tr></table>
+    <div class="meta">${S.miss?`雨量缺 ${S.miss} 天。`:""}${S.smN<n?`SMAP L4 在 GEE 的資料只到 ${CLIM.last_sm_date}，此期間有 ${n-S.smN} 天無含水量。`:""}　判讀提示：兩期影像之間若有 3 日 ≥100 mm 的豪雨（本系統歷史通報中，此級雨量後事件率約為無雨日的 10–80 倍），新裸露較可能是崩塌；若只有乾季或無豪雨，應優先排除季節、河床擺動與工程。解析度 0.1°／9 km，山區單點代表性有限，僅供脈絡，非變遷證據。</div>`}
+  d.addEventListener("toggle",()=>{if(d.open)render()});d.refresh=()=>{if(d.open)render()};
+  return d}
 
 const NL_TILE=l=>`https://wmts.nlsc.gov.tw/wmts/${l}/default/GoogleMapsCompatible/{z}/{y}/{x}`;
 const WB_TILE=r=>`https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/${r}/{z}/{y}/{x}`;
@@ -314,8 +370,8 @@ function card(it){
   el.querySelector(".im").onchange=e=>{s.improved=e.target.checked;save()};
   el.querySelector("textarea").oninput=e=>{s.note=e.target.value;save()};
   const sel=el.querySelector(".pair"); if(sel) sel.onchange=()=>{s.pair=+sel.value;const q=it.pairs[s.pair];
-    el.querySelectorAll(".imgs img").forEach(im=>im.src=q.img[im.dataset.k]);if(el._nl&&el._nl.refresh)el._nl.refresh();save()};
-  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._nl,ctls[ctls.length-1])}
+    el.querySelectorAll(".imgs img").forEach(im=>im.src=q.img[im.dataset.k]);if(el._nl&&el._nl.refresh)el._nl.refresh();if(el._cl&&el._cl.refresh)el._cl.refresh();save()};
+  {const ctls=el.querySelectorAll(".ctl");el._nl=nlscPanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._nl,ctls[ctls.length-1]);el._cl=climatePanel(it,()=>s.pair!=null?s.pair:it.default_pair);el.insertBefore(el._cl,el._nl)}
   el.querySelectorAll(".imgs img").forEach(im=>im.onclick=()=>{const lb=document.getElementById("lightbox");lb.querySelector("img").src=im.src;lb.style.display="flex"});
   return el}
 const root=document.getElementById("root");
@@ -351,9 +407,14 @@ def main():
         it["nlsc_years"] = yrs[it["rank"]]
         it["timeline"] = _timeline(yrs[it["rank"]], wbf.get(it["rank"]))
     init = _load(DATA / "ledger.json", [])
+    clim = _load(REPO / "data" / "climate_series.json", None)
+    if clim:                                   # 只嵌入覆核清單內的熱點
+        keep = {str(it["rank"]) for it in a_items + base_items}
+        clim["ranks"] = {r: v for r, v in clim["ranks"].items() if r in keep}
     page = (HTML.replace("__A__", json.dumps(a_items, ensure_ascii=False))
                 .replace("__BASE__", json.dumps(base_items, ensure_ascii=False))
-                .replace("__INIT__", json.dumps(init, ensure_ascii=False)))
+                .replace("__INIT__", json.dumps(init, ensure_ascii=False))
+                .replace("__CLIM__", json.dumps(clim, ensure_ascii=False, separators=(",", ":"))))
     out.write_text(page, encoding="utf-8")
     print(f"A 級 {len(a_items)} 個、對照組 {len(base_items)} 個 → {out}")
 
