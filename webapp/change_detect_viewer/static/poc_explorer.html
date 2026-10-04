@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>五個 POC 區域成果展示｜坡地韌性哨兵</title>
+<meta name="description" content="高雄、花蓮、太魯閣、中部山區、嘉義五個試辦區域的事件目錄、Sentinel-1／2 影像偵測與驗證結果互動地圖。">
+<link rel="stylesheet" href="/static/leaflet.css">
+<style>
+  :root{ --bg:#fff; --surface:#f7f7f8; --raised:#fff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f; --accent:#0b5fd4; --accent-soft:#e8f0fc; --focus:#0b5fd4; --warn:#b7791f; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; --mono:ui-monospace,Consolas,monospace; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb; --accent:#6aa9ff; --accent-soft:#1f2d44; --focus:#8bbcff; --warn:#e0b45a; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:var(--radius);z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none} nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap} nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);text-decoration:none}
+  h1{font-size:clamp(24px,3.6vw,32px);margin:28px 0 6px;line-height:1.3} h2{font-size:20px;margin:0 0 6px} h3{font-size:16px;margin:14px 0 4px}
+  .sub{color:var(--muted);margin:0 0 14px;max-width:56em}
+  .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:10px 14px;max-width:62em;font-size:15px}
+  [role=tablist]{display:flex;flex-wrap:wrap;gap:4px;margin:18px 0 0;border-bottom:1px solid var(--border)}
+  [role=tab]{font:inherit;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-bottom:none;background:var(--surface);color:var(--muted);cursor:pointer;border-radius:var(--radius) var(--radius) 0 0}
+  [role=tab][aria-selected=true]{background:var(--raised);color:var(--text);font-weight:600;border-top:3px solid var(--accent);padding-top:6px}
+  .grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;margin:14px 0}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  #map{height:560px;border:1px solid var(--border);border-radius:var(--radius)}
+  .panel{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+  .layers{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 8px;font-size:14px} .layers label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:2px;border:1px solid rgba(0,0,0,.3)}
+  table{border-collapse:collapse;font-size:13.5px;width:100%;margin:6px 0} th,td{border-bottom:1px solid var(--border);padding:4px 6px;text-align:left;vertical-align:top} th{color:var(--muted);font-weight:600}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:14px}.kv dt{color:var(--muted)}.kv dd{margin:0}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  .mk{width:22px;height:22px;border-radius:50%;border:2px solid #fff;color:#fff;font:700 11px/18px var(--font);text-align:center;box-shadow:0 0 3px rgba(0,0,0,.6)}
+  .leaflet-popup-content{font:14px/1.5 var(--font);color:#1c1c1e;max-width:420px}
+  .leaflet-popup-content img{width:100%;margin-top:6px}
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:18px 0;color:var(--muted);font-size:14px;margin-top:24px}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">坡地韌性哨兵 · 五個 POC 區域</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/accessible">無障礙入口頁</a></li><li><a href="/static/analytics.html">歷史影像大數據</a></li></ul></nav>
+  <div id="site-badge"></div>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="wrap">
+  <h1>五個試辦區域：官方事件判釋與影像偵測的對照</h1>
+  <p class="sub">選一個區域，看事件型崩塌目錄（官方衛星判釋）與 Sentinel-1／Sentinel-2 影像偵測的位置與數字。高雄是第一個 POC，花蓮、太魯閣、中部山區、嘉義是後續四個區域。</p>
+  <div class="callout" role="note"><strong>怎麼讀這些圖：</strong>事件目錄是官方的<em>衛星判釋</em>，不是現地確認；影像偵測是簡單的固定規則（不訓練模型），門檻事先固定、沒有拿事件標籤調過。10 m 的 Sentinel 影像只看得到數公頃以上的崩塌，所以多數區域偵測不到事件目錄裡的小崩塌——這是方法的限制，不是目錄的錯誤。所有結果都是單一事件、少量樣本的階段性成果，不可外推。</div>
+
+  <div role="tablist" aria-label="POC 區域" id="tabs"></div>
+  <div class="grid">
+    <section aria-label="地圖">
+      <div class="layers" id="layers" role="group" aria-label="圖層"></div>
+      <div id="map" role="application" aria-label="互動地圖，可縮放與點選標記"></div>
+      <p class="small muted" id="map-note"></p>
+    </section>
+    <section aria-label="區域說明與數字">
+      <div class="panel" id="info"></div>
+    </section>
+  </div>
+
+  <section aria-labelledby="cmp">
+    <h2 id="cmp">五區比較</h2>
+    <p class="sub">Sentinel-1（降軌 VH，K＝穩健門檻倍數）與 Sentinel-2（絕對門檻，多個前後日期配對）對事件目錄的表現。「倍數」＝事件多邊形內／外的新增偵測機率比，需對照「事件平移」才能判斷是不是雜訊。</p>
+    <div class="panel" style="overflow-x:auto"><table id="cmp-table"><caption class="vh">五個區域的 Sentinel-1 與 Sentinel-2 結果比較</caption></table></div>
+  </section>
+</div></main>
+<footer><div class="wrap">資料來源：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）、Copernicus Sentinel-1／2（Microsoft Planetary Computer、Copernicus Data Space）、國土測繪中心 DTM。事件判釋為衛星判釋，非現地真值。分析腳本與參數見專案 ARCHITECTURE_v3.md。</div></footer>
+
+<script src="/static/leaflet.js"></script>
+<script src="/static/site_badge.js"></script>
+<script>
+const COL = {events:"#ff9800", s1_k2:"#00bcd4", s1_k3:"#2196f3", s1_k4:"#1a237e", s2_new:"#9c27b0", s2_state:"#43a047", official113:"#e53935"};
+const LBL = {events:"事件型目錄（事件窗口內，官方衛星判釋）", s1_k2:"Sentinel-1 偵測 K=2（寬鬆）", s1_k3:"Sentinel-1 偵測 K=3", s1_k4:"Sentinel-1 偵測 K=4（嚴格）", s2_new:"Sentinel-2 新增（事前 06-15→事後 10-11）", s2_state:"Sentinel-2 基準偵測（2025-03-25）", official113:"官方 113 年度崩塌地圖層（≥0.5 ha）"};
+const MK = {V:["#6a1b9a","坡面盲測點"], U:["#00695c","UAV 對照點"], R:["#ef6c00","偵測有、官方無（目視複核）"], O:["#c62828","Sentinel-1 目錄外大塊"]};
+const esc = s => String(s==null?"—":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct = v => v==null?"—":(v*100).toFixed(1)+"%";
+const num = (v,d=1) => v==null?"—":Number(v).toLocaleString("zh-Hant",{maximumFractionDigits:d});
+let IDX=[], CACHE={}, map, cur=null, layerObjs={}, markerGroup=null;
+
+function initMap(){
+  map = L.map("map",{zoomControl:true});
+  const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri World Imagery"});
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
+  esri.addTo(map);
+  L.control.layers({"衛星影像（Esri）":esri,"街道圖（OSM）":osm},null,{collapsed:false}).addTo(map);
+}
+async function load(id){
+  const a = IDX.find(x=>x.id===id);
+  if(!CACHE[id]) CACHE[id] = await (await fetch(a.file)).json();
+  return CACHE[id];
+}
+function style(k){ return {color:COL[k],weight:k==="events"?2:1.5,fillColor:COL[k],fillOpacity:k==="official113"?0.35:(k==="events"?0.15:0.4)}; }
+async function show(id){
+  const d = await load(id); cur = d;
+  document.querySelectorAll("#tabs [role=tab]").forEach(t=>{const on=t.dataset.id===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;});
+  Object.values(layerObjs).forEach(l=>map.removeLayer(l)); layerObjs={}; if(markerGroup){map.removeLayer(markerGroup);markerGroup=null;}
+  const b=d.bbox; map.fitBounds([[b[1],b[0]],[b[3],b[2]]]);
+  L.rectangle([[b[1],b[0]],[b[3],b[2]]],{color:"#fff",weight:1,fill:false,dashArray:"4 4",interactive:false}).addTo(map).bringToBack();
+  const lay = document.getElementById("layers"); lay.innerHTML="";
+  const order = ["official113","events","s2_state","s2_new","s1_k2","s1_k3","s1_k4"];
+  order.filter(k=>d.layers[k]).forEach(k=>{
+    const g = L.geoJSON(d.layers[k],{style:()=>style(k),onEachFeature:(f,l)=>{const p=f.properties||{};l.bindPopup(k==="events"?`<b>${esc(p.event)}</b><br>${esc(p.date)}（官方衛星判釋）`:`${esc(LBL[k])}<br>${p.ha!=null?p.ha+" ha":""}`);}});
+    layerObjs[k]=g; const on = ["events","s1_k2"].includes(k) || (k==="official113"&&false);
+    if(on) g.addTo(map);
+    const lb=document.createElement("label"); lb.innerHTML=`<input type="checkbox" ${on?"checked":""}><span class="sw" style="background:${COL[k]}"></span>${esc(LBL[k])}（${d.layers[k].features.length}）`;
+    lb.querySelector("input").addEventListener("change",e=>{e.target.checked?g.addTo(map):map.removeLayer(g);});
+    lay.appendChild(lb);
+  });
+  if(d.markers && d.markers.length){
+    markerGroup = L.layerGroup();
+    d.markers.forEach(m=>{
+      const [c,lab]=MK[m.kind]||["#555","標記"];
+      const ic=L.divIcon({className:"",html:`<div class="mk" style="background:${c}" title="${esc(m.id)}">${esc(m.kind)}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+      L.marker([m.lat,m.lon],{icon:ic,title:m.title,alt:m.title}).bindPopup(`<b>${esc(m.title)}</b><br>${esc(m.text)}${m.img?`<img src="${esc(m.img)}" alt="${esc(m.id)} 複核圖：Sentinel-2 事前、事後兩期與 Sentinel-1 變化">`:""}`,{maxWidth:440}).addTo(markerGroup);
+    });
+    const kinds=[...new Set(d.markers.map(m=>m.kind))];
+    const lb=document.createElement("label"); lb.innerHTML=`<input type="checkbox" checked>${kinds.map(k=>`<span class="sw" style="background:${(MK[k]||[])[0]};border-radius:50%"></span>${esc((MK[k]||[])[1])}`).join("　")}（${d.markers.length}）`;
+    markerGroup.addTo(map);
+    lb.querySelector("input").addEventListener("change",e=>{e.target.checked?markerGroup.addTo(map):map.removeLayer(markerGroup);});
+    lay.appendChild(lb);
+  }
+  document.getElementById("map-note").textContent = id==="K" ? "預設只開事件目錄；可加開官方 113 年度圖層、Sentinel-2 基準偵測與抽查點。" : "預設開事件目錄與 Sentinel-1 K=2；其餘圖層請勾選。可點多邊形或標記看詳情。";
+  document.getElementById("info").innerHTML = info(d);
+}
+function eventsTable(d){
+  if(!d.events_in_window||!d.events_in_window.length) return "";
+  return `<h3>事件窗口內的事件（框內）</h3><table><thead><tr><th>日期</th><th>事件</th><th class="n">塊數</th><th class="n">面積 ha</th></tr></thead><tbody>${d.events_in_window.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.event)}</td><td class="n">${num(e.n,0)}</td><td class="n">${num(e.area_ha)}</td></tr>`).join("")}</tbody></table>`;
+}
+function s1Table(d){
+  const s1=d.metrics&&d.metrics.s1; if(!s1||!s1.by_K) return "";
+  const rows=Object.entries(s1.by_K).map(([K,v])=>{const sh=Object.values(v.ratio_shifted||{}).filter(x=>x!=null);return `<tr><td>K=${K}</td><td class="n">${num(v.new_ha)}</td><td class="n">${pct(v.share_new_in_event)}</td><td class="n">${num(v.ratio,0)}×</td><td class="n">${sh.length?num(Math.max(...sh),1)+"×":"—"}</td><td class="n">${pct(v.event_detected_frac)}</td></tr>`}).join("");
+  return `<h3>Sentinel-1 變化偵測（${esc(s1.orbit)}；事前 ${esc((s1.pre_dates||[]).slice(-1)[0])}、事後 ${esc((s1.post_dates||[])[0])}）</h3><table><thead><tr><th>門檻</th><th class="n">新增 ha</th><th class="n">落在事件內</th><th class="n">內／外倍數</th><th class="n">平移對照最大</th><th class="n">事件被偵測</th></tr></thead><tbody>${rows}</tbody></table><p class="small muted">K 越大越嚴格（特異度高、召回低）。平移對照＝把事件位置平移 3／6 km 後的倍數；對照接近倍數＝雜訊。</p>`;
+}
+function s2Line(d){
+  const s=d.metrics&&d.metrics.s2; if(!s||!s.n_pairs) return "";
+  return `<h3>Sentinel-2 簡單規則（${s.n_pairs} 個前後配對）</h3><p class="small">影像新增 ${num(s.new_ha_min,0)}–${num(s.new_ha_max,0)} ha（事件面積 ${num(s.event_area_ha,0)} ha）；事件內／外倍數 ${num(s.ratio_min,1)}–${num(s.ratio_max,1)}×。</p>`;
+}
+function largeLine(d){
+  const l=d.metrics&&d.metrics.s1_large; if(!l) return "";
+  const k=l.by_K&&l.by_K["2.0"]; const k4=l.by_K&&l.by_K["4.0"];
+  return `<h3>大崩塌查核（≥2 ha 塊，降軌 VH）</h3><p class="small">參照大塊 ${l.ref_large_n} 塊（${num(l.ref_large_ha)} ha）。K=2：召回 ${esc(k&&k.recall_large_n)}、偵測大塊 ${k&&k.det_large_n}（精確 ${esc(k&&k.precision_large_n)}）、目錄外大塊 ${k&&k.outside_catalog_n} 個；K=4：召回 ${esc(k4&&k4.recall_large_n)}。</p>`;
+}
+function kInfo(d){
+  const m=d.metrics, hb=m.human_blind||{}, ab=m.ai_blind||{}, w=m.state_wayback||{}, s2=(m.state_s2||{}), sl=(s2.state_late_vs_2024layer||{}).all||{}, ch=s2.change||{}, cw=(m.change_wayback||{}).AC||{};
+  const ex=o=>{const vals=Object.entries(o).filter(([k,v])=>typeof v==="number"&&!["n","excluded"].includes(k)&&!k.includes("rate")&&!k.includes("agreement"));return vals;};
+  const b=m.buffer||{}, ss=m.su_sensitivity||{};
+  return `<h3>官方圖層與影像目視（30 個坡面盲測）</h3>
+  <table><thead><tr><th></th><th class="n">AI 判讀</th><th class="n">人工判讀</th></tr></thead><tbody>
+  <tr><td>有無裸露一致</td><td class="n">${pct(ab.bare_presence_agreement)}</td><td class="n"><b>${pct(hb.bare_presence_agreement)}</b></td></tr>
+  <tr><td>類別嚴格一致</td><td class="n">${pct(ab.exact_rate)}</td><td class="n"><b>${pct(hb.exact_rate)}</b></td></tr>
+  <tr><td>含相容</td><td class="n">${pct(ab.exact_or_compat_rate)}</td><td class="n"><b>${pct(hb.exact_or_compat_rate)}</b></td></tr></tbody></table>
+  <p class="small muted">AI 偏向判成「持續裸露」，經使用者人工獨立判讀後以人工數字為準（n=29 可判讀、單一人工判讀者、分層配額）。</p>
+  <h3>影像規則對官方年度圖層（像素召回／精確率下限）</h3>
+  <table><thead><tr><th>影像</th><th class="n">召回</th><th class="n">精確率下限</th></tr></thead><tbody>
+  <tr><td>Wayback 2022（0.5 m）</td><td class="n">${pct((w["2022"]||{}).all&&w["2022"].all.recall)}</td><td class="n">${pct((w["2022"]||{}).all&&w["2022"].all.precision_lower_bound)}</td></tr>
+  <tr><td>Wayback 2023（0.5 m）</td><td class="n">${pct((w["2023"]||{}).all&&w["2023"].all.recall)}</td><td class="n">${pct((w["2023"]||{}).all&&w["2023"].all.precision_lower_bound)}</td></tr>
+  <tr><td>Sentinel-2 2025-03-25（10 m）對 113 年度</td><td class="n">${pct(sl.recall)}</td><td class="n">${pct(sl.precision_lower_bound)}</td></tr></tbody></table>
+  <p class="small muted">精確率只是下限（官方有漏報）；Wayback 評估範圍 372 km²、Sentinel-2 為整個 POC 的 1,502 km²。</p>
+  <h3>Sentinel-2 前後變化對事件目錄（2024-04→2025-03）</h3>
+  <p class="small">影像新增 ${num(ch.new_ha)} ha，${pct(ch.share_new_in_events)} 落在事件內；事件內／外倍數 ${num(ch.ratio,0)}×；事件面積被偵測為新增 ${pct(ch.events_detected_as_new_frac)}。</p>
+  <h3>穩健性檢驗</h3>
+  <p class="small">空間緩衝 0／500／1,000 m：測試區召回 2022 約 ${pct((b["0"]||{})["2022"]&&b["0"]["2022"].test.recall)}／${pct((b["500"]||{})["2022"]&&b["500"]["2022"].test.recall)}／${pct((b["1000"]||{})["2022"]&&b["1000"]["2022"].test.recall)}（邊界洩漏不明顯）。坡面切分：河網門檻 STREAM_HA=5／20 時前 100 名坡面與基準的重疊只有 ${num((ss.s5_m1||{}).top100_union_jaccard_vs_base,2)}／${num((ss.s20_m1||{}).top100_union_jaccard_vs_base,2)}（排序對門檻高度敏感）。</p>`;
+}
+function info(d){
+  let h=`<h2>${esc(d.label)}</h2><p>${esc(d.desc)}</p><p class="small muted">${esc(d.event_note)}</p>`;
+  h+=eventsTable(d);
+  if(d.id==="K") h+=kInfo(d); else h+=s1Table(d)+s2Line(d)+largeLine(d);
+  if(d.id==="H") h+=`<p class="small"><b>花蓮重點：</b>Sentinel-1 降軌在此區穩定，偵測到 688 ha 的超大崩塌複合體；5 個目錄外大塊（O 標記）AI 初判在光學影像上看不到明顯崩塌，尚待人工判讀。Sentinel-2 簡單規則的新增面積隨影像日期從約 1,900 ha 到 18,000 ha 劇烈變動，不穩。</p>`;
+  if(["A","B","C"].includes(d.id)) h+=`<p class="small"><b>這區的結果：</b>Sentinel-2 簡單規則沒有訊號；Sentinel-1 嚴格門檻只找到極少面積，事件被偵測比例很低。事件目錄裡的崩塌平均每塊不到 1 ha，10 m 影像看不到。這是「流程可複製、效果不可複製」的例子。</p>`;
+  return h;
+}
+function compare(){
+  const rows=IDX.map(a=>CACHE[a.id]).filter(Boolean);
+  let t=`<thead><tr><th>區域</th><th class="n">事件區面積 ha</th><th class="n">S1 K=2 新增 ha</th><th class="n">S1 K=2 落在事件內</th><th class="n">S1 K=2 事件被偵測</th><th class="n">S1 K=4 事件被偵測</th><th>Sentinel-2 倍數範圍</th></tr></thead><tbody>`;
+  rows.forEach(d=>{
+    if(d.id==="K"){const ch=(d.metrics.state_s2||{}).change||{}; t+=`<tr><td>${esc(d.label)}</td><td class="n">${num(ch.events_area_ha_in_region,0)}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td>${num(ch.ratio,0)}×（單一前後配對）</td></tr>`;return;}
+    const s1=(d.metrics.s1||{}).by_K||{}, k2=s1["2.0"]||{}, k4=s1["4.0"]||{}, s2=d.metrics.s2||{};
+    t+=`<tr><td>${esc(d.label)}</td><td class="n">${num((d.metrics.s1||{}).event_area_ha_in_region,0)}</td><td class="n">${num(k2.new_ha)}</td><td class="n">${pct(k2.share_new_in_event)}</td><td class="n">${pct(k2.event_detected_frac)}</td><td class="n">${pct(k4.event_detected_frac)}</td><td>${num(s2.ratio_min,1)}–${num(s2.ratio_max,1)}×（${s2.n_pairs} 配對）</td></tr>`;
+  });
+  document.getElementById("cmp-table").innerHTML += t+"</tbody>";
+}
+(async function(){
+  IDX = await (await fetch("/static/poc/index.json")).json();
+  initMap();
+  const tabs=document.getElementById("tabs");
+  IDX.forEach((a,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");b.dataset.id=a.id;b.textContent=a.label.replace(/（.*$/,"").trim();b.title=a.label;b.setAttribute("aria-selected",i===0);b.tabIndex=i===0?0:-1;
+    b.addEventListener("click",()=>show(a.id));
+    b.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=(i+(e.key==="ArrowRight"?1:IDX.length-1))%IDX.length;show(IDX[n].id);tabs.children[n].focus();e.preventDefault();}});
+    tabs.appendChild(b);});
+  const h0=(location.hash||"").replace("#","");
+  await show((IDX.find(x=>x.id===h0)||IDX[0]).id);
+  for(const a of IDX){ await load(a.id); }
+  compare();
+})();
+</script>
+</body>
+</html>

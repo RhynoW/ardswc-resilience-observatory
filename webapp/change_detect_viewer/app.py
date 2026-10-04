@@ -795,6 +795,12 @@ def accessible_landing():
     return send_from_directory(HERE / "static", "landing_aria.html")
 
 
+@app.route("/poc")
+def poc_page():
+    """五個 POC 區域成果互動展示（static/poc_explorer.html；資料在 static/poc/，由 scripts/export_poc_web.py 匯出）。"""
+    return send_from_directory(HERE / "static", "poc_explorer.html")
+
+
 @app.route("/analytics")
 def analytics_page():
     """歷史影像平台大數據視覺化分析頁（static/analytics.html；資料見 /api/analytics）。"""
