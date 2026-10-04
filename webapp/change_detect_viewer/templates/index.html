@@ -446,6 +446,15 @@
   .ds-row h4 small{ font-weight:400; color:var(--muted); }
   .ds-row p{ margin:0; font-size:13px; color:var(--muted); line-height:1.6; }
   .ds-note{ font-size:12px; color:var(--muted); max-width:90ch; line-height:1.6; margin:8px 0 0; }
+  .ds-h4{ margin:10px 0 6px; font-size:14px; }
+  .ds-tabs{ display:flex; flex-wrap:wrap; gap:4px; border-bottom:1px solid var(--line); margin:0 0 10px; }
+  .ds-tab{ font:inherit; font-size:13px; padding:7px 12px; border:1px solid var(--line); border-bottom:none; background:var(--chip-bg); color:var(--muted); cursor:pointer; }
+  .ds-tab[aria-selected="true"]{ background:var(--paper-raised); color:var(--ink); font-weight:600; border-top:3px solid var(--accent); padding-top:5px; }
+  .ds-tab:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  .ds-panel{ border:1px solid var(--line); border-top:none; background:var(--paper-raised); padding:10px 14px; margin:-11px 0 14px; }
+  .ds-panel h4{ margin:0 0 6px; font-size:14px; }
+  .ds-panel p{ margin:0 0 6px; font-size:13px; line-height:1.65; }
+  .ds-panel .ds-sub2{ color:var(--muted); }
   details.legacy{ border:1px solid var(--line); background:var(--paper-raised); padding:0 18px; margin:6px 0 28px; }
   details.legacy > summary{ cursor:pointer; padding:12px 0; font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em; color:var(--accent-2); }
   details.legacy[open] > summary{ border-bottom:1px solid var(--line-soft); margin-bottom:16px; }
@@ -776,14 +785,15 @@
 
     <div class="ds-block">
       <h3>目前階段與下一步</h3>
+      <h4 class="ds-h4">已完成（五個 POC 區域）</h4>
+      <div class="ds-tabs" id="ds-tabs" role="tablist" aria-label="POC 區域"><button type="button" role="tab" class="ds-tab" id="ds-tab-0" aria-controls="ds-pn-0" aria-selected="true" tabindex="0" data-i="0">高雄</button><button type="button" role="tab" class="ds-tab" id="ds-tab-1" aria-controls="ds-pn-1" aria-selected="false" tabindex="-1" data-i="1">花蓮</button><button type="button" role="tab" class="ds-tab" id="ds-tab-2" aria-controls="ds-pn-2" aria-selected="false" tabindex="-1" data-i="2">A 太魯閣</button><button type="button" role="tab" class="ds-tab" id="ds-tab-3" aria-controls="ds-pn-3" aria-selected="false" tabindex="-1" data-i="3">B 中部</button><button type="button" role="tab" class="ds-tab" id="ds-tab-4" aria-controls="ds-pn-4" aria-selected="false" tabindex="-1" data-i="4">C 嘉義</button></div>
+      <div role="tabpanel" class="ds-panel" id="ds-pn-0" aria-labelledby="ds-tab-0"><h4>① 高雄（桃源・那瑪夏・六龜・甲仙，約 1,800 km²）</h4><p>坡面切分、四年圖層疊合與事件歸因、官方判釋盲測驗證（Wayback／Sentinel-2／UAV）、Wayback 全 POC 影像盤點、影像規則基準偵測與「狀態」評估。</p><p class="ds-sub2">另已完成：空間緩衝與坡面切分參數敏感度測試；人工抽查（30 個坡面＋16 張 UAV 圖，推翻原 AI 判讀的 96.6%）；「偵測有、官方無」目視複核 29 個；雲遮罩第二版；Sentinel-2 補 2024–2025 年（狀態與事件前後變化）；Wayback 2022→2023 變化對事件目錄（事件重疊太少，統計力量弱）。</p></div><div role="tabpanel" class="ds-panel" id="ds-pn-1" aria-labelledby="ds-tab-1" hidden><h4>② 花蓮（馬太鞍溪堰塞湖）</h4><p>資料盤點（Wayback、BigGIS UAV、事件目錄、Sentinel-2）；Sentinel-2 事件前後變化偵測與穩健性檢驗（結果隨影像日期劇烈變動，不穩）；Sentinel-1 變化偵測與大崩塌查核（偵測到 688 ha 的超大崩塌；5 個目錄外大塊待人工判讀）；Wayback、Sentinel-1／2 的對位查證。</p><p class="ds-sub2">結果：Sentinel-1 在此區訊號穩定，Sentinel-2 簡單規則不穩；證據只有這一個事件。</p></div><div role="tabpanel" class="ds-panel" id="ds-pn-2" aria-labelledby="ds-tab-2" hidden><h4>③ A 太魯閣（2024-04-03 花蓮地震）</h4><p>候選區掃描（事件目錄面積、事件前後實測雲量）；Sentinel-2 與 Sentinel-1 事件前後變化偵測。</p><p class="ds-sub2">結果：無訊號或召回極低——地震崩塌多為小崩塌（目錄平均每塊 0.84 ha），10 m 影像看不到。尚未做坡面切分、官方年度圖層疊合與人工判讀。</p></div><div role="tabpanel" class="ds-panel" id="ds-pn-3" aria-labelledby="ds-tab-3" hidden><h4>④ B 中部山區（2023-08-03 卡努颱風）</h4><p>候選區掃描（事件目錄面積、事件前後實測雲量）；Sentinel-2 與 Sentinel-1 事件前後變化偵測。</p><p class="ds-sub2">結果：無訊號或召回極低（目錄平均每塊 0.26 ha）。尚未做坡面切分、官方年度圖層疊合與人工判讀。</p></div><div role="tabpanel" class="ds-panel" id="ds-pn-4" aria-labelledby="ds-tab-4" hidden><h4>⑤ C 嘉義阿里山（2024-07-23 凱米颱風）</h4><p>候選區掃描（事件目錄面積、事件前後實測雲量）；Sentinel-2 與 Sentinel-1 事件前後變化偵測。</p><p class="ds-sub2">結果：無訊號或召回極低（目錄平均每塊 0.60 ha）。尚未做坡面切分、官方年度圖層疊合與人工判讀。</p></div>
       <div class="ds-map">
         <div>
-          <div class="ds-row"><h4>已完成</h4><p>坡面切分、四年圖層疊合與事件歸因、官方判釋盲測驗證（Wayback／Sentinel-2／UAV）、Wayback 全 POC 影像盤點、影像規則基準偵測與「狀態」評估。</p></div>
-        </div>
-        <div>
-          <div class="ds-row"><h4>接下來</h4><p>影像「前後變化」對事件目錄的評估；「偵測有、官方無」的人工複核以估計精確率；用 Sentinel-2 補 2024–2025 年；坡面切分參數請專家檢驗；台帳定義與示警規則落地。</p></div>
+          <div class="ds-row"><h4>接下來</h4><p>其餘 25 個「偵測有、官方無」樣本與先前盲測的人工複核；花蓮 Sentinel-1 目錄外大塊的人工判讀；坡面切分參數（河網門檻）請專家檢驗；以地表反射率（L2A）與相對輻射正規化重做 Sentinel-2 變化偵測。</p></div>
         </div>
       </div>
+      <script>(function(){var tabs=document.querySelectorAll('#ds-tabs .ds-tab');function show(i){tabs.forEach(function(t,k){var on=k===i;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;document.getElementById('ds-pn-'+k).hidden=!on;});}tabs.forEach(function(t,k){t.addEventListener('click',function(){show(k);});t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var n=(k+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length;show(n);tabs[n].focus();e.preventDefault();}});});})();</script>
     </div>
 
     <details class="legacy" id="legacy-stage">
