@@ -1,5 +1,5 @@
 """把五個 POC 區域的成果匯出成網頁互動展示用的靜態資料（webapp/change_detect_viewer/static/poc/）。
-輸出：index.json（區域清單與摘要指標）、<id>.json（每區：範圍、事件窗口、指標、圖層 GeoJSON、標記點）、img/（花蓮目錄外大塊複核圖）。
+輸出：index.json（區域清單與摘要指標）、<id>.json（每區：範圍、事件窗口、指標、圖層 GeoJSON、標記點；花蓮目錄外大塊複核圖以 data URI 內嵌）。
 圖層（WGS84、已簡化；單檔 <3 MB 以符合 HF 限制）：
   events      事件窗口內的事件型目錄多邊形（衛星判釋，非現地真值）
   s1_k2/3/4   Sentinel-1 變化偵測（降軌 VH；K 為穩健門檻倍數，事先固定）的 ≥0.3 ha 偵測塊
@@ -155,7 +155,6 @@ def build_area(tag, name, label, bbox, evt_range, s1win, desc, event_note):
 
 def main():
     WEB.mkdir(parents=True, exist_ok=True)
-    (WEB / "img").mkdir(exist_ok=True)
     index = []
     cfg = [
         ("H", "hualien", "② 花蓮（馬太鞍溪堰塞湖）", (121.1456, 23.5494, 121.4456, 23.8494), ("2025-05-01", "2026-06-30"), None,
@@ -173,9 +172,13 @@ def main():
             keyj = jload(AREAS / "hualien_barrier_lake" / "s1_review" / "key.json", {})
             for oid, k in keyj.items():
                 src = AREAS / "hualien_barrier_lake" / "s1_review" / f"{oid}.jpg"
-                if src.exists():
-                    shutil.copy(src, WEB / "img" / f"{oid}.jpg")
-                d["markers"].append({"id": oid, "kind": "O", "lat": k["lat"], "lon": k["lon"], "title": f"{oid}：Sentinel-1 目錄外大塊（{k['ha']} ha）", "text": f"平均坡度 {k['mean_slope_deg']}°；VH 平均下降 {k['mean_dB_diff']} dB。AI 初判在 Sentinel-2 上看不到明顯崩塌，尚待人工判讀。", "img": f"/static/poc/img/{oid}.jpg"})
+                uri = None
+                if src.exists():                      # HF 禁止未走 LFS 的二進位檔：複核圖縮小後以 data URI 內嵌在 JSON
+                    import base64
+                    im = cv2.imread(str(src))
+                    im = cv2.resize(im, (1440, int(im.shape[0] * 1440 / im.shape[1])), interpolation=cv2.INTER_AREA)
+                    uri = "data:image/jpeg;base64," + base64.b64encode(cv2.imencode(".jpg", im, [cv2.IMWRITE_JPEG_QUALITY, 78])[1].tobytes()).decode()
+                d["markers"].append({"id": oid, "kind": "O", "lat": k["lat"], "lon": k["lon"], "title": f"{oid}：Sentinel-1 目錄外大塊（{k['ha']} ha）", "text": f"平均坡度 {k['mean_slope_deg']}°；VH 平均下降 {k['mean_dB_diff']} dB。AI 初判在 Sentinel-2 上看不到明顯崩塌，尚待人工判讀。", "img": uri})
             tf, shp = A.grid()
             for pair, fn in (("20250615→20251011", "new_20250615_20251011.npy"),):
                 p = AREAS / "hualien_barrier_lake" / "s2" / fn
