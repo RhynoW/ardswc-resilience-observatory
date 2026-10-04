@@ -17,3 +17,8 @@ data/dtm/
 data/ge_captures/ardswc_top*/*.png
 data/ge_captures/ardswc_top*/_change_detect/*.png
 data/biggis_interp/raw/
+
+data/biggis_interp/shp/
+data/biggis_interp/poc/
+data/boundaries/
+data/biggis_interp/areas/
