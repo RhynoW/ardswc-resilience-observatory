@@ -415,6 +415,40 @@
   .flash-highlight{ outline:3px solid var(--accent); outline-offset:3px; transition:outline-color .6s; }
   .decision-flow{ font-family:var(--font-mono); font-size:12.5px; color:var(--accent); margin:10px 0 6px; letter-spacing:.02em; }
   .decision-meta{ font-size:12.5px; color:var(--muted); max-width:86ch; line-height:1.6; margin:0; }
+
+  /* ── 決策首頁改版（2026-10-04）：正反合 ─────────────────── */
+  .ds-block{ margin:0 0 30px; }
+  .ds-block > h3{ font-size:19px; margin:0 0 6px; }
+  .ds-block > .sec-sub{ max-width:86ch; }
+  .ds-grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
+  @media (max-width:980px){ .ds-grid3{ grid-template-columns:1fr; } }
+  .ds-card{ border:1px solid var(--line); border-top:3px solid var(--accent-2); background:var(--paper-raised); padding:14px 16px; }
+  .ds-card.fan{ border-top-color:var(--accent); }
+  .ds-card.he{ border-top-color:var(--ink); }
+  .ds-tag{ font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; color:var(--muted); text-transform:uppercase; }
+  .ds-card h4{ margin:2px 0 8px; font-size:16px; line-height:1.4; }
+  .ds-card h5{ margin:12px 0 4px; font-size:12px; font-family:var(--font-mono); letter-spacing:.04em; text-transform:uppercase; color:var(--accent-2); }
+  .ds-card p, .ds-card li{ font-size:13px; line-height:1.65; margin:0 0 6px; }
+  .ds-card ul{ margin:0; padding-left:18px; }
+  .ds-card .warn{ color:var(--muted); }
+  .ds-nums{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0 4px; }
+  @media (max-width:900px){ .ds-nums{ grid-template-columns:repeat(2,1fr); } }
+  .ds-num{ border:1px solid var(--line-soft); background:var(--paper); padding:10px 12px; }
+  .ds-num b{ display:block; font-size:24px; color:var(--accent); line-height:1.2; font-family:var(--font-serif); }
+  .ds-num span{ font-size:12px; color:var(--muted); }
+  .ds-table{ border-collapse:collapse; width:100%; font-size:12.5px; margin:8px 0 8px; }
+  .ds-table th, .ds-table td{ border:1px solid var(--line-soft); padding:4px 8px; text-align:left; }
+  .ds-table th{ background:var(--chip-bg); font-family:var(--font-mono); font-size:11.5px; }
+  .ds-map{ display:grid; grid-template-columns:1fr 1fr; gap:0 22px; margin-top:12px; }
+  @media (max-width:900px){ .ds-map{ grid-template-columns:1fr; } }
+  .ds-row{ padding:10px 0; border-top:1px solid var(--line-soft); }
+  .ds-row h4{ margin:0 0 3px; font-size:14px; }
+  .ds-row h4 small{ font-weight:400; color:var(--muted); }
+  .ds-row p{ margin:0; font-size:13px; color:var(--muted); line-height:1.6; }
+  .ds-note{ font-size:12px; color:var(--muted); max-width:90ch; line-height:1.6; margin:8px 0 0; }
+  details.legacy{ border:1px solid var(--line); background:var(--paper-raised); padding:0 18px; margin:6px 0 28px; }
+  details.legacy > summary{ cursor:pointer; padding:12px 0; font-family:var(--font-mono); font-size:12.5px; letter-spacing:.03em; color:var(--accent-2); }
+  details.legacy[open] > summary{ border-bottom:1px solid var(--line-soft); margin-bottom:16px; }
   .ext-details > summary{ cursor:pointer; font-size:13px; color:var(--muted); padding:10px 0; }
   .ext-details[open] > summary{ margin-bottom:10px; }
   .pc-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
@@ -644,17 +678,116 @@
   <!-- ── 觀測導覽（2026-09-06 追加，landing page）───────────── -->
   <section id="tab-guide" class="tabpanel active">
     <div class="decision-hero">
-      <div class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026</div>
-      <h2>具有真實導入潛力的空間情報國家韌性決策原型</h2>
-      <p class="sec-sub decision-lead">這不是「AI 自動判定災害」的黑箱系統，而是一套<strong>候選排序＋證據鏈</strong>的決策
-      輔助原型：從水保署影像平台（2026-09-22 共 105,131 筆）中只取真正的災害紀錄——<strong>災害事件＋媒體報導</strong>
-      的災情地點，把同一災害的後續追蹤與重複拍攝合併成<strong>獨立災害事件</strong>，找出 100 個長期複發地點，再以近期
-      衛星影像變化與人工確認排出<strong>巡查優先級</strong>，協助決定哪些地方值得優先巡查。</p>
-      <p class="decision-flow">真正災害資料清理 → 獨立事件去重 → 複發熱點辨識 → 近期影像變化 → 人工確認 → 巡查優先建議</p>
+      <div class="eyebrow">開源空間資訊於國家韌性應用黑客松競賽：OSSInt 2026 ・ 輔導後改版（階段性成果截至 2026-10-04）</div>
+      <h2>以「正・反・合」檢驗崩塌地偵測：官方判釋與影像偵測互相對照，找出流程的盲點</h2>
+      <p class="sec-sub decision-lead">在競賽委員的輔導下，我們把本專案從「找出複發熱點」收斂為一個可檢驗的問題：
+      <strong>水保署的官方崩塌判釋，與直接從歷史影像偵測到的裸露地，彼此吻合到什麼程度？落差出在哪裡？</strong>
+      我們用兩個方向各做一次，再把差異整理成現行崩塌地偵測作業流程可能的盲點與改進方向。
+      試辦範圍（POC）為高雄山區（桃源、那瑪夏、六龜、甲仙一帶，約 1,800 km²）。</p>
+      <p class="decision-flow">正：官方判釋為出發點、影像佐證　⇄　反：影像偵測為主、官方判釋為參照標籤　→　合：盲點與改進建議</p>
       <p class="decision-meta"><strong>主要使用者：</strong>水保署、各分署及地方政府的巡查與判讀人員（不作為民眾安全判斷工具）。
-      <strong>已知限制：</strong>歷史通報有密度偏差——道路可達地點、特定年度或單位較常拍攝，紀錄多不必然代表災害多；
-      高排名熱點須經人工查證。</p>
+      <strong>以下皆為階段性成果：</strong>單一場景、少量樣本，官方判釋是衛星判釋而不是現地真值，數字不可外推到其他地區或年份。</p>
     </div>
+
+    <div class="ds-block">
+      <h3>輔導之後，我們改了什麼</h3>
+      <p class="sec-sub">委員的共同提醒是：範圍要收斂、定義要清楚、結果要能被檢驗。我們據此調整的方向如下（已完成與尚未完成都如實標示）。</p>
+      <div class="ds-map">
+        <div>
+          <div class="ds-row"><h4>主線收斂到災害資料流程 <small>（已調整敘事）</small></h4><p>真正災害資料清理 → 獨立事件去重 → 複發熱點辨識 → 近期影像變化 → 人工確認 → 巡查優先建議。</p></div>
+          <div class="ds-row"><h4>以官方判釋為起點，改以「坡面」為單位 <small>（POC 已做）</small></h4><p>用 20 m DTM 切出 Slope Unit（POC 共 18,401 個），把官方歷年崩塌圖層與事件目錄疊到坡面上，朝「坡面災害履歷」發展。切分參數尚未經專家驗證。</p></div>
+          <div class="ds-row"><h4>先小範圍、再抽樣驗證 <small>（已做）</small></h4><p>在小範圍 POC 內抽代表性坡面，以歷史影像做盲測目視（只看影像與坡面外框，不看官方類別）。</p></div>
+        </div>
+        <div>
+          <div class="ds-row"><h4>降級為輔助或未來延伸 <small>（敘事已調整）</small></h4><p>250 m 熱點格網、SSIM 影像相似度、Cesium 3D 與 UAV 對位，不再是主角；3D 與 UAV 放在「未來延伸」。</p></div>
+          <div class="ds-row"><h4>誠實處理「示警」與「偽陽性」 <small>（規劃中，尚未改系統）</small></h4><p>本站只做巡查優先排序，不是每日監測或即時示警；人工覆核台帳的明確定義與偽陽性去除規則已列入下一階段，尚未實作。</p></div>
+          <div class="ds-row"><h4>可複製、可檢驗 <small>（進行中）</small></h4><p>資料來自政府開放資料與開放影像（Wayback、BigGIS UAV 開放圖磚、Sentinel-2）；分析腳本與參數隨成果一併記錄。Google Earth 內容只用於個案人工複核，不進批次偵測或訓練。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h3>正・反・合：三個方向，各自做了什麼、看到什麼</h3>
+      <div class="ds-grid3">
+
+        <div class="ds-card">
+          <div class="ds-tag">正 ・ thesis</div>
+          <h4>官方判釋為出發點，影像當佐證</h4>
+          <h5>做法</h5>
+          <p>BigGIS 事件判釋與 110–113 年度全臺崩塌地圖層 → 切成 Slope Unit → 疊合四個年度、對照事件目錄 → 抽樣坡面，以 Wayback／Sentinel-2／UAV 影像做盲測目視判讀。</p>
+          <h5>結果</h5>
+          <ul>
+            <li>30 個坡面（Wayback／Sentinel-2）人工盲測（n=29 可判讀）：有無裸露與官方圖層一致 <strong>69%</strong>；變化類別<strong>嚴格一致 8（28%）</strong>、含相容 18（62%）、不一致 11。我們先前由 AI 判讀得到 96.6%，經人工獨立判讀後發現 AI 偏向判成「持續裸露」，因此<strong>不採用</strong>。分層抽樣、單一人工判讀者，不能當作官方圖層的整體精度。</li>
+            <li>UAV（0.6 m）可對位年度的 8 個坡面，人工判讀 2 個無法判讀，其餘 6 個中一致或相容 <strong>4/6</strong>。</li>
+            <li>四年圖層相鄰年度重疊（IoU）僅 <strong>0.59–0.65</strong>；官方「首次出現」5 例，人工判讀下<strong>全部與影像不相符</strong>（4 例看不到崩塌）；「消失」3 例中 2 相容。這可能來自描繪、影像日期與植生差異，比例尚未估計。</li>
+            <li>事件目錄能解釋的新增裸露面積：各期 <strong>0–15%</strong>（2021→2022 為 4.9%、2022→2023 為 0%、2023→2025 為 14.9%），全期 2021→2025 為 16.7%。</li>
+          </ul>
+          <p class="warn">限制：單一人工判讀者、樣本小且為分層配額；官方圖層是衛星判釋，與影像日期相差數月。</p>
+        </div>
+
+        <div class="ds-card fan">
+          <div class="ds-tag">反 ・ antithesis</div>
+          <h4>影像偵測為主，官方判釋當參照標籤</h4>
+          <h5>做法</h5>
+          <p>Wayback 0.5 m 影像（2022-08-26、2023-11-02）＋簡單的植生指標規則（<strong>不訓練模型</strong>），坡度 ≥ 15°，兩期皆有影像的 409 km²（坡度 ≥ 15° 的評估範圍 372 km²）；官方 2022、2023 年度圖層當參照標籤（衛星判釋，非現地確認）。另以空間棋盤格切出訓練區與測試區，降低用同一份標籤調參又打分的問題；相鄰格仍可能有空間自相關，尚非完全獨立測試。</p>
+          <h5>結果（召回率）</h5>
+          <table class="ds-table">
+            <tr><th>範圍</th><th>2022</th><th>2023</th></tr>
+            <tr><td>全評估範圍（像素）</td><td>73%</td><td>60%</td></tr>
+            <tr><td>空間測試區（像素）</td><td>68%</td><td>56%</td></tr>
+            <tr><td>官方崩塌塊 &gt; 2 ha（塊數命中）</td><td>99%</td><td>95%</td></tr>
+            <tr><td>官方崩塌塊 0.5–2 ha（塊數命中）</td><td>92%</td><td>85%</td></tr>
+            <tr><td>官方崩塌塊 &lt; 0.5 ha（塊數命中）</td><td>56%</td><td>43%</td></tr>
+          </table>
+          <p>精確率約 50–55%，但這只是<strong>下限</strong>：官方判釋本身有漏報，「偵測有、官方無」不等於偽陽性，需人工複核抽樣才能估計。塊數命中＝偵測與該官方崩塌塊重疊 ≥ 20% 面積。</p>
+          <p class="warn">限制：只有可見光，分不出裸土農地、道路、建物；兩個日期的單一場景。</p>
+        </div>
+
+        <div class="ds-card he">
+          <div class="ds-tag">合 ・ synthesis</div>
+          <h4>現行偵測流程的盲點與改進方向（初步）</h4>
+          <h5>目前看到的盲點</h5>
+          <ul>
+            <li><strong>時間不對齊：</strong>官方年度圖層的影像日期集中在特定月份，與事件前後影像不對齊；Wayback 在 2024、2025 年僅涵蓋 POC 的 0.7%、6.7%，連最新年度圖層都難以用影像回頭檢驗。</li>
+            <li><strong>事件目錄是子集：</strong>公開 KML 只含完整 Shapefile 的 48% 件數、83% 面積；同事件多個版本互相重疊。</li>
+            <li><strong>定義不同：</strong>年度圖層是「仍裸露的狀態」，事件目錄是「新增崩塌」，兩者不能直接相減；描繪誤差使年度比較充滿雜訊。</li>
+            <li><strong>小崩塌最難：</strong>&lt; 0.5 ha 的崩塌，影像規則只抓到 4–6 成。</li>
+            <li><strong>多數變化沒有事件歸因：</strong>目錄只能與各期 0–15% 的新增裸露面積形成空間對應（全期 17%）；這不代表其餘變化沒有事件原因。</li>
+          </ul>
+          <h5>改進方向（待更多驗證）</h5>
+          <ul>
+            <li>每筆判釋標註影像日期與「可被影像檢驗」的程度。</li>
+            <li>以坡面為單位累積多年度履歷，而不是各年度各自獨立的圖層。</li>
+            <li>以簡單植生指標規則當大崩塌（&gt; 2 ha）的漏判<strong>查核</strong>，不取代人工判釋。</li>
+            <li>公開「未被事件目錄解釋的變化」清單供人工複核；補強 2024–2025 年影像（Sentinel-2、UAV）。</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="ds-nums">
+        <div class="ds-num"><b>18,401</b><span>POC 內切出的 Slope Unit（20 m DTM）</span></div>
+        <div class="ds-num"><b>69%</b><span>有無裸露一致率（人工盲測 n=29）；類別嚴格一致 28%、含相容 62%</span></div>
+        <div class="ds-num"><b>73% / 60%</b><span>影像規則像素召回（2022 / 2023）</span></div>
+        <div class="ds-num"><b>0.7% / 6.7%</b><span>Wayback 對 POC 的 2024 / 2025 年涵蓋</span></div>
+      </div>
+      <p class="ds-note">資料與限制：官方判釋為衛星判釋、不是現地真值；0.1 ha 不是硬門檻；本頁數字取自 POC 單一範圍與兩個影像日期，樣本與判讀者數量都有限，
+      「合」的結論為初步建議，需要專家與更多區域驗證。Google Earth 內容只用於個案人工複核，未用於上述偵測與評估。</p>
+    </div>
+
+    <div class="ds-block">
+      <h3>目前階段與下一步</h3>
+      <div class="ds-map">
+        <div>
+          <div class="ds-row"><h4>已完成</h4><p>坡面切分、四年圖層疊合與事件歸因、官方判釋盲測驗證（Wayback／Sentinel-2／UAV）、Wayback 全 POC 影像盤點、影像規則基準偵測與「狀態」評估。</p></div>
+        </div>
+        <div>
+          <div class="ds-row"><h4>接下來</h4><p>影像「前後變化」對事件目錄的評估；「偵測有、官方無」的人工複核以估計精確率；用 Sentinel-2 補 2024–2025 年；坡面切分參數請專家檢驗；台帳定義與示警規則落地。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="legacy" id="legacy-stage">
+      <summary>▸ 前一階段成果（保留）：Top 100 熱點巡查優先級・官方衛星判釋驗證・人工覆核狀態</summary>
 
     <div class="priority-cta">
       <div class="pc-head">
@@ -723,6 +856,8 @@
         </div>
       </div>
     </div>
+
+    </details>
 
     <div class="explore-more">
       <h4>巡查清單與技術底座</h4>
