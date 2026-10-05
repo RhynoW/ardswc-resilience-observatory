@@ -153,6 +153,27 @@ def build_area(tag, name, label, bbox, evt_range, s1win, desc, event_note):
     return out
 
 
+def evidence_summary():
+    """高雄：SU 有效坡面、現地照片（分類）與衛星事件目錄兩類證據的摘要（供展示頁）。"""
+    meta = jload(POC / "su_meta_eff.json", {})
+    ev = jload(POC / "su_evidence.json", [])
+    ph = jload(POC / "su_photos.json", [])
+    pm = jload(POC / "su_photo_meta.json", {})
+    if not ev:
+        return None
+    LS = ("坡面崩塌／坍方", "落石／滾石")
+    n_ph = sum(1 for e in ev if e["field_photos"].get("classes"))
+    sat = [e for e in ev if e["satellite"]["category"] != "無崩塌"]
+    both = [e for e in sat if e["field_photos"].get("classes")]
+    ls = [e for e in ev if sum(e["field_photos"].get("classes", {}).get(k, 0) for k in LS)]
+    from collections import Counter
+    cls = Counter(m["class"] for m in pm.values())
+    return {"su_version": (meta.get("params") or {}).get("su_version"), "n_su": len(ev), "n_su_original": 18401, "photos_poc": len(ph),
+            "photos_disaster_media": len(pm), "photo_classes": dict(cls), "su_with_photos": n_ph, "su_with_sat_bare": len(sat), "su_both": len(both),
+            "su_photo_only": n_ph - len(both), "su_sat_only": len(sat) - len(both), "su_with_ls_photos": len(ls),
+            "su_ls_photos_no_sat": sum(1 for e in ls if e["satellite"]["category"] == "無崩塌")}
+
+
 def main():
     WEB.mkdir(parents=True, exist_ok=True)
     index = []
@@ -222,6 +243,7 @@ def main():
         "human_blind": (jload(POC / "su_validation" / "score_verdicts_human.json", {}) or {}).get("overall"),
         "ai_blind": (jload(POC / "su_validation" / "score.json", {}) or {}).get("overall"),
         "change_wayback": jload(POC / "reverse" / "eval_change.json"),
+        "evidence": evidence_summary(),
     }
     (WEB / "kaohsiung.json").write_text(json.dumps(round_coords(kh), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print("kaohsiung", round((WEB / "kaohsiung.json").stat().st_size / 1e6, 2), "MB", {k: len(v["features"]) for k, v in kh["layers"].items()}, len(kh["markers"]), "markers")

@@ -12,6 +12,7 @@
 限制：事件判釋是衛星判釋；年度圖層與事件判釋都來自水保署體系，並非完全獨立。
 """
 import json
+import os
 import sys
 import time
 from collections import Counter, defaultdict
@@ -104,8 +105,9 @@ def main():
     res = {"windows": {}, "events": {n: {"date": str(v[0].date()), "area_ha_in_poc": round(float(R[n].sum() * PX_HA), 1)} for n, v in events.items()}}
 
     # ── SU 標籤對位到 10 m 格網
-    meta = json.load(open(POC / "su_meta.json", encoding="utf-8"))
-    L = np.load(POC / "su_labels.npz")
+    SUF = os.environ.get("SU_OUT_SUFFIX", "")          # "_eff"＝使用有效坡面（≥15°）標籤，輸出檔加後綴，不覆蓋原檔
+    meta = json.load(open(POC / f"su_meta{SUF}.json", encoding="utf-8"))
+    L = np.load(POC / f"su_labels{SUF}.npz")
     key20, sx0, sy0 = L["key20"], float(L["x0"]), float(L["y0"])
     h, w = shape
     x = tf.c + (np.arange(w) + 0.5) * RES
@@ -264,8 +266,8 @@ def main():
                       "slope_deg": uinfo[int(uniq[i])]["mean_slope_deg"], "bare_ha": {str(y_): round(float(bare[y_][i]), 2) for y_ in YEARS},
                       "growth_pairs": int(grow[i]), "new_bare_ha_total": round(float(chain_new[i]), 2), "dominant_event": dom[i] or None,
                       "explained_by_events": round(float(expl[i]), 2), "cx": round(float(cx_b[i] if has else cx_a[i]), 1), "cy": round(float(cy_b[i] if has else cy_a[i]), 1)})
-    (POC / "su_table.json").write_text(json.dumps(table, ensure_ascii=False), encoding="utf-8")
-    np.save(POC / "su_lab10.npy", lab_su.astype(np.int32))
+    (POC / f"su_table{SUF}.json").write_text(json.dumps(table, ensure_ascii=False), encoding="utf-8")
+    np.save(POC / f"su_lab10{SUF}.npy", lab_su.astype(np.int32))
     log("SU 逐單元表 →", len(table), "筆")
 
     # ── 3. 大規模崩塌潛勢區（獨立對照）
@@ -309,7 +311,7 @@ def main():
     res["potential_zones"] = {"n_in_poc": len(pz), "su_groups": rows_, "steep_control": ctl, "zones": zones,
                               "bare_share_inside_zones_2024": round(float((M[2024] & pzm).sum() / max(pzm.sum(), 1)), 4),
                               "bare_share_poc_2024": round(float(M[2024].sum() / (h * w)), 4)}
-    (POC / "su_events.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    (POC / f"su_events{SUF}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     log("完成 → su_events.json")
 
 

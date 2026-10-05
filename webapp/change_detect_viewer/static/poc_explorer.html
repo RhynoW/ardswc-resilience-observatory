@@ -147,6 +147,13 @@ function largeLine(d){
   const k=l.by_K&&l.by_K["2.0"]; const k4=l.by_K&&l.by_K["4.0"];
   return `<h3>大崩塌查核（≥2 ha 塊，降軌 VH）</h3><p class="small">參照大塊 ${l.ref_large_n} 塊（${num(l.ref_large_ha)} ha）。K=2：召回 ${esc(k&&k.recall_large_n)}、偵測大塊 ${k&&k.det_large_n}（精確 ${esc(k&&k.precision_large_n)}）、目錄外大塊 ${k&&k.outside_catalog_n} 個；K=4：召回 ${esc(k4&&k4.recall_large_n)}。</p>`;
 }
+function evBlock(e){
+  if(!e) return "";
+  const c=e.photo_classes||{}; const rows=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${num(v,0)}</td></tr>`).join("");
+  return `<h3>兩類證據：衛星事件目錄 vs 現地照片（坡面 ${num(e.n_su,0)} 個，SU 版本 ${esc(e.su_version)}）</h3>
+  <p class="small">範圍內歷史照片 ${num(e.photos_poc,0)} 筆（災害事件＋媒體報導 ${num(e.photos_disaster_media,0)} 筆，其餘為重要地景）。兩類證據<b>不相加</b>：有衛星裸露的坡面 ${num(e.su_with_sat_bare,0)} 個、有災害／媒體照片的坡面 ${num(e.su_with_photos,0)} 個，<b>兩者皆有只有 ${num(e.su_both,0)} 個</b>；只有照片 ${num(e.su_photo_only,0)} 個、只有衛星 ${num(e.su_sat_only,0)} 個。照片描述含崩塌或落石的坡面 ${num(e.su_with_ls_photos,0)} 個，其中 ${num(e.su_ls_photos_no_sat,0)} 個年度圖層沒有裸露（可能是小型崩塌或落石，待人工確認）。</p>
+  <table><thead><tr><th>照片描述分類（規則式初分，非判定）</th><th class="n">筆數</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
 function kInfo(d){
   const m=d.metrics, hb=m.human_blind||{}, ab=m.ai_blind||{}, w=m.state_wayback||{}, s2=(m.state_s2||{}), sl=(s2.state_late_vs_2024layer||{}).all||{}, ch=s2.change||{}, cw=(m.change_wayback||{}).AC||{};
   const ex=o=>{const vals=Object.entries(o).filter(([k,v])=>typeof v==="number"&&!["n","excluded"].includes(k)&&!k.includes("rate")&&!k.includes("agreement"));return vals;};
@@ -165,6 +172,7 @@ function kInfo(d){
   <p class="small muted">精確率只是下限（官方有漏報）；Wayback 評估範圍 372 km²、Sentinel-2 為整個 POC 的 1,502 km²。</p>
   <h3>Sentinel-2 前後變化對事件目錄（2024-04→2025-03）</h3>
   <p class="small">影像新增 ${num(ch.new_ha)} ha，${pct(ch.share_new_in_events)} 落在事件內；事件內／外倍數 ${num(ch.ratio,0)}×；事件面積被偵測為新增 ${pct(ch.events_detected_as_new_frac)}。</p>
+  ${evBlock(m.evidence)}
   <h3>穩健性檢驗</h3>
   <p class="small">空間緩衝 0／500／1,000 m：測試區召回 2022 約 ${pct((b["0"]||{})["2022"]&&b["0"]["2022"].test.recall)}／${pct((b["500"]||{})["2022"]&&b["500"]["2022"].test.recall)}／${pct((b["1000"]||{})["2022"]&&b["1000"]["2022"].test.recall)}（邊界洩漏不明顯）。坡面切分：河網門檻 STREAM_HA=5／20 時前 100 名坡面與基準的重疊只有 ${num((ss.s5_m1||{}).top100_union_jaccard_vs_base,2)}／${num((ss.s20_m1||{}).top100_union_jaccard_vs_base,2)}（排序對門檻高度敏感）。</p>`;
 }

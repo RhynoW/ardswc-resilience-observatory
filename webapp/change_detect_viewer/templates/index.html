@@ -704,7 +704,7 @@
       <div class="ds-map">
         <div>
           <div class="ds-row"><h4>主線收斂到災害資料流程 <small>（已調整敘事）</small></h4><p>真正災害資料清理 → 獨立事件去重 → 複發熱點辨識 → 近期影像變化 → 人工確認 → 巡查優先建議。</p></div>
-          <div class="ds-row"><h4>以官方判釋為起點，改以「坡面」為單位 <small>（POC 已做）</small></h4><p>用 20 m DTM 切出 Slope Unit（POC 共 18,401 個），把官方歷年崩塌圖層與事件目錄疊到坡面上，朝「坡面災害履歷」發展。切分參數尚未經專家驗證。</p></div>
+          <div class="ds-row"><h4>以官方判釋為起點，改以「坡面」為單位 <small>（POC 已做）</small></h4><p>用 20 m DTM 切出 Slope Unit（POC 共 18,401 個；依委員建議保留原始幾何、另裁出各單元內坡度 ≥15° 的有效坡面，其中 17,805 個有有效坡面），把官方歷年崩塌圖層與事件目錄疊到坡面上，朝「坡面災害履歷」發展。切分參數尚未經專家驗證。</p></div>
           <div class="ds-row"><h4>先小範圍、再抽樣驗證 <small>（已做）</small></h4><p>在小範圍 POC 內抽代表性坡面，以歷史影像做盲測目視（只看影像與坡面外框，不看官方類別）。</p></div>
         </div>
         <div>
@@ -774,7 +774,7 @@
 
       </div>
       <div class="ds-nums">
-        <div class="ds-num"><b>18,401</b><span>POC 內切出的 Slope Unit（20 m DTM）</span></div>
+        <div class="ds-num"><b>17,805</b><span>POC 內有 ≥15° 有效坡面的 Slope Unit（原 18,401 個，20 m DTM；SU 版本 SUv1-D20m-S10-M1-E15）</span></div>
         <div class="ds-num"><b>69%</b><span>有無裸露一致率（人工盲測 n=29）；類別嚴格一致 28%、含相容 62%</span></div>
         <div class="ds-num"><b>73% / 60%</b><span>影像規則像素召回（2022 / 2023）</span></div>
         <div class="ds-num"><b>0.7% / 6.7%</b><span>Wayback 對 POC 的 2024 / 2025 年涵蓋</span></div>
