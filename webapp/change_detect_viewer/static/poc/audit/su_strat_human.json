@@ -1,0 +1,146 @@
+{
+ "SV01": {
+  "verdict": "D",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV02": {
+  "verdict": "D",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV03": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV04": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV05": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV06": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV07": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV08": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV09": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV10": {
+  "verdict": "A",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV11": {
+  "verdict": "D",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV12": {
+  "verdict": "A",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV13": {
+  "verdict": "A",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV14": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV15": {
+  "verdict": "D",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV16": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV17": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV18": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV19": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV20": {
+  "verdict": "E",
+  "conf": "中",
+  "small": false,
+  "note": ""
+ },
+ "SV21": {
+  "verdict": "C",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV22": {
+  "verdict": "C",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV23": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ },
+ "SV24": {
+  "verdict": "B",
+  "conf": "高",
+  "small": false,
+  "note": ""
+ }
+}

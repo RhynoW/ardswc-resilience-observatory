@@ -1,0 +1,84 @@
+{
+ "title": "分層人工驗證（24 個坡面）判讀流程稽核清單",
+ "built": "2026-10-06T14:11:21+08:00",
+ "code": {
+  "repo": "RhynoW/ardswc-resilience-observatory",
+  "commit_of_tooling": "a8fcd89ea25346d9770ab6ebd6fd22b8468c9575",
+  "scripts": [
+   "scripts/su_strat_select.py",
+   "scripts/su_strat_panels.py",
+   "scripts/su_outline_offset_check.py",
+   "scripts/su_strat_export_outlines.py",
+   "scripts/su_strat_audit_pack.py"
+  ]
+ },
+ "su_version": "SUv1-D20m-S10-M1-E15",
+ "su_params": {
+  "stream_ha": 10.0,
+  "min_su_ha": 1.0,
+  "slope_min_deg": 15.0,
+  "dtm": "data/dtm/tw_dtm20.tif（20 m）",
+  "built": "2026-10-05"
+ },
+ "design": {
+  "strata": 6,
+  "per_stratum": 4,
+  "total": 24,
+  "selection_seed": 20261005,
+  "panel_order_seed": 20261006,
+  "min_separation_m": 1200,
+  "min_effective_area_ha": 3.0,
+  "note": "層別定義見 scripts/su_strat_select.py 文件字串；各層候選名單與編號→層別對照不公開（見 withheld）。"
+ },
+ "rater": {
+  "n": 1,
+  "who": "專案成員（人工，單一判讀者）",
+  "blind_to": [
+   "層別",
+   "事件目錄歸因",
+   "照片",
+   "系統推薦"
+  ],
+  "saw": [
+   "Wayback 較早與最新影像",
+   "Sentinel-2 2024-04-04 與 2025-03-25",
+   "有效坡面輪廓",
+   "DTM 參考欄"
+  ],
+  "options": {
+   "A": "近期有新增／擴大崩塌",
+   "B": "有崩塌但近期無變化",
+   "C": "無崩塌",
+   "D": "有裸露但非崩塌",
+   "E": "無法判讀"
+  },
+  "provenance_note": "判讀結果由使用者以 review.html 匯出 su_strat_human.json 後貼入對話，由助理原樣存檔；原始匯出檔的時間戳記無法取得。"
+ },
+ "limits": [
+  "每層 4 個，不可估計比率或準確率",
+  "單一判讀者",
+  "Wayback 影像對 DTM／Sentinel-2 有 10–25 m 偏移（offset_check.json）",
+  "S5 為代理層（無治理資料）",
+  "近期＝2024-04～2025-03"
+ ],
+ "files": {
+  "review.html": "ffa24c5aa8b20fb70a4971ab2bf93b8828a54180c163263414b1822a269fff1d",
+  "su_strat_human.json": "13ca1eca5aa584f4c7d9789c62e93e727292aec3a5497113032ceea0d27202ba",
+  "offset_check.json": "aa3d844d6acf5782ac6b40156ae7ede6462a97e10da24511fa1d5e960378b650"
+ },
+ "inputs_sha256": {
+  "su_table_eff.json": "2087a0ceac44c53b33f912446cc775d2d5a25e7ae98b592ccab496eb65674e4a",
+  "su_meta_eff.json": "bfed51ba1784e6e25c78a8cb2f9ebab1d10201ae674d3b639abfa68d61f22c90",
+  "su_evidence.json": "4376167f3d424c90be566fb7e740c7a70121ee0bb26ce189a7e04f09258352ad",
+  "su_lab10_eff.npy": "8f011b4aad63a0259d19289c346ff4d6e2408ef941f5e87bfa9e66dbe71e4e40",
+  "s2/det_20240404_A_fixed.npy": "8c5ea4ad3531a1312cdbd96513e1742be122294ed92b9f85dfeaa7fcfcc6aa5f",
+  "s2/det_20250325_A_fixed.npy": "7a32cd3d261f3abe103010a23953f881389bef0d7787d8f39840c52835a7888a",
+  "reverse/river.npy": "06c850f30a78227c9a23ba7c2e4790776ae8393fed393cc3a74713b6e80df5b8"
+ },
+ "withheld_sha256_commitment": {
+  "key.json": "333148bd97922dd034f6866eca13bcd69d5194547928c040b0a7ec3fb536a7a4",
+  "selected.json": "8879c619e645882e21ec4e61ab9f10e70f2cc7de3fec7f1e2d87e321e4e54794",
+  "pool_summary.json": "f7bead6ee178b5f185900148a211a0c269265ae3a4f8a1063ac361da063c5771",
+  "reveal": "專業人員盲判完成後公開原檔，雜湊可供核對"
+ }
+}
