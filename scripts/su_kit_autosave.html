@@ -1,0 +1,16 @@
+<script>
+(function(){
+  const KEY='su_kit_v1_'+(typeof GROUP!=='undefined'?GROUP:'expert');
+  const ctl=()=>[...document.querySelectorAll('input,textarea')].filter(e=>!['button','submit'].includes(e.type));
+  function snap(){const o={r:{},c:{},t:{},T:(typeof T!=='undefined'?T:{})};ctl().forEach(e=>{if(e.type==='radio'){if(e.checked)o.r[e.name]=e.value}else if(e.type==='checkbox'){o.c[e.name]=o.c[e.name]||[];if(e.checked)o.c[e.name].push(e.value)}else o.t[e.id||e.name]=e.value});return o}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(snap()));const s=document.getElementById('as');if(s)s.textContent='　已自動暫存 '+new Date().toLocaleTimeString()}catch(e){}}
+  function restore(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o)return false;
+    ctl().forEach(e=>{if(e.type==='radio'){e.checked=(o.r[e.name]===e.value)}else if(e.type==='checkbox'){e.checked=(o.c[e.name]||[]).includes(e.value)}else if((e.id||e.name) in o.t){e.value=o.t[e.id||e.name]}});
+    if(typeof T!=='undefined'&&o.T)Object.assign(T,o.T);if(typeof prog==='function')prog();return true}catch(e){return false}}
+  const h=document.querySelector('header');if(h){const s=document.createElement('span');s.id='as';s.style.cssText='font-size:13px;margin-left:12px;opacity:.85';h.appendChild(s);
+    const b=document.createElement('button');b.textContent='清除暫存';b.onclick=()=>{if(confirm('清除這個瀏覽器中暫存的答案？'))try{localStorage.removeItem(KEY);location.reload()}catch(e){}};h.appendChild(b)}
+  const had=restore();if(had){const s=document.getElementById('as');if(s)s.textContent='　已還原先前暫存的答案'}
+  document.addEventListener('change',save);document.addEventListener('input',save);setInterval(save,15000);window.addEventListener('beforeunload',save);
+  window.__su_save=save;window.__su_restore=restore;
+})();
+</script>

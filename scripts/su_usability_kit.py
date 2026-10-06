@@ -26,6 +26,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 sys.path.insert(0, str(REPO / "webapp" / "change_detect_viewer"))
 import su_strat_panels as P  # noqa: E402
+import su_panel_v2 as V2  # noqa: E402
 from landslide_incremental import grid  # noqa: E402
 
 POC = REPO / "data" / "biggis_interp" / "poc"
@@ -110,22 +111,19 @@ def main():
     recs = jl(REPO / "webapp/change_detect_viewer/static/poc/su/su_records.json")
     from concurrent.futures import ThreadPoolExecutor
 
+    official = {k: np.load(POC / "incremental_masks.npz")[k] for k in ("2021", "2024")}
+
     def one(item):
         f, s, typ = item
         t = dict(f)
         t["lon"], t["lat"] = to_ll.transform(f["cx"], f["cy"])
-        try:
-            w = P.wayback_cols(t, lab10, tf, to_m, None)
-        except Exception:  # noqa: BLE001
-            w = [None, None]
-        cols = [c for c in w + P.s2_cols(t, lab10, tf, arrs) if c is not None]
-        h = max(c.shape[0] for c in cols)
-        cols = [np.vstack([c, np.zeros((h - c.shape[0], c.shape[1], 3), np.uint8)]) if c.shape[0] < h else c for c in cols]
-        return f["su_id"], np.hstack(cols), t
+        cells = V2.build_cells(t)
+        return f["su_id"], V2.compose(cells, t, lab10, tf, to_m, official), V2.compose(cells, t, lab10, tf, to_m, None), t
     with ThreadPoolExecutor(3) as ex:
         res = list(ex.map(one, sus))
-    img = {sid: im for sid, im, _ in res}
-    meta = {sid: t for sid, _, t in res}
+    img = {sid: im for sid, im, _, _ in res}
+    img_e = {sid: ie for sid, _, ie, _ in res}
+    meta = {sid: t for sid, _, _, t in res}
     # 題號（兩組共用 T01–T20 的隨機對照；G1／G2 的題目順序各自隨機）
     rng = random.Random(SEED + 1)
     order = list(range(len(sus)))
@@ -149,7 +147,7 @@ def main():
             ev, ph = [], []
         else:
             bare, ev, ph = r["bare"], r["events"], r["photo_list"]
-        h = "<table><tr><th>年度圖層</th>" + "".join(f"<th>{'113年度' if y == '2024' else y}</th>" for y in ("2021", "2022", "2023", "2024")) + "</tr><tr><td>裸露面積 ha（單元內）</td>" + "".join(f"<td>{bare.get(y, 0)}</td>" for y in ("2021", "2022", "2023", "2024")) + "</tr></table>"
+        h = "<table><tr><th>年度圖層</th>" + "".join(f"<th>{'2024年' if y == '2024' else y}</th>" for y in ("2021", "2022", "2023", "2024")) + "</tr><tr><td>裸露面積 ha（單元內；2024年＝113年度圖層，影像約2025-03～04）</td>" + "".join(f"<td>{bare.get(y, 0)}</td>" for y in ("2021", "2022", "2023", "2024")) + "</tr></table>"
         h += "<p><b>事件目錄（2021-07～2025-03，多邊形落在此單元者）</b></p>" + ("<ul>" + "".join(f"<li>{e[0]} {e[1]}（{e[2]} ha）</li>" for e in ev) + "</ul>" if ev else "<p class='m'>無</p>")
         h += "<p><b>歷史照片（災害事件／媒體報導，最多 10 筆）</b></p>" + ("<ul>" + "".join(f"<li>{p_[0]}：<a href='https://photo.ardswc.gov.tw/api/Media/{p_[2]}' target='_blank'>{p_[3] or p_[2]}</a></li>" for p_ in ph) + "</ul>" if ph else "<p class='m'>無</p>")
         return h
@@ -157,7 +155,7 @@ def main():
     for sid, c in code.items():
         s = setof[sid]
         mu_ = next(u for u in jl(POC / "su_meta_eff.json")["units"] if u["su_id"] == sid)
-        items[sid] = {"code": c, "img": uri(img[sid]), "sheet": sheet(sid), "su": sid, "area": f"有效坡面 {mu_['eff_area_ha']} ha"}
+        items[sid] = {"code": c, "img": uri(img[sid], 1520, 70), "img_e": uri(img_e[sid], 1520, 70), "sheet": sheet(sid), "su": sid, "area": f"有效坡面 {mu_['eff_area_ha']} ha"}
     html_kit = lambda grp: kit(grp, items, setof)
     for grp in ("G1", "G2"):
         (OUT / f"kit_{grp}.html").write_text(html_kit(grp), encoding="utf-8")
@@ -180,9 +178,9 @@ def kit(grp, items, setof):
         sids = [s for s in items if setof[s] == sname]
         rng.shuffle(sids)
         if cond == "orig":
-            head = f"第 {n} 階段（共 2 階段）：使用「原始資料」判斷 10 個坡面。每題提供四欄影像圖（白線＝≥15° 有效坡面）與一份資料表（四年圖層裸露、事件目錄、照片清單）。"
+            head = f"第 {n} 階段（共 2 階段）：使用「原始資料」判斷 10 個坡面。每題提供多時點影像圖（見上方圖例）與一份資料表（四年圖層裸露、事件目錄、照片清單）。"
         else:
-            head = f"第 {n} 階段（共 2 階段）：使用「證據鏈頁」判斷另外 10 個坡面。每題提供同樣的影像圖，以及一個嵌入的證據鏈頁（需連網；也可點「在新分頁開啟」）。頁面上的候選層級是 POC 規則、尚未驗證，請依你的專業判斷，不必照著選。"
+            head = f"第 {n} 階段（共 2 階段）：使用「證據鏈頁」判斷另外 10 個坡面。每題提供同樣的多時點影像圖，以及一個嵌入的證據鏈頁（需連網；也可點「在新分頁開啟」）。頁面上的候選層級是 POC 規則、尚未驗證，請依你的專業判斷，不必照著選。"
         body.append(f'<div class="ph">{head}</div>')
         for s in sids:
             it = items[s]
@@ -209,18 +207,18 @@ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.st
 """
     return f"""<!doctype html><meta charset="utf-8"><title>坡面判讀操作測試（{grp}）</title><style>{CSS}</style>
 <header><b>坡面判讀操作測試</b><span id="p"></span>　參與者代號：<input type="text" id="pid" size="8" placeholder="如 P01"><button onclick="exp()">匯出結果 JSON</button></header><main>
-<p>這是一個測試，<b>不是考試，也沒有標準答案</b>。情境：您是巡查規劃人員，要決定下面每個坡面是否建議安排現勘。請依您的專業判斷作答，沒把握就選「資料不足，無法決定」並標示信心。頁面會自動記錄每題在視窗內的停留秒數（只用於比較兩種資料呈現方式），不記錄其他個資。官方判釋是衛星判釋、不是現地確認。完成後按右上角「匯出結果 JSON」，把檔案寄回。</p>
+<p>這是一個測試，<b>不是考試，也沒有標準答案</b>。情境：您是巡查規劃人員，要決定下面每個坡面是否建議安排現勘。請依您的專業判斷作答，沒把握就選「資料不足，無法決定」並標示信心。頁面會自動記錄每題在視窗內的停留秒數（只用於比較兩種資料呈現方式），不記錄其他個資。官方判釋是衛星判釋、不是現地確認。完成後按右上角「匯出結果 JSON」，把檔案寄回。</p><p><b>影像圖怎麼看：</b>每個坡面一張圖，由舊到新排成兩列、每列四格（Wayback 0.3–0.5 m 與 Sentinel-2 10 m，標題有日期與來源；Sentinel-2 已做對比增強，僅供目視，原本被浮水印遮住的區域改用較粗的圖磚補回，會比較模糊）。<b>白線</b>＝我們切出的坡面單元中坡度 ≥15° 的「有效坡面」範圍，是統計單元的外框，<b>不是裸露地的邊界</b>；<b>紅線</b>＝官方 2024 年度崩塌地圖層的裸露範圍（即 113 年度圖層，影像約 2025-03～04）；<b>黃線</b>＝2021 年度圖層的裸露範圍。Wayback 影像對地形資料常有 10–25 m 偏移，線與影像可能錯位，請以大致位置判斷。</p>
 {"".join(body)}{fin}</main><script>const GROUP="{grp}";{js}</script>"""
 
 
 def expert(items):
     OPT = P.OPT
-    rows = "".join(f'<div class="it" id="it_{it["code"]}" data-code="{it["code"]}"><b>{it["code"]}</b><img src="{it["img"]}" alt="{it["code"]} 四欄影像"><p class="q">' + "".join(f'<label><input type="radio" name="v_{it["code"]}" value="{k}"><b>{k}</b> {t}</label>' for k, t in OPT) + '</p><p class="q">信心：' + "".join(f'<label><input type="radio" name="c_{it["code"]}" value="{v}">{v}</label>' for v in ("高", "中", "低")) + f'　備註：<input type="text" id="n_{it["code"]}"></p></div>' for it in sorted(items.values(), key=lambda x: x["code"]))
+    rows = "".join(f'<div class="it" id="it_{it["code"]}" data-code="{it["code"]}"><b>{it["code"]}</b><img src="{it["img_e"]}" alt="{it["code"]} 多時點影像"><p class="q">' + "".join(f'<label><input type="radio" name="v_{it["code"]}" value="{k}"><b>{k}</b> {t}</label>' for k, t in OPT) + '</p><p class="q">信心：' + "".join(f'<label><input type="radio" name="c_{it["code"]}" value="{v}">{v}</label>' for v in ("高", "中", "低")) + f'　備註：<input type="text" id="n_{it["code"]}"></p></div>' for it in sorted(items.values(), key=lambda x: x["code"]))
     js = """const IDS=[...document.querySelectorAll('.it')].map(e=>e.dataset.code);
 function exp(){const pid=document.getElementById('pid').value.trim();if(!pid){alert('請先填判讀者代號');return}const o={rater:pid,exported:new Date().toISOString(),items:{}};IDS.forEach(i=>{const v=document.querySelector('input[name=v_'+i+']:checked'),c=document.querySelector('input[name=c_'+i+']:checked');o.items[i]={verdict:v?v.value:null,conf:c?c.value:null,note:document.getElementById('n_'+i).value}});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,1)],{type:'application/json'}));a.download='expert_'+pid+'.json';a.click()}
 document.addEventListener('change',()=>{let n=0;IDS.forEach(i=>{if(document.querySelector('input[name=v_'+i+']:checked')&&document.querySelector('input[name=c_'+i+']:checked'))n++;document.getElementById('it_'+i).classList.toggle('done',!!(document.querySelector('input[name=v_'+i+']:checked')&&document.querySelector('input[name=c_'+i+']:checked')))});document.getElementById('p').textContent='　'+n+' / '+IDS.length})"""
     return f"""<!doctype html><meta charset="utf-8"><title>專家盲判（20 個坡面）</title><style>{CSS}</style><header><b>專家盲判（20 個坡面）</b><span id="p"></span>　判讀者代號：<input type="text" id="pid" size="8" placeholder="如 E01"><button onclick="exp()">匯出 JSON</button></header><main>
-<p>每張圖是同一個坡面（白線＝≥15° 有效坡面輪廓）在四個時間點的影像：Wayback（較早與最新）、Sentinel-2（2024-04-04、2025-03-25；10 m，放大顯示）。請只依影像判斷，不要參考任何系統推薦。Wayback 影像對 DTM／Sentinel-2 常有 10–25 m 的偏移，請以輪廓大致位置判斷。選項：A 近期有新增／擴大崩塌；B 有崩塌但近期無變化；C 無崩塌；D 有裸露但非崩塌（河床、道路、工程、農地）；E 無法判讀。</p>{rows}</main><script>{js}</script>"""
+<p>每張圖是同一個坡面在多個時間點的影像，由舊到新排成兩列、每列四格：Wayback（0.3–0.5 m）與 Sentinel-2（10 m，已做對比增強、僅供目視；原本被浮水印遮住的區域改用較粗圖磚補回），標題有日期與來源。白線＝≥15° 有效坡面的外框（不是裸露地邊界）。請只依影像判斷，不要參考任何系統推薦。Wayback 影像對 DTM／Sentinel-2 常有 10–25 m 的偏移，請以輪廓大致位置判斷。選項：A 近期有新增／擴大崩塌；B 有崩塌但近期無變化；C 無崩塌；D 有裸露但非崩塌（河床、道路、工程、農地）；E 無法判讀。</p>{rows}</main><script>{js}</script>"""
 
 
 def readme(q):
