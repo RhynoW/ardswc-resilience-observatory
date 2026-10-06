@@ -1,9 +1,9 @@
 {
  "title": "分層人工驗證（24 個坡面）判讀流程稽核清單",
- "built": "2026-10-06T14:11:21+08:00",
+ "built": "2026-10-06T14:19:03+08:00",
  "code": {
   "repo": "RhynoW/ardswc-resilience-observatory",
-  "commit_of_tooling": "a8fcd89ea25346d9770ab6ebd6fd22b8468c9575",
+  "commit_of_tooling": "a8fcd89ea25346d9770ab6ebd6fd22b8468c9575（選樣、判讀圖、偏移查證、輪廓匯出腳本）；本打包腳本見 scripts/su_strat_audit_pack.py",
   "scripts": [
    "scripts/su_strat_select.py",
    "scripts/su_strat_panels.py",
@@ -61,24 +61,25 @@
   "S5 為代理層（無治理資料）",
   "近期＝2024-04～2025-03"
  ],
+ "hash_note": "SHA-256 以 LF 位元組計算；.gitattributes 已將本資料夾設為 -text，避免換行轉換改變內容。",
  "files": {
-  "review.html": "ffa24c5aa8b20fb70a4971ab2bf93b8828a54180c163263414b1822a269fff1d",
-  "su_strat_human.json": "13ca1eca5aa584f4c7d9789c62e93e727292aec3a5497113032ceea0d27202ba",
-  "offset_check.json": "aa3d844d6acf5782ac6b40156ae7ede6462a97e10da24511fa1d5e960378b650"
+  "review.html": "41e19341ca00d52b90a8da27b787a495f5dea39622375c9a0903ad173e0bc6bd",
+  "su_strat_human.json": "7ff00cdee55bb801ef20cb9ae70e9bd57369c8592147b61a2806db7d6b38f004",
+  "offset_check.json": "eb183def8dbeec21330805abb20ac26afd5e9654f6118b93deef30ed80e21222"
  },
  "inputs_sha256": {
   "su_table_eff.json": "2087a0ceac44c53b33f912446cc775d2d5a25e7ae98b592ccab496eb65674e4a",
   "su_meta_eff.json": "bfed51ba1784e6e25c78a8cb2f9ebab1d10201ae674d3b639abfa68d61f22c90",
   "su_evidence.json": "4376167f3d424c90be566fb7e740c7a70121ee0bb26ce189a7e04f09258352ad",
-  "su_lab10_eff.npy": "8f011b4aad63a0259d19289c346ff4d6e2408ef941f5e87bfa9e66dbe71e4e40",
+  "su_lab10_eff.npy": "fd6e40596c9e5b6ea62f9233a4511e3e754b16ee290eacaae4fa50d489a5fac8",
   "s2/det_20240404_A_fixed.npy": "8c5ea4ad3531a1312cdbd96513e1742be122294ed92b9f85dfeaa7fcfcc6aa5f",
   "s2/det_20250325_A_fixed.npy": "7a32cd3d261f3abe103010a23953f881389bef0d7787d8f39840c52835a7888a",
   "reverse/river.npy": "06c850f30a78227c9a23ba7c2e4790776ae8393fed393cc3a74713b6e80df5b8"
  },
  "withheld_sha256_commitment": {
-  "key.json": "333148bd97922dd034f6866eca13bcd69d5194547928c040b0a7ec3fb536a7a4",
-  "selected.json": "8879c619e645882e21ec4e61ab9f10e70f2cc7de3fec7f1e2d87e321e4e54794",
-  "pool_summary.json": "f7bead6ee178b5f185900148a211a0c269265ae3a4f8a1063ac361da063c5771",
+  "key.json": "ac511eb983f270bf3c25e912a295526d979e2f3291e0bb0be2375facc9579908",
+  "selected.json": "5328b21aa0cc4c21cf926407fca1248be0c033ffcd41081b10710feca42bd5c4",
+  "pool_summary.json": "746d693208e690c00bc35d80c815f7d47e5e357e65818bc9ad7f6e8dbd0e6224",
   "reveal": "專業人員盲判完成後公開原檔，雜湊可供核對"
  }
 }
