@@ -166,6 +166,18 @@ def _report_marker(site, date_a, date_b, roi):
     return {"frac_x": round(panel_x / width, 5), "frac_y": round(panel_y / height, 5)}
 
 
+# ── 依輔導委員意見（停止 3D／UAV／自動套合／格網熱點主軸）：舊階段頁面預設不對外；設 SHOW_LEGACY=1 可還原（程式與資料都保留）
+_LEGACY_PREFIXES = ("/review", "/analytics", "/accessible", "/api/ge_trace", "/static/uav_cesium.html", "/static/spatial3d.html",
+                    "/static/uav/", "/static/analytics.html", "/static/landing_aria.html", "/api/uav_registration",
+                    "/api/capture_custom", "/api/dtm_heights")
+
+
+@app.before_request
+def _hide_legacy():
+    if os.environ.get("SHOW_LEGACY") != "1" and request.path.startswith(_LEGACY_PREFIXES):
+        return jsonify({"error": "not found"}), 404
+
+
 @app.route("/")
 def index():
     return render_template("index.html", apple_enabled=GT.apple_is_available())

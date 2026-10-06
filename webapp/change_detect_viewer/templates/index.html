@@ -657,11 +657,12 @@
     font-family:var(--font-mono); font-size:11.5px; color:var(--muted);
     display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
   }
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
 
-<div class="a11y-note" role="note">本站另有 <a href="/accessible"><strong>React Aria 無障礙版本</strong></a>（新的入口頁：語意化結構、鍵盤焦點、深淺色與高對比）；<a href="/analytics">歷史影像大數據分析</a>頁。</div>
+<div class="a11y-note" role="note" hidden>本站另有 <a href="/accessible"><strong>React Aria 無障礙版本</strong></a>（新的入口頁：語意化結構、鍵盤焦點、深淺色與高對比）；<a href="/analytics">歷史影像大數據分析</a>頁。</div>
 <header>
   <div class="brand">
     <span class="brand-mark">🛰️ OBSERVATORY</span>
@@ -669,12 +670,12 @@
   </div>
   <nav class="tabs">
     <button data-tab="guide" class="active">決策首頁</button>
-    <button data-tab="hotspots">巡查清單</button>
-    <button data-tab="dashboard">空間分析</button>
+    <button data-tab="hotspots" hidden>巡查清單</button>
+    <button data-tab="dashboard" hidden>空間分析</button>
     <button data-tab="references">參考資訊</button>
   </nav>
   <div class="hdr-right">
-    <a class="review-link" href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
+    <a class="review-link" hidden href="/review" target="_blank" rel="noopener" title="A 級候選＋對照組的人工覆核工作單（盲審優先；判定存在本機瀏覽器）">人工覆核工作單 ↗</a>
     <a href="#" id="health-badge" class="health-badge" title="檢查服務健康狀態">● 系統狀態</a>
     <div id="site-badge"></div>
   </div>
@@ -796,7 +797,7 @@
       <script>(function(){var tabs=document.querySelectorAll('#ds-tabs .ds-tab');function show(i){tabs.forEach(function(t,k){var on=k===i;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;document.getElementById('ds-pn-'+k).hidden=!on;});}tabs.forEach(function(t,k){t.addEventListener('click',function(){show(k);});t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var n=(k+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length;show(n);tabs[n].focus();e.preventDefault();}});});})();</script>
     </div>
 
-    <details class="legacy" id="legacy-stage">
+    <details class="legacy" id="legacy-stage" hidden>
       <summary>▸ 前一階段成果（保留）：Top 100 熱點巡查優先級・官方衛星判釋驗證・人工覆核狀態</summary>
 
     <div class="priority-cta">
@@ -843,7 +844,7 @@
       並以 <strong>Sentinel-2 每年一期</strong>（2017 起、乾季雲量最低場景）覆驗。舊版 11 筆人工目視覆核屬於舊熱點位置，
       已全部清空；目前 100 個熱點<strong>皆尚未人工覆核</strong>，資料信心最高只到「中」。A 級代表「優先確認候選」，
       不是災害已確認——人工覆核完成後，覆核結論會優先於自動分數並直接改變分級。</p>
-      <p style="margin:10px 0;"><a class="review-link" href="/review" target="_blank" rel="noopener">→ 開啟人工覆核工作單（A 級候選 31 筆＋對照組 18 筆，盲審優先）</a>
+      <p style="margin:10px 0;"><a class="review-link" hidden href="/review" target="_blank" rel="noopener">→ 開啟人工覆核工作單（A 級候選 31 筆＋對照組 18 筆，盲審優先）</a>
       <span class="sec-sub" style="margin-left:8px;">判定存在各覆核者的瀏覽器，完成後匯出 ledger.json。</span></p>
       <div class="proof-grid" id="proof-grid"></div>
     </div>
@@ -869,7 +870,7 @@
 
     </details>
 
-    <div class="explore-more">
+    <div class="explore-more" hidden>
       <h4>巡查清單與技術底座</h4>
       <div class="explore-links">
         <button class="explore-link" data-tab="hotspots">📋 巡查清單：100 熱點優先級排序與匯出</button>
