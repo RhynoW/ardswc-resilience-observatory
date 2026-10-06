@@ -1,0 +1,12 @@
+{
+ "v": 1,
+ "kdf": "pbkdf2-hmac-sha256",
+ "iter": 300000,
+ "salt": "zJuYNLP9azVR9DusoGL8qg==",
+ "files": {
+  "check": "check.b64",
+  "G1": "G1.b64",
+  "G2": "G2.b64",
+  "expert": "expert.b64"
+ }
+}

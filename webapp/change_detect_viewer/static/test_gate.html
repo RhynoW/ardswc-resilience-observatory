@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<title>測試入口｜坡地韌性哨兵</title>
+<style>
+  :root{--bg:#fff;--text:#1c1c1e;--muted:#58585f;--border:#d1d1d6;--accent:#0b5fd4;--surface:#f7f7f8;--err:#c62828}
+  @media (prefers-color-scheme: dark){:root{--bg:#1b1b1d;--text:#f2f2f4;--muted:#b4b4bb;--border:#46464c;--accent:#6aa9ff;--surface:#242427;--err:#ff7a70}}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+  main{max-width:560px;margin:8vh auto;padding:0 20px}h1{font-size:24px;margin:0 0 6px}p{margin:6px 0}.muted{color:var(--muted);font-size:14px}
+  input{font:inherit;font-size:22px;letter-spacing:.4em;text-align:center;width:9em;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text)}
+  button{font:inherit;padding:9px 18px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;cursor:pointer;margin:6px 6px 0 0}
+  button.s{background:transparent;color:var(--accent)} #err{color:var(--err);min-height:1.6em} :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>測試入口</h1>
+  <p class="muted">坡地韌性哨兵：坡面判讀操作測試與專家盲判。僅限收到存取碼的測試人員與專家。</p>
+  <div id="gate" class="box">
+    <label for="code">請輸入 4 碼數字存取碼</label><br>
+    <input id="code" inputmode="numeric" autocomplete="off" maxlength="4" pattern="\d{4}" aria-describedby="err">
+    <button id="go" type="button">進入</button>
+    <p id="err" role="alert"></p>
+  </div>
+  <div id="menu" class="box" hidden>
+    <p><b>請依主辦單位通知選擇：</b></p>
+    <p>實務人員操作測試（G1 或 G2 擇一，依你被分配的組別）：</p>
+    <button type="button" data-f="G1">開啟 G1</button><button type="button" data-f="G2">開啟 G2</button>
+    <p style="margin-top:14px">專家盲判（20 個坡面）：</p>
+    <button type="button" class="s" data-f="expert">開啟專家盲判表</button>
+    <p class="muted" style="margin-top:12px">開啟後頁面右上角有「匯出結果 JSON」，完成後請匯出並寄回主辦單位。關閉或重新整理頁面會回到這個入口，需要重新輸入存取碼；已填的答案不會保留，請一次完成再匯出。</p>
+  </div>
+</main>
+<script>
+let CODE="";
+const $=id=>document.getElementById(id);
+async function call(file){
+  const r=await fetch("/test/open",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:CODE,file})});
+  return r;
+}
+async function check(){
+  CODE=$("code").value.trim(); $("err").textContent="";
+  if(!/^\d{4}$/.test(CODE)){ $("err").textContent="請輸入 4 碼數字。"; return; }
+  $("go").disabled=true; $("err").textContent="驗證中…";
+  try{
+    const r=await call("check");
+    if(r.status===200){ $("gate").hidden=true; $("menu").hidden=false; $("err").textContent=""; }
+    else if(r.status===429){ $("err").textContent="嘗試次數過多，請稍後再試。"; }
+    else{ $("err").textContent="存取碼不正確。"; }
+  }catch(e){ $("err").textContent="連線失敗，請稍後再試。"; }
+  $("go").disabled=false;
+}
+async function openKit(f){
+  const b=document.querySelectorAll("#menu button"); b.forEach(x=>x.disabled=true);
+  const r=await call(f);
+  if(r.status!==200){ b.forEach(x=>x.disabled=false); alert("開啟失敗（"+r.status+"）。請重新整理後再輸入存取碼。"); return; }
+  const html=await r.text(); document.open(); document.write(html); document.close();
+}
+$("go").addEventListener("click",check);
+$("code").addEventListener("keydown",e=>{ if(e.key==="Enter") check(); });
+document.querySelectorAll("#menu button").forEach(x=>x.addEventListener("click",()=>openKit(x.dataset.f)));
+if(/^#\d{4}$/.test(location.hash)){ $("code").value=location.hash.slice(1); history.replaceState(null,"",location.pathname); check(); }
+</script>
+</body>
+</html>

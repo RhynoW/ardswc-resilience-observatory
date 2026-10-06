@@ -807,6 +807,68 @@ def su_page():
     return send_from_directory(HERE / "static", "su_detail.html")
 
 
+# ── 測試入口（實務人員操作測試與專家盲判）：4 碼存取碼才解密提供；加密檔在 private_kits/（base64 文字，見 scripts/su_usability_lock.py）
+# 注意：repo 公開，4 碼只擋一般訪客與避免洩題，不是機密保護。
+_TEST_FAILS = {}            # ip → 失敗時間戳記（記憶體內；單一程序）
+_TEST_KEYS = {}             # 驗證成功的存取碼 → (加密金鑰, 驗證金鑰)，避免每次重算 PBKDF2
+_TEST_MAX_FAILS, _TEST_WINDOW_S = 5, 600
+
+
+@app.route("/test")
+def test_gate_page():
+    return send_from_directory(HERE / "static", "test_gate.html")
+
+
+@app.route("/test/open", methods=["POST"])
+def test_open():
+    import base64, hashlib, hmac, re, time
+    from flask import Response
+    ip = (request.headers.get("X-Forwarded-For") or request.remote_addr or "?").split(",")[0].strip()
+    now = time.time()
+    fails = [t for t in _TEST_FAILS.get(ip, []) if now - t < _TEST_WINDOW_S]
+    if len(fails) >= _TEST_MAX_FAILS:
+        return jsonify({"ok": False, "error": "too many attempts"}), 429
+    data = request.get_json(silent=True) or {}
+    code, name = str(data.get("code", "")), str(data.get("file", ""))
+    kits = HERE / "private_kits"
+    try:
+        man = json.loads((kits / "manifest.json").read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return jsonify({"ok": False, "error": "not available"}), 404
+    if not re.fullmatch(r"\d{4}", code) or name not in man["files"]:
+        _TEST_FAILS[ip] = fails + [now]
+        return jsonify({"ok": False}), 403
+
+    def ks(ek, nonce, n):
+        out, c = bytearray(), 0
+        while len(out) < n:
+            out += hmac.new(ek, nonce + c.to_bytes(8, "big"), hashlib.sha256).digest()
+            c += 1
+        return bytes(out[:n])
+
+    def dec(blob, ek, mk):
+        raw = base64.b64decode(blob)
+        nonce, ct, mac = raw[:16], raw[16:-32], raw[-32:]
+        if not hmac.compare_digest(hmac.new(mk, nonce + ct, hashlib.sha256).digest(), mac):
+            raise ValueError("mac")
+        return bytes(a ^ b for a, b in zip(ct, ks(ek, nonce, len(ct))))
+    try:
+        keys = _TEST_KEYS.get(code)
+        if keys is None:
+            dk = hashlib.pbkdf2_hmac("sha256", code.encode(), base64.b64decode(man["salt"]), int(man["iter"]), 64)
+            keys = (dk[:32], dk[32:])
+            dec((kits / man["files"]["check"]).read_bytes(), *keys)          # 驗證存取碼（MAC 不符會丟例外）
+            _TEST_KEYS[code] = keys
+        body = b"OK" if name == "check" else dec((kits / man["files"][name]).read_bytes(), *keys)
+    except ValueError:
+        _TEST_FAILS[ip] = fails + [now]
+        return jsonify({"ok": False}), 403
+    resp = Response(body, mimetype="text/html" if name != "check" else "text/plain")
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return resp
+
+
 @app.route("/analytics")
 def analytics_page():
     """歷史影像平台大數據視覺化分析頁（static/analytics.html；資料見 /api/analytics）。"""
