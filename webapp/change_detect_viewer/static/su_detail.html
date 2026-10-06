@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>坡面證據鏈與候選層級｜坡地韌性哨兵</title>
+<meta name="description" content="高雄 POC 每個坡面單元（≥15° 有效坡面）的事件目錄歷史、現地照片、近期衛星變化、影像品質與偏移提醒，以及三種候選層級（不給總分）。">
+<link rel="stylesheet" href="/static/leaflet.css">
+<style>
+  :root{ --bg:#fff; --surface:#f7f7f8; --raised:#fff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f; --accent:#0b5fd4; --focus:#0b5fd4; --warn:#b7791f;
+    --t-pri:#c62828; --t-gen:#1565c0; --t-ins:#757575; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; --mono:ui-monospace,Consolas,monospace; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb; --accent:#6aa9ff; --focus:#8bbcff; --warn:#e0b45a; --t-pri:#ff7a70; --t-gen:#6aa9ff; --t-ins:#a0a0a8; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:var(--radius);z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none} nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap} nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);text-decoration:none}
+  h1{font-size:clamp(22px,3.4vw,30px);margin:24px 0 6px;line-height:1.3} h2{font-size:18px;margin:16px 0 4px} h3{font-size:15px;margin:12px 0 3px}
+  .sub{color:var(--muted);margin:0 0 12px;max-width:62em}
+  .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:10px 14px;max-width:70em;font-size:14.5px}
+  .grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin:14px 0}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  #map{height:560px;border:1px solid var(--border);border-radius:var(--radius)}
+  .bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 8px;font-size:14px}
+  .bar label{display:inline-flex;gap:5px;align-items:center;cursor:pointer} .sw{display:inline-block;width:12px;height:12px;border-radius:2px}
+  input[type=search],select{font:inherit;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--raised);color:var(--text)}
+  .panel{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+  .tier{display:inline-block;font-weight:700;padding:3px 12px;border-radius:999px;color:#fff;font-size:15px}
+  .tier.p{background:var(--t-pri)} .tier.g{background:var(--t-gen)} .tier.i{background:var(--t-ins)}
+  ul.why{margin:6px 0 6px;padding-left:20px;font-size:14.5px} ul.cau{margin:4px 0;padding-left:20px;font-size:13.5px;color:var(--muted)}
+  table{border-collapse:collapse;font-size:13.5px;width:100%;margin:4px 0} th,td{border-bottom:1px solid var(--border);padding:3px 6px;text-align:left;vertical-align:top} th{color:var(--muted);font-weight:600}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)} .small{font-size:13px}
+  .list{max-height:230px;overflow:auto;border:1px solid var(--border);border-radius:var(--radius);margin:6px 0}
+  .list button{display:flex;width:100%;gap:8px;justify-content:space-between;text-align:left;font:inherit;font-size:13px;padding:4px 8px;border:none;border-bottom:1px solid var(--border);background:var(--raised);color:var(--text);cursor:pointer}
+  .list button:hover,.list button[aria-current=true]{background:var(--surface)}
+  details{margin:8px 0} summary{cursor:pointer;color:var(--accent)}
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:18px 0;color:var(--muted);font-size:14px;margin-top:24px}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">坡地韌性哨兵 · 坡面證據鏈</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/accessible">無障礙入口頁</a></li></ul></nav>
+  <div id="site-badge"></div>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="wrap">
+  <h1>坡面證據鏈與候選層級</h1>
+  <p class="sub">高雄 POC 的每個坡面單元（只算 ≥15° 的有效坡面）：它過去發生過什麼、最近還有沒有變化、這些資料靠不靠得住——最後只給三種候選層級，<b>不給總分</b>。機器幫忙決定「先看誰」，證據鏈告訴你「為什麼」，最後由人決定「要不要去」。</p>
+  <div class="callout" role="note"><strong>請先讀：</strong>候選層級是 POC 規則（v0），<b>尚未驗證</b>，不是崩塌機率、也不是風險等級。我們用 24 個分層坡面做過人工驗證：系統的「近期有變化」訊號（事件歸因、Sentinel-2 簡單規則）只有約 1/4 屬實、也會漏報，所以它們只用來「請人看」，不用來「判定」。「一般判讀」不代表安全；「資料不足」表示資料不夠判斷，不是沒有問題。照片與衛星事件目錄是<b>兩類證據，不相加</b>。</div>
+
+  <div class="grid">
+    <section aria-label="地圖與清單">
+      <div class="bar">
+        <span id="cnt" class="muted"></span>
+        <label><input type="checkbox" id="t-p" checked><span class="sw" style="background:var(--t-pri)"></span>優先人工判讀</label>
+        <label><input type="checkbox" id="t-g"><span class="sw" style="background:var(--t-gen)"></span>一般判讀（有證據者）</label>
+        <label><input type="checkbox" id="t-i"><span class="sw" style="background:var(--t-ins)"></span>資料不足（有證據者）</label>
+        <input type="search" id="q" placeholder="輸入 SU ID（如 SU-11351-128369-R）" aria-label="搜尋坡面單元 ID" size="30">
+        <button id="go" type="button">查詢</button>
+      </div>
+      <div id="map" role="application" aria-label="坡面單元地圖；點選多邊形看證據鏈"></div>
+      <h3>優先人工判讀清單（<span id="np"></span> 個；依事件日期與 ID 排序，不是排名）</h3>
+      <div class="list" id="list" role="list" aria-label="優先人工判讀的坡面清單"></div>
+    </section>
+    <section aria-label="坡面證據鏈">
+      <div class="panel" id="detail"><p class="muted">點選地圖上的坡面、清單中的項目，或輸入 SU ID。</p></div>
+    </section>
+  </div>
+  <details class="panel"><summary>候選層級的規則與驗證限制（POC 規則 v0）</summary><div id="rules" class="small"></div></details>
+</div></main>
+<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
+
+<script src="/static/leaflet.js"></script>
+<script src="/static/site_badge.js"></script>
+<script>
+const esc = s => String(s==null?"—":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = (v,d=1) => v==null?"—":Number(v).toLocaleString("zh-Hant",{maximumFractionDigits:d});
+const TC = {"優先人工判讀":["p","var(--t-pri)"],"一般判讀":["g","var(--t-gen)"],"資料不足":["i","var(--t-ins)"]};
+const COLORS = {"優先人工判讀":"#c62828","一般判讀":"#1565c0","資料不足":"#757575"};
+let IDX, REC, RULES, map, layers={}, cur=null, curLayer=null;
+
+async function init(){
+  [IDX, REC, RULES] = await Promise.all(["su_index.json","su_records.json","rules.json"].map(f=>fetch("/static/poc/su/"+f).then(r=>r.json())));
+  map = L.map("map");
+  const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri World Imagery"}).addTo(map);
+  const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
+  L.control.layers({"衛星影像（Esri）":esri,"街道圖（OSM）":osm},null,{collapsed:false}).addTo(map);
+  map.fitBounds([[22.95,120.55],[23.35,120.95]]);
+  ["優先人工判讀","一般判讀","資料不足"].forEach(t=>{
+    const g = L.layerGroup(); layers[t]=g;
+    Object.values(REC).filter(r=>r.tier===t).forEach(r=>{
+      (r.ring||[]).forEach(ring=>{
+        L.polygon(ring.map(p=>[p[1],p[0]]),{color:COLORS[t],weight:t==="優先人工判讀"?2:1,fillColor:COLORS[t],fillOpacity:t==="優先人工判讀"?0.4:0.25}).on("click",()=>select(r.su_id)).bindTooltip(r.su_id).addTo(g);
+      });
+    });
+  });
+  const upd=()=>{ [["t-p","優先人工判讀"],["t-g","一般判讀"],["t-i","資料不足"]].forEach(([id,t])=>{const on=document.getElementById(id).checked; on?layers[t].addTo(map):map.removeLayer(layers[t]);}); };
+  ["t-p","t-g","t-i"].forEach(id=>document.getElementById(id).addEventListener("change",upd)); upd();
+  const pri = Object.values(REC).filter(r=>r.tier==="優先人工判讀").sort((a,b)=>((b.events[0]||["0"])[0]).localeCompare((a.events[0]||["0"])[0]) || a.su_id.localeCompare(b.su_id));
+  document.getElementById("np").textContent = pri.length;
+  const ls = document.getElementById("list");
+  pri.forEach(r=>{const b=document.createElement("button"); b.type="button"; b.setAttribute("role","listitem"); b.dataset.id=r.su_id; b.innerHTML=`<span>${esc(r.su_id)}</span><span class="muted">${esc(r.why.map(w=>w.slice(0,2)).join(" "))}　${r.events[0]?esc(r.events[0][0]):""}</span>`; b.addEventListener("click",()=>select(r.su_id)); ls.appendChild(b);});
+  const t = IDX.tiers; document.getElementById("cnt").textContent = `全區 ${num(IDX.n,0)} 個單元：優先 ${num(t["優先人工判讀"],0)}、一般 ${num(t["一般判讀"],0)}、資料不足 ${num(t["資料不足"],0)}（地圖只畫有證據的 ${num(Object.keys(REC).length,0)} 個）`;
+  document.getElementById("rules").innerHTML = "<pre style='white-space:pre-wrap;font:inherit'>"+esc(RULES.doc)+"</pre>";
+  document.getElementById("go").addEventListener("click",()=>select(document.getElementById("q").value.trim()));
+  document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")select(e.target.value.trim());});
+  const h = decodeURIComponent((location.hash||"").slice(1)); if(h) setTimeout(()=>select(h),200);
+}
+function bareBars(b){
+  const ys=["2021","2022","2023","2024"], mx=Math.max(0.5,...ys.map(y=>b[y]||0));
+  return `<svg viewBox="0 0 300 70" role="img" aria-label="四年圖層裸露面積" style="width:100%;max-width:340px">${ys.map((y,i)=>{const h=Math.round(((b[y]||0)/mx)*40);return `<rect x="${20+i*70}" y="${50-h}" width="46" height="${h}" fill="#8d6e63"/><text x="${43+i*70}" y="64" font-size="10" text-anchor="middle" fill="currentColor">${y==="2024"?"113年度":y}</text><text x="${43+i*70}" y="${46-h}" font-size="10" text-anchor="middle" fill="currentColor">${num(b[y]||0,1)}</text>`}).join("")}</svg>`;
+}
+function select(id){
+  const r = REC[id];
+  const q = IDX.rows.find(x=>x[0]===id);
+  document.querySelectorAll("#list button").forEach(b=>b.setAttribute("aria-current",b.dataset.id===id));
+  const d = document.getElementById("detail");
+  if(!q){ d.innerHTML=`<p>找不到單元「${esc(id)}」。</p>`; return; }
+  history.replaceState(null,"","#"+encodeURIComponent(id));
+  if(!r){
+    const codes = {a:"有效坡面面積 <1 ha",b:"有效坡面占比 <20%",c:"Sentinel-2 視窗被浮水印遮蔽 ≥30%"};
+    d.innerHTML=`<h2>${esc(id)}</h2><p><span class="tier ${TC[q[1]][0]}">${esc(q[1])}</span></p><p class="small">此單元在事件目錄、年度圖層（≥0.5 ha）、現地照片與 Sentinel-2 近期變化上<b>都沒有證據紀錄</b>。${q[3]?"資料不足原因："+q[3].split("").map(c=>codes[c]).join("；")+"。":""}</p><p class="small muted">候選層級為規則判定，非風險評估。</p>`;
+    return;
+  }
+  if(curLayer){map.removeLayer(curLayer);curLayer=null;}
+  if(r.ring&&r.ring.length){ curLayer=L.polygon(r.ring.map(ring=>ring.map(p=>[p[1],p[0]])),{color:"#ffeb3b",weight:3,fill:false}).addTo(map); map.invalidateSize(); map.fitBounds(curLayer.getBounds(),{maxZoom:16,animate:false}); }
+  const [tc] = TC[r.tier];
+  const why = r.why.length?`<ul class="why">${r.why.map(w=>`<li>${esc(w)}</li>`).join("")}</ul>`:`<p class="small muted">沒有優先指標。</p>`;
+  const cau = `<ul class="cau">${r.caution.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`;
+  const ev = r.events.length?`<table><thead><tr><th>日期</th><th>事件（目錄中的判釋面積在此單元）</th><th class="n">ha</th></tr></thead><tbody>${r.events.map(e=>`<tr><td>${esc(e[0])}</td><td>${esc(e[1])}</td><td class="n">${num(e[2],2)}</td></tr>`).join("")}</tbody></table>`:`<p class="small muted">2021-07～2025-03 的事件目錄沒有多邊形落在此單元。</p>`;
+  const pc = Object.entries(r.photos||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${esc(k)} ${v}`).join("、");
+  const pl = (r.photo_list||[]).length?`<details><summary>照片清單（最多 10 筆，連到水保署平台）</summary><ul class="small">${r.photo_list.map(p=>`<li>${esc(p[0])}・${esc(p[1])}・<a href="https://photo.ardswc.gov.tw/api/Media/${esc(p[2])}" target="_blank" rel="noopener">${esc(p[3]||p[2])}</a></li>`).join("")}</ul></details>`:"";
+  const lon = r.ring&&r.ring[0]&&r.ring[0][0]?r.ring[0][0][0]:120.75, lat = r.ring&&r.ring[0]&&r.ring[0][0]?r.ring[0][0][1]:23.15;
+  d.innerHTML = `<h2>${esc(r.su_id)} <span class="tier ${tc}">${esc(r.tier)}</span></h2>
+  <p class="small muted">版本化 ID：${esc(r.uid)}　有效坡面 ${num(r.eff_ha)} ha（占單元 ${num(r.eff_frac*100,0)}%，平均坡度 ${num(r.slope,0)}°）</p>
+  <h3>為什麼是這個層級</h3>${why}${cau}
+  <h3>① 衛星事件目錄與年度圖層</h3>
+  <p class="small">年度圖層全期類別：<b>${esc(r.cat)}</b>；新增裸露（四年鏈）合計 ${num(r.new_total)} ha；主因事件 ${esc(r.dom_event||"—")}（歸因 ${num(r.explained*100,0)}%）。官方判釋為衛星判釋，不是現地確認；年度圖層與影像目視的「有無裸露」一致率只有約 69%。</p>
+  ${bareBars(r.bare)}${ev}
+  <h3>② 現地歷史照片（補充證據，不與①相加）</h3>
+  <p class="small">${pc?`災害事件＋媒體報導照片：${pc}；年份 ${esc((r.photo_years||[]).join("、"))}。`:"此單元沒有災害事件或媒體報導照片。"} 照片張數不是災害次數；描述分類為規則式初分；多拍在道路可達處。</p>${pl}
+  <h3>③ 近期衛星變化（Sentinel-2，2024-04-04→2025-03-25）</h3>
+  <p class="small">簡單規則偵測到的新增裸露 ${num(r.s2_new_ha,2)} ha（其中 ${num(r.s2_riv*100,0)}% 在河道遮罩內）。這個規則只抓得到數公頃以上的崩塌（對官方崩塌召回僅約 34%），人工驗證中其「近期有變化」訊號只有約 1/4 屬實，且有漏報，只能當「請人看」的線索。</p>
+  <h3>④ 影像品質與偏移提醒</h3>
+  <p class="small">Sentinel-2 視窗被浮水印遮蔽 ${num(r.s2_invalid*100,0)}%；Wayback 2017 年起 ${r.wb_n==null?"無紀錄":r.wb_n+" 個拍攝日，最新 "+esc(r.wb_last||"—")}。Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。</p>
+  <p class="small"><a href="https://livingatlas.arcgis.com/wayback/#mapCenter=${lon}%2C${lat}%2C17" target="_blank" rel="noopener">在 Esri Wayback 開啟此位置（新分頁，人工複核用）</a></p>
+  <p class="small muted">是否現勘由人決定；本頁不提供風險分數。</p>`;
+}
+init();
+</script>
+</body>
+</html>

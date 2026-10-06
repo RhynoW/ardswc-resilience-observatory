@@ -801,6 +801,12 @@ def poc_page():
     return send_from_directory(HERE / "static", "poc_explorer.html")
 
 
+@app.route("/su")
+def su_page():
+    """坡面證據鏈與候選層級（static/su_detail.html；資料在 static/poc/su/，由 scripts/su_pages_build.py 產製）。"""
+    return send_from_directory(HERE / "static", "su_detail.html")
+
+
 @app.route("/analytics")
 def analytics_page():
     """歷史影像平台大數據視覺化分析頁（static/analytics.html；資料見 /api/analytics）。"""
