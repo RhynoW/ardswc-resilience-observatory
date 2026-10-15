@@ -125,7 +125,7 @@ def main():
         ix, iy = int((lon - BBOX[0]) / STEP), int((BBOX[3] - lat) / STEP)
         ds = [k for k in study if 0 <= ix < nx and 0 <= iy < ny and masks[k][iy, ix]]
         pair = bool(ds) and (date.fromisoformat(ds[-1]) - date.fromisoformat(ds[0])).days >= 365
-        su.append({"i": t["i"], "su_id": t["su_id"], "category": t["category"], "n_dates": len(ds), "years": sorted({k[:4] for k in ds}), "first": ds[0] if ds else None, "last": ds[-1] if ds else None, "pair_ge365d": pair})
+        su.append({"i": t["i"], "su_id": t["su_id"], "category": t["category"], "n_dates": len(ds), "dates": ds, "years": sorted({k[:4] for k in ds}), "first": ds[0] if ds else None, "last": ds[-1] if ds else None, "pair_ge365d": pair})
     n = len(su)
     summ = {"footprints": len(fps), "distinct_dates_all": len(days), "distinct_dates_2017_2026": len(study),
             "poc_cells": int(nx * ny), "poc_area_km2": round(nx * ny * cell_km2, 0),
