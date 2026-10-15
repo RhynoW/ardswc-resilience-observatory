@@ -2,7 +2,7 @@
  "v": 1,
  "kdf": "pbkdf2-hmac-sha256",
  "iter": 300000,
- "salt": "dFIluQuSfIp8Zo6FwWyQHQ==",
+ "salt": "3DaxZ6F3ttVBMLm9JeA4Bg==",
  "files": {
   "check": "check.b64",
   "G1": "G1.b64",

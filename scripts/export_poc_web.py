@@ -168,7 +168,7 @@ def evidence_summary():
     ls = [e for e in ev if sum(e["field_photos"].get("classes", {}).get(k, 0) for k in LS)]
     from collections import Counter
     cls = Counter(m["class"] for m in pm.values())
-    return {"su_version": (meta.get("params") or {}).get("su_version"), "n_su": len(ev), "n_su_original": 18401, "photos_poc": len(ph),
+    return {"su_version": (meta.get("params") or {}).get("su_version"), "n_su": len(ev), "n_su_original": len(jload(POC / "su_table.json", [])), "photos_poc": len(ph),
             "photos_disaster_media": len(pm), "photo_classes": dict(cls), "su_with_photos": n_ph, "su_with_sat_bare": len(sat), "su_both": len(both),
             "su_photo_only": n_ph - len(both), "su_sat_only": len(sat) - len(both), "su_with_ls_photos": len(ls),
             "su_ls_photos_no_sat": sum(1 for e in ls if e["satellite"]["category"] == "無崩塌")}

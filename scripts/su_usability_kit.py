@@ -1,7 +1,7 @@
 """實務人員操作測試組（3–5 人）：比較「原始資料頁」與「證據鏈頁（/su）」對「是否建議現勘」判斷的幫助（依陳委員 2026-10-04 建議）。
 設計（交叉）：20 個坡面分成 A、B 兩組各 10 個（10 對配對：同類型、面積、坡度相近）；
   G1：先用「原始資料」判斷 A 組，再用「證據鏈頁」判斷 B 組；G2：先用「原始資料」判斷 B 組，再用「證據鏈頁」判斷 A 組。參與者交替分到 G1／G2。
-  原始資料條件：四欄影像圖（Wayback 較早／最新、Sentinel-2 兩期，白線＝有效坡面）＋純資料表（四年圖層裸露 ha、事件目錄列表、照片清單與原始描述；不含分類、層級、提醒）。
+  原始資料條件：多時點影像圖（su_panel_v2：Wayback 與 Sentinel-2 依日期 2×4，白線＝有效坡面）＋純資料表（四年圖層裸露 ha、事件目錄列表、照片清單與原始描述；不含分類、層級、提醒）。
   證據鏈條件：同一張影像圖＋嵌入的 /su 證據鏈頁（四類證據、候選層級與原因、偏移提醒）。
   題目：是否建議安排現勘（建議現勘／可暫緩／資料不足無法決定）、信心、最有幫助的資訊（複選）、備註；自動記錄每題在視窗內可見的秒數。
 樣本太小（3–5 人）：只做描述統計與回饋，不宣稱效率提升百分比。
@@ -47,12 +47,27 @@ def uri(img, w=1800, q=76):
     return "data:image/jpeg;base64," + base64.b64encode(cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, q])[1].tobytes()).decode()
 
 
+def v2_overlapping(v1_ids):
+    """v1 單元（su_v1/ 備份）→ 與其重疊 ≥0.2 ha（5 格 20 m）的 v2 單元 ID。"""
+    bk = POC / "su_v1"
+    if not (bk / "su_labels.npz").exists():
+        return set()
+    k1 = np.load(bk / "su_labels.npz")["key20"]
+    keys = [u["key"] for u in jl(bk / "su_meta.json")["units"] if u["su_id"] in v1_ids]
+    k2 = np.load(POC / "su_labels.npz")["key20"]
+    m = np.isin(k1, keys) & (k2 >= 0)
+    c = np.bincount(k2[m], minlength=int(k2.max()) + 1)
+    sid = {u["key"]: u["su_id"] for u in jl(POC / "su_meta.json")["units"]}
+    return {sid[int(k)] for k in np.flatnonzero(c >= 5)}
+
+
 def select():
     recs = jl(REPO / "webapp/change_detect_viewer/static/poc/su/su_records.json")
     T = {t["su_id"]: t for t in jl(POC / "su_table_eff.json")}
     mu = {u["su_id"]: u for u in jl(POC / "su_meta_eff.json")["units"]}
     idx = {r[0]: r for r in jl(REPO / "webapp/change_detect_viewer/static/poc/su/su_index.json")["rows"]}
     used = set(v["su_id"] for v in jl(POC / "su_strat" / "key.json").values())          # 已做過分層驗證的 24 個不重複使用
+    used |= v2_overlapping(used)                                                          # 驗證是在 v1 單元上做的：與之重疊 ≥0.2 ha 的 v2 單元也排除
     rng = random.Random(SEED)
 
     def feat(sid):
@@ -229,7 +244,7 @@ def readme(q):
 ## 設計（交叉）
 - 20 個坡面分成 A、B 兩組各 10 個（10 對配對：同類型、面積與坡度相近；配對品質：{q}）。
 - 參與者交替分到 G1／G2：G1 先用「原始資料」做 A 組、再用「證據鏈頁」做 B 組；G2 先用「原始資料」做 B 組、再用「證據鏈頁」做 A 組。這樣每人兩種條件都做，且兩組題目輪流用兩種條件，抵銷題組難度差異。
-- 原始資料條件：四欄影像圖＋純資料表（四年圖層裸露、事件目錄、照片清單與原始描述）；證據鏈條件：同一張影像圖＋嵌入的 /su 頁（四類證據、候選層級與原因、偏移提醒）。
+- 原始資料條件：多時點影像圖（2×4，疊紅黃線）＋純資料表（四年圖層裸露、事件目錄、照片清單與原始描述）；證據鏈條件：同一張影像圖＋嵌入的 /su 頁（四類證據、候選層級與原因、偏移提醒）。
 
 ## 執行
 1. 把 `kit_G1.html` 或 `kit_G2.html` 寄給參與者（自足檔案，影像內嵌；證據鏈階段需連網）。每位參與者只用其中一份。

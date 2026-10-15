@@ -24,6 +24,9 @@ VERSION = "SUv1-D20m-S10-M1-E15"
 
 
 def main():
+    _m = json.load(open(POC / "su_meta.json", encoding="utf-8"))
+    if str(_m["params"].get("su_version", "")).startswith("SUv2"):
+        sys.exit("目前已切換到 SU v2（slope_units_v2.py＋su_switch_v2.py 產生有效坡面）；本程式只適用 v1，未執行。")
     L = np.load(POC / "su_labels.npz")
     key20, x0, y0 = L["key20"], float(L["x0"]), float(L["y0"])
     meta = json.load(open(POC / "su_meta.json", encoding="utf-8"))
