@@ -906,6 +906,33 @@ def review_queue():
     return app.response_class(html, mimetype="text/html")
 
 
+# ── 地圖底圖用：此地點（地圖中心所在圖磚）實際有影像變動的 Wayback 版本與拍攝日（取代列出全部約 200 個全球版本）
+_WB_FRAMES_CACHE = {}       # (z, col, row) → frames；記憶體內，單一程序
+
+
+@app.route("/api/wayback_frames")
+def api_wayback_frames():
+    try:
+        lon, lat = float(request.args["lon"]), float(request.args["lat"])
+        z = int(request.args.get("z", WB.DEFAULT_ZOOM))
+    except (KeyError, ValueError):
+        return jsonify({"error": "缺 lon/lat"}), 400
+    if not (119.0 <= lon <= 123.0 and 21.0 <= lat <= 26.5):
+        return jsonify({"error": "只支援台灣範圍"}), 400
+    z = max(WB.MIN_ZOOM, min(WB.MAX_ZOOM, z))
+    key = (z, *WB.lonlat_to_tile(lon, lat, z))
+    if key not in _WB_FRAMES_CACHE:
+        try:
+            fr = WB.list_frames(lat, lon, z)
+        except Exception as e:  # noqa: BLE001
+            return jsonify({"error": f"Wayback 查詢失敗：{e}"}), 502
+        if len(_WB_FRAMES_CACHE) > 2000:
+            _WB_FRAMES_CACHE.clear()
+        _WB_FRAMES_CACHE[key] = [{"release": f["release"], "date": f["date"], "date_kind": f["date_kind"], "res_m": f["res_m"],
+                                  "source": (f["source"] or "").strip()} for f in fr]
+    return jsonify({"z": z, "tile": list(key[1:]), "frames": _WB_FRAMES_CACHE[key]})
+
+
 # ── GE Web 回溯（換日期直連 URL，同 §14.7/reference_ge_web_date_url 手法）─────
 @app.route("/api/ge_trace")
 def api_ge_trace():
