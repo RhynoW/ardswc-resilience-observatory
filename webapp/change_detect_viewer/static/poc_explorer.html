@@ -89,7 +89,26 @@ function initMap(){
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri World Imagery"});
   const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
   esri.addTo(map);
-  L.control.layers({"衛星影像（Esri）":esri,"街道圖（OSM）":osm},null,{collapsed:false}).addTo(map);
+  const ctl=L.control.layers({"衛星影像（Esri）":esri,"街道圖（OSM）":osm},null,{collapsed:false}).addTo(map);
+  // Esri Wayback 歷史版本：一個底圖選項＋版本下拉選單（設定檔由瀏覽器直接向 Esri 取得；版本日期是發布日，不是拍攝日）
+  (function(){
+    const WB_TILE="https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/{rel}/{z}/{y}/{x}";
+    const wb=L.tileLayer("",{maxZoom:19,attribution:"Esri Wayback"});
+    const sel=document.createElement("select");
+    sel.setAttribute("aria-label","Esri Wayback 版本");sel.style.cssText="max-width:210px;font-size:12px;margin-top:4px";
+    sel.innerHTML='<option>Wayback 版本載入中…</option>';sel.disabled=true;
+    const box=L.control({position:"topright"});
+    box.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.style.cssText="background:#fff;padding:4px 6px;color:#222";
+      d.innerHTML='<div style="font-size:12px">Esri Wayback 版本（發布日，非拍攝日）</div>';d.appendChild(sel);L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);return d};
+    box.addTo(map);
+    const setRel=n=>{wb.setUrl(WB_TILE.replace("{rel}",n));};
+    sel.addEventListener("change",()=>{setRel(sel.value);if(!map.hasLayer(wb)){[esri,osm].forEach(l=>map.removeLayer(l));wb.addTo(map)}});
+    ctl.addBaseLayer(wb,"Esri Wayback（歷史影像）");
+    fetch("https://s3-us-west-2.amazonaws.com/config.maptiles.arcgis.com/waybackconfig.json").then(r=>r.json()).then(cfg=>{
+      const rel=Object.entries(cfg).map(([n,v])=>{const m=/(\d{4}-\d{2}-\d{2})/.exec(v.itemTitle||"");return m?{n,d:m[1]}:null}).filter(Boolean).sort((a,b)=>b.d.localeCompare(a.d));
+      sel.innerHTML=rel.map(r=>`<option value="${r.n}">${r.d}</option>`).join("");sel.disabled=false;setRel(rel[0].n);
+    }).catch(()=>{sel.innerHTML='<option>無法取得 Wayback 版本清單</option>'});
+  })();
 }
 async function load(id){
   const a = IDX.find(x=>x.id===id);
