@@ -5,8 +5,10 @@ NDVI、NDRE、MTCI 抓到同一批，選 NDRE 為唯一主指標——B5、B8A �
 步驟：
   fetch ：Planetary Computer sentinel-2-l2a（免費），POC 範圍，2023-11-01～2026-09-30、圖幅雲量 <70%；每景讀 B05、B8A、SCL（20 m），
           直接算每個坡面（v2 有效坡面）的有效像元比例與 NDRE 中位數，只存坡面統計（poc/s2ts/items/<日期>_<圖幅>.npz），不存影像。
-  build ：同日多圖幅取有效比例高者；有效 ≥50% 的觀測才用。
-          基準期 2023-11-01～2024-06-30（≥3 筆）；之後任一日 t 起，前 6 筆有效觀測至少 3 筆低於「基準中位數 − 0.08」，且 t 之後全部觀測的中位數也低於 → 持續下降，記第一個 t。
+  build ：同日多圖幅取有效比例高者；有效 ≥50% 的觀測才用；每個日期扣掉當日全區坡面中位數（距平），去除季節與大氣的共同起伏
+          （全區中位數在 0.51～0.66 間隨季節擺動；不扣除時 2026 年春季有上千個坡面被誤判為下降）。
+          基準期 2023-11-01～2024-06-30（≥3 筆）；之後第一個「本身低於基準 − 0.08、且其後至少還有 6 筆」的觀測日 t 起，前 6 筆有效觀測至少 3 筆低於「基準中位數 − 0.08」，且 t 之後全部觀測的中位數、以及 t 之後 60 天起（≥3 筆）的中位數也都低於 → 持續下降，記第一個 t。
+          （加 60 天條件前，2024 年 7 月初與 2026 年 5–7 月各有數十到上百個「無崩塌」坡面同月被判下降，散布全區，研判為夏季薄雲／雲影殘留。）
           另記最近 6 個月（資料最後日往前 183 天）的中位數相對基準的差。輸出 poc/s2ts/su_ndre.json。
 門檻 0.08 是小試驗看過資料後訂的，未獨立驗證；只用來「請人看」。
 用法：python scripts/s2_ndre_series.py fetch|build|all
@@ -35,6 +37,7 @@ BASE = ("2023-11-01", "2024-06-30")
 SCL_OK = (4, 5, 6, 7)
 THR = 0.08
 MIN_VALID = 0.5
+LATE_DAYS = 60        # 下降日 60 天後仍偏低才算持續（排除夏季薄雲、雲影等短暫干擾）
 
 
 def log(*a):
@@ -158,7 +161,7 @@ def fetch():
         return "fail " + err
 
     done = 0
-    with ThreadPoolExecutor(max_workers=4) as ex:
+    with ThreadPoolExecutor(max_workers=10) as ex:
         for f, r in zip(feats, ex.map(safe, feats)):
             done += 1
             if done % 10 == 0 or r.startswith("fail"):
@@ -183,6 +186,10 @@ def build():
     V = np.stack([by_date[d][0] for d in dates])
     N = np.stack([by_date[d][1] for d in dates])
     N[V < MIN_VALID] = np.nan
+    # 季節與大氣的共同變化：每個日期扣掉當日全區有效坡面的 NDRE 中位數（距平）；有效坡面 <500 個的日期不用
+    reg = np.array([np.nanmedian(row) if np.isfinite(row).sum() >= 500 else np.nan for row in N])
+    N = N - reg[:, None]
+    N[~np.isfinite(reg)] = np.nan
     last = dates[-1]
     import datetime as _dt
     recent0 = (_dt.date.fromisoformat(last) - _dt.timedelta(days=183)).isoformat()
@@ -204,7 +211,9 @@ def build():
             for k in range(len(after)):
                 nxt = [x for _, x in after[k:k + 6]]
                 rest = [x for _, x in after[k:]]
-                if len(nxt) >= 3 and sum(x < b - THR for x in nxt) >= 3 and np.median(rest) < b - THR:
+                late = [x for d, x in after[k:] if (_dt.date.fromisoformat(d) - _dt.date.fromisoformat(after[k][0])).days >= LATE_DAYS]
+                if (after[k][1] < b - THR and len(nxt) >= 6 and sum(x < b - THR for x in nxt) >= 3 and np.median(rest) < b - THR
+                        and len(late) >= 3 and np.median(late) < b - THR):
                     drop = {"date": after[k][0], "delta": round(float(np.median(rest) - b), 3)}
                     break
             rec["drop"] = drop
@@ -219,7 +228,7 @@ def build():
             mm[d[:7]].append(x)
         rec["monthly"] = [round(float(np.median(mm[mo])), 3) if mo in mm else None for mo in months]
         out[t["su_id"]] = rec
-    res = {"index": "NDRE (B8A,B5) L2A, SCL 4-7, valid>=0.5, SU effective-slope median", "window": [dates[0], last], "base": BASE, "thr": THR,
+    res = {"index": "NDRE (B8A,B5) L2A, SCL 4-7, valid>=0.5, SU effective-slope median, anomaly vs same-date POC median", "window": [dates[0], last], "base": BASE, "thr": THR,
            "recent_from": recent0, "n_dates": len(dates), "months": months, "stats": dict(stats), "su": out}
     (OUT / "su_ndre.json").write_text(json.dumps(res, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     log("日期", len(dates), dates[0], "→", last, dict(stats))

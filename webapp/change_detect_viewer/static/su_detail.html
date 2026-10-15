@@ -53,7 +53,7 @@
 <main id="main" tabindex="-1"><div class="wrap">
   <h1>坡面證據鏈與候選層級</h1>
   <p class="sub">高雄 POC 的每個坡面單元（只算 ≥15° 的有效坡面）：它過去發生過什麼、最近還有沒有變化、這些資料靠不靠得住——最後只給三種候選層級，<b>不給總分</b>。機器幫忙決定「先看誰」，證據鏈告訴你「為什麼」，最後由人決定「要不要去」。</p>
-  <div class="callout" role="note"><strong>請先讀：</strong>候選層級是 POC 規則（v0），<b>尚未驗證</b>，不是崩塌機率、也不是風險等級。我們用 24 個分層坡面做過人工驗證：系統的「近期有變化」訊號（事件歸因、Sentinel-2 簡單規則）只有約 1/4 屬實、也會漏報，所以它們只用來「請人看」，不用來「判定」。「一般判讀」不代表安全；「資料不足」表示資料不夠判斷，不是沒有問題。照片與衛星事件目錄是<b>兩類證據，不相加</b>。</div>
+  <div class="callout" role="note"><strong>請先讀：</strong>候選層級是 POC 規則（v1），<b>尚未驗證</b>，不是崩塌機率、也不是風險等級。舊版的「近期有變化」訊號（事件歸因、Sentinel-2 真彩色簡單規則）在 24 個分層坡面的人工驗證中只有約 1/4 屬實；2026-10-15 起近期變化改用 Sentinel-2 紅邊指標（NDRE）時間序列，小試驗抓到 7/15、對照誤報 0/15，仍會漏掉小崩塌——所以它們只用來「請人看」，不用來「判定」。「一般判讀」不代表安全；「資料不足」表示資料不夠判斷，不是沒有問題。照片與衛星事件目錄是<b>兩類證據，不相加</b>。</div>
 
   <div class="grid">
     <section aria-label="地圖與清單">
@@ -153,6 +153,20 @@ function bareBars(b){
   const ys=["2021","2022","2023","2024"], mx=Math.max(0.5,...ys.map(y=>b[y]||0));
   return `<svg viewBox="0 0 300 70" role="img" aria-label="四年圖層裸露面積" style="width:100%;max-width:340px">${ys.map((y,i)=>{const h=Math.round(((b[y]||0)/mx)*40);return `<rect x="${20+i*70}" y="${50-h}" width="46" height="${h}" fill="#8d6e63"/><text x="${43+i*70}" y="64" font-size="10" text-anchor="middle" fill="currentColor">${y==="2024"?"2024年":y}</text><text x="${43+i*70}" y="${46-h}" font-size="10" text-anchor="middle" fill="currentColor">${num(b[y]||0,1)}</text>`}).join("")}</svg>`;
 }
+function ndreBlock(e){
+  if(!e||e.base==null) return `<p class="small muted">Sentinel-2 有效觀測不足，無法判斷近期變化（基準期需 ≥3 筆、之後需 ≥6 筆）。</p>`;
+  const ms=RULES.ndre_months||[], v=e.monthly||[], W=320, H=90, lo=Math.min(-0.3,...v.filter(x=>x!=null)), hi=Math.max(0.1,...v.filter(x=>x!=null));
+  const X=i=>10+i*(W-20)/Math.max(ms.length-1,1), Y=x=>H-14-(x-lo)/(hi-lo)*(H-24);
+  let path="",pen=false; v.forEach((x,i)=>{if(x==null){pen=false;return}path+=(pen?"L":"M")+X(i).toFixed(1)+" "+Y(x).toFixed(1)+" ";pen=true});
+  const bl=Y(e.base), th=Y(e.base-(RULES.ndre_thr||0.08));
+  const di=e.drop?ms.indexOf(e.drop.date.slice(0,7)):-1;
+  const yrs=ms.map((m,i)=>m.endsWith("-01")?`<text x="${X(i)}" y="${H-2}" font-size="9" text-anchor="middle" fill="currentColor">${m.slice(0,4)}</text>`:"").join("");
+  const svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="NDRE 逐月中位數" style="width:100%;max-width:380px"><line x1="10" x2="${W-10}" y1="${bl}" y2="${bl}" stroke="#888" stroke-dasharray="3 3"/><line x1="10" x2="${W-10}" y1="${th}" y2="${th}" stroke="#c62828" stroke-dasharray="2 4"/>${di>=0?`<line x1="${X(di)}" x2="${X(di)}" y1="4" y2="${H-14}" stroke="#c62828"/>`:""}<path d="${path}" fill="none" stroke="#2e7d32" stroke-width="2"/>${yrs}</svg>`;
+  const txt=e.drop?`<b>自 ${esc(e.drop.date)} 起持續下降</b>（之後中位數比基準低 ${num(-e.drop.delta,2)}）。`:"沒有偵測到持續下降。";
+  const rec=e.recent_delta!=null?`最近 6 個月相對基準 ${e.recent_delta>=0?"+":""}${num(e.recent_delta,2)}。`:"";
+  return `${svg}<p class="small">${txt}${rec} 綠線＝有效坡面 NDRE 的逐月中位數<b>減去同日全區中位數</b>（距平，扣掉季節與大氣的共同起伏；SCL 去雲、有效像元 ≥50% 的日期）；灰虛線＝基準期（2023-11～2024-06），紅虛線＝基準減 ${RULES.ndre_thr||0.08}，紅直線＝下降日。持續下降還要求下降日 60 天後仍偏低。</p>
+  <p class="small muted">小試驗（凱米颱風 15 對案例／對照）：持續下降規則抓到 7/15、對照誤報 0/15；坡面中位數約只看得到占有效坡面兩成以上的變化，小崩塌會漏。紅邊未捕捉不代表沒有變化；NDRE 受季節、陰影、薄雲影響，只用來「請人看」。</p>`;
+}
 function select(id){
   const r = REC[id];
   const q = IDX.rows.find(x=>x[0]===id);
@@ -161,7 +175,7 @@ function select(id){
   if(!q){ d.innerHTML=`<p>找不到單元「${esc(id)}」。</p>`; return; }
   history.replaceState(null,"","#"+encodeURIComponent(id));
   if(!r){
-    const codes = {a:"有效坡面面積 <1 ha",b:"有效坡面占比 <20%",c:"Sentinel-2 視窗被浮水印遮蔽 ≥30%"};
+    const codes = {a:"有效坡面面積 <1 ha",b:"有效坡面占比 <20%",c:"Sentinel-2 有效觀測不足（雲、陰影）"};
     d.innerHTML=`<h2>${esc(id)}</h2><p><span class="tier ${TC[q[1]][0]}">${esc(q[1])}</span></p><p class="small">此單元在事件目錄、年度圖層（≥0.5 ha）、現地照片與 Sentinel-2 近期變化上<b>都沒有證據紀錄</b>。${q[3]?"資料不足原因："+q[3].split("").map(c=>codes[c]).join("；")+"。":""}</p><p class="small muted">候選層級為規則判定，非風險評估。</p>`;
     return;
   }
@@ -182,10 +196,10 @@ function select(id){
   ${bareBars(r.bare)}${ev}
   <h3>② 現地歷史照片（補充證據，不與①相加）</h3>
   <p class="small">${pc?`災害事件＋媒體報導照片：${pc}；年份 ${esc((r.photo_years||[]).join("、"))}。`:"此單元沒有災害事件或媒體報導照片。"} 照片張數不是災害次數；描述分類為規則式初分；多拍在道路可達處。</p>${pl}
-  <h3>③ 近期衛星變化（Sentinel-2，2024-04-04→2025-03-25）</h3>
-  <p class="small">簡單規則偵測到的新增裸露 ${num(r.s2_new_ha,2)} ha（其中 ${num(r.s2_riv*100,0)}% 在河道遮罩內）。這個規則只抓得到數公頃以上的崩塌（對官方崩塌召回僅約 34%），人工驗證中其「近期有變化」訊號只有約 1/4 屬實，且有漏報，只能當「請人看」的線索。</p>
+  <h3>③ 近期衛星變化（Sentinel-2 L2A 紅邊指標 NDRE，${esc((RULES.ndre_window||[]).join("～"))}）</h3>
+  ${ndreBlock(r.ndre)}
   <h3>④ 影像品質與偏移提醒</h3>
-  <p class="small">Sentinel-2 視窗被浮水印遮蔽 ${num(r.s2_invalid*100,0)}%；Wayback 2017 年起 ${r.wb_n==null?"無紀錄":r.wb_n+" 個拍攝日，最新 "+esc(r.wb_last||"—")}。Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。</p>
+  <p class="small">Sentinel-2 有效觀測 ${r.ndre&&r.ndre.n_obs!=null?r.ndre.n_obs+" 個日期（基準期 "+r.ndre.n_base+"、之後 "+r.ndre.n_after+"）":"—"}；只採用坡面內有效像元 ≥50% 的日期。Wayback 2017 年起 ${r.wb_n==null?"無紀錄":r.wb_n+" 個拍攝日，最新 "+esc(r.wb_last||"—")}。Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。</p>
   <p class="small"><a href="https://livingatlas.arcgis.com/wayback/#mapCenter=${lon}%2C${lat}%2C17" target="_blank" rel="noopener">在 Esri Wayback 開啟此位置（新分頁，人工複核用）</a></p>
   <p class="small muted">是否現勘由人決定；本頁不提供風險分數。</p>`;
 }

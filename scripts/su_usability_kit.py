@@ -33,7 +33,7 @@ POC = REPO / "data" / "biggis_interp" / "poc"
 OUT = POC / "su_usability"
 SEED = 20261007
 LIVE = "https://rhynowu-ardswc-resilience-observatory.hf.space/su#"
-TYPES = [("P1 近期照片描述崩塌／落石", 2), ("P2 事件目錄新增或擴大", 2), ("P3 Sentinel-2 近期新增", 2), ("一般判讀（有證據）", 2), ("資料不足（有證據）", 1), ("一般判讀（無證據，陡坡）", 1)]
+TYPES = [("P1 近期照片描述崩塌／落石", 2), ("P2 事件目錄新增或擴大", 2), ("P3 Sentinel-2 NDRE 持續下降", 2), ("一般判讀（有證據）", 2), ("資料不足（有證據）", 1), ("一般判讀（無證據，陡坡）", 1)]
 DEC = [("go", "建議安排現勘"), ("wait", "可暫緩（先不排）"), ("na", "資料不足，無法決定")]
 HELP = ["影像圖", "事件目錄", "現地照片", "近期衛星變化", "影像品質／偏移提醒", "候選層級與原因", "其他"]
 
@@ -75,11 +75,11 @@ def select():
         return {"su_id": sid, "i": t["i"], "cx": t["cx"], "cy": t["cy"], "eff_ha": u["eff_area_ha"], "slope": u["mean_slope_deg"], "cat": t["category"], "tier": idx[sid][1]}
     pools = {}
     sid_ok = lambda sid: sid in T and sid not in used and mu[sid]["eff_area_ha"] >= 1.5
-    pri_ok = lambda sid: ok(sid) and recs[sid]["s2_invalid"] < 0.15
-    ok = lambda sid: sid in T and sid not in used and mu[sid]["eff_area_ha"] >= 3.0 and mu[sid]["eff_frac"] >= 0.4 and "c" not in idx[sid][3]      # 排除 Sentinel-2 視窗被浮水印遮蔽 ≥30% 者（資料不足類型另計）
+    pri_ok = lambda sid: ok(sid) and (recs[sid].get("ndre") or {}).get("n_after", 0) >= 6
+    ok = lambda sid: sid in T and sid not in used and mu[sid]["eff_area_ha"] >= 3.0 and mu[sid]["eff_frac"] >= 0.4 and "c" not in idx[sid][3]      # 排除資料不足（c＝Sentinel-2 有效觀測不足）
     pools["P1 近期照片描述崩塌／落石"] = [s for s, r in recs.items() if pri_ok(s) and r["tier"] == "優先人工判讀" and any(w.startswith("P1") for w in r["why"])]
     pools["P2 事件目錄新增或擴大"] = [s for s, r in recs.items() if pri_ok(s) and r["tier"] == "優先人工判讀" and any(w.startswith("P2") for w in r["why"]) and not any(w.startswith("P1") for w in r["why"])]
-    pools["P3 Sentinel-2 近期新增"] = [s for s, r in recs.items() if pri_ok(s) and r["tier"] == "優先人工判讀" and any(w.startswith("P3") for w in r["why"]) and len(r["why"]) == 1]
+    pools["P3 Sentinel-2 NDRE 持續下降"] = [s for s, r in recs.items() if pri_ok(s) and r["tier"] == "優先人工判讀" and any(w.startswith("P3") for w in r["why"]) and len(r["why"]) == 1]
     pools["一般判讀（有證據）"] = [s for s, r in recs.items() if pri_ok(s) and r["tier"] == "一般判讀"]
     pools["資料不足（有證據）"] = [s for s, r in recs.items() if sid_ok(s) and r["tier"] == "資料不足" and mu[s]["eff_area_ha"] >= 1.5]
     pools["一般判讀（無證據，陡坡）"] = [s for s, i_ in idx.items() if i_[1] == "一般判讀" and i_[2] == 0 and ok(s) and (mu[s]["mean_slope_deg"] or 0) >= 25 and mu[s]["eff_area_ha"] >= 5.0]
@@ -204,7 +204,7 @@ def kit(grp, items, setof):
             dec = "".join(f'<label><input type="radio" name="d_{c}" value="{k}">{t}</label>' for k, t in DEC)
             conf = "".join(f'<label><input type="radio" name="c_{c}" value="{v}">{v}</label>' for v in ("高", "中", "低"))
             hp = "".join(f'<label><input type="checkbox" name="h_{c}" value="{h}">{h}</label>' for h in HELP if (cond == "tool" or h != "候選層級與原因"))
-            body.append(f'<div class="it" id="it_{c}" data-code="{c}" data-cond="{cond}"><b>{c}</b>　<span class="m">{it["area"]}</span><img src="{it["img"]}" alt="{c} 四欄影像：Wayback 較早、最新，Sentinel-2 兩期">{extra}'
+            body.append(f'<div class="it" id="it_{c}" data-code="{c}" data-cond="{cond}"><b>{c}</b>　<span class="m">{it["area"]}</span><img src="{it["img"]}" alt="{c} 多時點影像：Wayback 與 Sentinel-2 依日期排列">{extra}'
                         f'<p class="q"><b>是否建議安排現勘？</b>　{dec}</p><p class="q">信心：{conf}</p><p class="q">最有幫助的資訊（可複選）：{hp}</p><p class="q">備註：<input type="text" id="n_{c}"></p></div>')
     fin = '<div class="ph">最後：整體回饋</div><div class="it"><p>依你的使用經驗（1＝完全沒幫助，5＝很有幫助）：<br>原始資料條件對決定是否現勘的幫助：' + "".join(f'<label><input type="radio" name="u_orig" value="{k}">{k}</label>' for k in range(1, 6)) + '<br>證據鏈頁條件的幫助：' + "".join(f'<label><input type="radio" name="u_tool" value="{k}">{k}</label>' for k in range(1, 6)) + '</p><p>最令你困惑的地方：<br><textarea id="f1" rows="2"></textarea></p><p>還需要哪些資訊或功能：<br><textarea id="f2" rows="2"></textarea></p><p>職務與巡查／判釋年資（選填，不會公開個人身分）：<input type="text" id="f3"></p></div>'
     js = """
