@@ -1,0 +1,185 @@
+const pptxgen = require("pptxgenjs");
+const React = require("react");
+const ReactDOMServer = require("react-dom/server");
+const sharp = require("sharp");
+const fa = require("react-icons/fa");
+const { applyTheme } = require("C:/Users/user/.claude/skills/synced/c8fdb94f-bdfa-4737-b788-9b2d7d63db72_abd4613a-d1c0-4c62-a729-52c56ffb4d41/pptx/scripts/apply_theme.js");
+
+const FONT = "Microsoft JhengHei";
+const THEME = {
+  name: "SlopeSentinel",
+  headFontFace: FONT,
+  bodyFontFace: FONT,
+  colors: {
+    dk1: "1E2B22", lt1: "FFFFFF", dk2: "2C5F2D", lt2: "EEF3EC",
+    accent1: "2C5F2D", accent2: "B85042", accent3: "97BC62", accent4: "5E6B63", accent5: "D9A441", accent6: "4A6FA5",
+    hlink: "2C5F2D", folHlink: "5E6B63",
+  },
+};
+const HEX = THEME.colors;
+
+async function icon(Comp, hex) {
+  const svg = ReactDOMServer.renderToStaticMarkup(React.createElement(Comp, { color: "#" + hex, size: 256 }));
+  const buf = await sharp(Buffer.from(svg)).resize(256, 256).png().toBuffer();
+  return "image/png;base64," + buf.toString("base64");
+}
+
+(async () => {
+  const pres = new pptxgen();
+  pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5
+  pres.title = "地景複發熱點觀測站";
+  pres.author = "TASTI_SatDashboard";
+  pres.theme = { headFontFace: FONT, bodyFontFace: FONT };
+  const C = pres.SchemeColor;
+
+  pres.defineSlideMaster({
+    title: "TITLE_DARK",
+    background: { color: C.text2 },
+    objects: [
+      { placeholder: { options: { name: "title", type: "title", x: 0.8, y: 1.3, w: 11.7, h: 1.3, fontSize: 54, bold: true, color: C.background1, valign: "middle", margin: 0 }, text: "" } },
+      { placeholder: { options: { name: "body", type: "body", x: 0.8, y: 2.75, w: 11.7, h: 1.3, fontSize: 26, color: C.background2, valign: "top", margin: 0 }, text: "" } },
+    ],
+  });
+  pres.defineSlideMaster({
+    title: "CONTENT",
+    background: { color: C.background1 },
+    margin: [0.5, 0.6, 0.5, 0.6],
+    objects: [
+      { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.35, w: 12.1, h: 0.85, fontSize: 32, bold: true, color: C.text2, valign: "middle", margin: 0 }, text: "" } },
+      { text: { text: "TASTI_SatDashboard・OSSInt 2026 決賽", options: { x: 0.6, y: 7.0, w: 6, h: 0.3, fontSize: 10, color: C.accent4, margin: 0 } } },
+    ],
+    slideNumber: { x: 12.2, y: 7.0, w: 0.5, h: 0.3, fontSize: 10, color: C.accent4, align: "right" },
+  });
+
+  const ic = {
+    cat: await icon(fa.FaSatellite, HEX.accent1), cam: await icon(fa.FaCamera, HEX.accent1), img: await icon(fa.FaLayerGroup, HEX.accent1),
+    robot: await icon(fa.FaSearchLocation, HEX.lt1), link: await icon(fa.FaLink, HEX.lt1), user: await icon(fa.FaUserCheck, HEX.lt1),
+    open: await icon(fa.FaCodeBranch, HEX.accent1), people: await icon(fa.FaUsers, HEX.accent1), map: await icon(fa.FaMapMarkedAlt, HEX.accent1),
+  };
+
+  // 1 封面
+  pres.addSection({ title: "開場" });
+  let s = pres.addSlide({ masterName: "TITLE_DARK", sectionTitle: "開場" });
+  s.addText("地景複發熱點觀測站", { placeholder: "title" });
+  s.addText([{ text: "坡地韌性哨兵", options: { bold: true, color: C.background1, breakLine: true } }, { text: "把事件目錄、現地照片與衛星影像，整理成每個坡面的證據鏈", options: { fontSize: 18 } }], { placeholder: "body" });
+  const flow = [["機器幫忙決定", "先看誰", ic.robot], ["證據鏈告訴你", "為什麼", ic.link], ["最後由人決定", "要不要去", ic.user]];
+  flow.forEach(([a, b, im], k) => {
+    const x = 0.8 + k * 3.95;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 4.45, w: 3.6, h: 1.25, fill: { color: C.accent1 }, line: { color: C.accent3, width: 1 }, rectRadius: 0.12, objectName: `flow${k}` });
+    s.addImage({ data: im, x: x + 0.25, y: 4.75, w: 0.6, h: 0.6, objectName: `flowIcon${k}` });
+    s.addText([{ text: a, options: { fontSize: 16, color: C.background2, breakLine: true } }, { text: b, options: { fontSize: 24, bold: true, color: C.background1 } }],
+      { x: x + 1.05, y: 4.55, w: 2.45, h: 1.05, valign: "middle", margin: 0, isTextBox: true, objectName: `flowText${k}` });
+  });
+  s.addText("TASTI_SatDashboard｜開源空間資訊於國家韌性應用黑客松 OSSInt 2026 決賽　　rhynowu-ardswc-resilience-observatory.hf.space",
+    { x: 0.8, y: 6.55, w: 11.7, h: 0.4, fontSize: 12, color: C.background2, margin: 0, isTextBox: true });
+  s.addNotes("我們是 TASTI_SatDashboard。這個系統不是要取代崩塌判釋，而是把水保署已經有的事件型崩塌目錄、歷史現地照片和近期衛星影像，整理成每個坡面的證據鏈。一句話：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。（約 20 秒）");
+
+  // 2 問題
+  pres.addSection({ title: "問題與方法" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "問題與方法" });
+  s.addText("巡查先看哪裡？證據散在三個地方", { placeholder: "title" });
+  const src = [
+    [ic.cat, "事件型崩塌目錄", "衛星判釋每次事件「新生或擴大」的部分；只涵蓋看得到的大事件"],
+    [ic.cam, "現地歷史照片", "補小型崩塌、落石、道路邊坡；多拍在道路可達處"],
+    [ic.img, "近期衛星影像", "Sentinel-2 約每 5 天一次；Wayback 解析度高、拍攝不定期"],
+  ];
+  src.forEach(([im, h, d], k) => {
+    const x = 0.6 + k * 4.1;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.55, w: 3.8, h: 2.6, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.12, objectName: `src${k}` });
+    s.addImage({ data: im, x: x + 0.3, y: 1.85, w: 0.65, h: 0.65, objectName: `srcIcon${k}` });
+    s.addText(h, { x: x + 0.3, y: 2.7, w: 3.2, h: 0.5, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: `srcH${k}` });
+    s.addText(d, { x: x + 0.3, y: 3.25, w: 3.2, h: 1.15, fontSize: 15, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `srcD${k}` });
+  });
+  const stats = [["約 1,800 km²", "高雄 POC（桃源・那瑪夏・六龜・甲仙）"], ["13,175", "個坡面單元"], ["8,856", "張現地照片落在 POC 內"]];
+  stats.forEach(([n, l], k) => {
+    const x = 0.6 + k * 4.1;
+    s.addText(n, { x, y: 4.6, w: 3.8, h: 0.8, fontSize: 36, bold: true, color: C.accent2, margin: 0, isTextBox: true, objectName: `stat${k}` });
+    s.addText(l, { x, y: 5.4, w: 3.8, h: 0.5, fontSize: 14, color: C.accent4, margin: 0, isTextBox: true, objectName: `statL${k}` });
+  });
+  s.addNotes("巡查人力有限，但山區坡面上萬個。要判斷先去哪裡，證據散在三個地方：事件型崩塌目錄、現地歷史照片、近期衛星影像，各有盲點。以高雄 POC 為例，約 1,800 平方公里、1 萬 3 千個坡面、近 9 千張現地照片。（約 40 秒）");
+
+  // 3 方法
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "問題與方法" });
+  s.addText("以坡面為單位，四類證據分開，不給總分", { placeholder: "title" });
+  s.addImage({ path: "v2_only.png", x: 0.6, y: 1.45, w: 4.6, h: 4.6, objectName: "suMap" });
+  s.addText("集水區重疊法（正、反 DEM）切坡面，只保留坡度 ≥15° 的有效坡面；每個單元都是完整區塊（舊版 85% 不連續 → 0%）",
+    { x: 0.6, y: 6.1, w: 4.6, h: 0.75, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "suCap" });
+  const ev = [["①", "事件目錄與年度圖層", "主骨架：歷次新增、擴大掛到同一坡面"], ["②", "現地照片", "補充證據，與①分開計、不相加"], ["③", "近期衛星變化", "Sentinel-2 時間序列，只回答「最近還有沒有變化」"], ["④", "影像品質提醒", "雲、陰影、有效觀測筆數、Wayback 偏移"]];
+  ev.forEach(([n, h, d], k) => {
+    const y = 1.5 + k * 0.95;
+    s.addShape(pres.shapes.OVAL, { x: 5.7, y: y + 0.05, w: 0.6, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1 }, objectName: `evDot${k}` });
+    s.addText(n, { x: 5.7, y: y + 0.05, w: 0.6, h: 0.6, fontSize: 18, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `evN${k}` });
+    s.addText([{ text: h, options: { fontSize: 18, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 14, color: C.accent4 } }],
+      { x: 6.5, y, w: 6.2, h: 0.8, valign: "middle", margin: 0, isTextBox: true, objectName: `evT${k}` });
+  });
+  const tiers = [["優先人工判讀", C.accent2], ["一般判讀", C.accent1], ["資料不足", C.accent4]];
+  s.addText("只給三種候選層級，由人決定是否現勘：", { x: 5.7, y: 5.4, w: 7, h: 0.4, fontSize: 15, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "tierLead" });
+  tiers.forEach(([t, col], k) => {
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.7 + k * 2.35, y: 5.95, w: 2.15, h: 0.6, fill: { color: col }, line: { color: col }, rectRadius: 0.3, objectName: `tier${k}` });
+    s.addText(t, { x: 5.7 + k * 2.35, y: 5.95, w: 2.15, h: 0.6, fontSize: 15, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `tierT${k}` });
+  });
+  s.addNotes("方法上，我們以坡面為單位。依輔導委員建議，用集水區重疊法切坡面，只保留坡度 15 度以上的有效坡面，每個單元都是完整區塊。每個坡面有四類證據：事件目錄是主骨架，照片是補充，衛星只回答最近還有沒有變化，再加上影像品質提醒。四類分開呈現、不相加、不給總分，最後只給三種候選層級。（約 50 秒）");
+
+  // 4 證據鏈頁
+  pres.addSection({ title: "成果與驗證" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
+  s.addText("每個坡面一頁：過去發生過什麼、最近還有沒有變化", { placeholder: "title" });
+  const poster = "image/png;base64," + require("fs").readFileSync("poster.png").toString("base64");
+  s.addMedia({ type: "video", path: "demo_su.mp4", x: 0.6, y: 1.5, w: 8.12, h: 4.57, cover: poster, objectName: "suVideo" });
+  s.addText("線上系統操作錄影（約 27 秒，點一下播放）：查詢坡面 → 證據鏈 → 切換 Wayback 歷史影像", { x: 0.6, y: 6.15, w: 8.12, h: 0.4, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "vidCap" });
+  const pts = [["為什麼是這個層級", "列出觸發的條件與提醒，不是分數"], ["事件歷史", "凱米颱風在此坡面新增 0.81 ha"], ["近期衛星變化", "NDRE 逐月曲線與下降日"], ["高解析佐證", "Wayback 拍攝日選單，人工目視確認"]];
+  pts.forEach(([h, d], k) => {
+    const y = 1.5 + k * 1.3;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 9.05, y, w: 3.65, h: 1.1, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `pt${k}` });
+    s.addText([{ text: h, options: { fontSize: 16, bold: true, color: C.text2, breakLine: true } }, { text: d, options: { fontSize: 13, color: C.text1 } }],
+      { x: 9.25, y: y + 0.08, w: 3.3, h: 0.95, valign: "middle", margin: 0, isTextBox: true, objectName: `ptT${k}` });
+  });
+  s.addNotes("（點一下影片播放）這是線上系統的坡面頁操作。地圖上紅色是官方判釋的崩塌，黃線是這個坡面。右邊依序是為什麼列為優先、事件歷史、近期衛星變化曲線，還可以切換 Wayback 歷史影像做人工目視確認。整個高雄 POC 目前有 411 個坡面列為優先人工判讀。（約 45 秒）");
+
+  // 5 驗證
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
+  s.addText("我們量了它準不準：訊號只能「請人看」", { placeholder: "title" });
+  s.addImage({ path: "gaemi_s2.gif", x: 0.6, y: 1.45, w: 4.3, h: 4.3, objectName: "gaemiGif" });
+  s.addText("凱米颱風前後（Sentinel-2，白線＝坡面）：NDRE 從 0.42 降到接近 0", { x: 0.6, y: 5.85, w: 4.3, h: 0.7, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "gifCap" });
+  const val = [
+    ["69%", "目視與官方圖層「有無裸露」一致", "人工盲測 n=29"],
+    ["約 1/4", "舊版「近期有變化」訊號屬實", "24 個分層坡面"],
+    ["5/26", "高雄全區紅邊下降經盲判屬實", "32 個坡面分層盲判"],
+    ["75%・43%", "大事件後崩塌坡面被抓到（花蓮・太魯閣），誤報約 2%", "事件目錄對照，崩塌占坡面兩成以上才可靠"],
+  ];
+  val.forEach(([n, l, src_], k) => {
+    const x = 5.3 + (k % 2) * 3.8, y = 1.45 + Math.floor(k / 2) * 2.0;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 3.6, h: 1.8, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.12, objectName: `val${k}` });
+    s.addText(n, { x: x + 0.2, y: y + 0.12, w: 3.2, h: 0.65, fontSize: 28, bold: true, color: k == 2 ? C.accent2 : C.text2, margin: 0, valign: "middle", isTextBox: true, objectName: `valN${k}` });
+    s.addText(l, { x: x + 0.2, y: y + 0.8, w: 3.2, h: 0.6, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `valL${k}` });
+    s.addText(src_, { x: x + 0.2, y: y + 1.4, w: 3.2, h: 0.3, fontSize: 11, color: C.accent4, margin: 0, isTextBox: true, objectName: `valS${k}` });
+  });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.3, y: 5.5, w: 7.4, h: 1.3, fill: { color: C.text2 }, line: { color: C.text2 }, rectRadius: 0.12, objectName: "concl" });
+  s.addText([{ text: "所以：", options: { bold: true, color: C.accent5 } }, { text: "紅邊指標適合大事件後找出植被大片消失的坡面，平時零星變化不可靠；自動訊號只排「先看誰」，最後由人確認。", options: { color: C.background1 } }],
+    { x: 5.55, y: 5.55, w: 6.95, h: 1.2, fontSize: 15, valign: "middle", margin: 0, isTextBox: true, objectName: "conclT" });
+  s.addNotes("左邊是凱米颱風前後的同一個坡面，颱風後 5 天整片植被消失，紅邊指標從 0.42 掉到接近 0。我們不只做系統，也量了它準不準。影像目視與官方圖層的有無裸露一致率只有 69%；舊版近期變化訊號約四分之一屬實。我們參考水保署電子報改用紅邊指標。在高雄全區，零星的下降經盲判只有 5/26 屬實；但在大事件後，花蓮有 75%、太魯閣有 43% 的崩塌坡面被抓到，沒有事件的坡面誤報約 2%。所以紅邊指標適合大事件後快速找出植被大片消失的坡面，自動訊號只用來排出先看誰，最後一定由人確認。（約 55 秒）");
+
+  // 6 落地
+  pres.addSection({ title: "落地" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "落地" });
+  s.addText("可複製、可檢驗，接下來交給第一線檢驗", { placeholder: "title" });
+  const nx = [
+    [ic.open, "全用開放資料與開源工具", "水保署 BigGIS、歷史影像平台、內政部 20 m DEM、Sentinel-2；程式公開在 GitHub"],
+    [ic.map, "流程可搬到其他流域", "高雄完成完整證據鏈；花蓮、太魯閣、中部、嘉義已測試事件目錄與衛星比對"],
+    [ic.people, "人工驗證持續進行", "專家盲判 2–3 位、實務人員操作測試 3–5 位；依結果調整候選規則"],
+  ];
+  nx.forEach(([im, h, d], k) => {
+    const y = 1.5 + k * 1.45;
+    s.addShape(pres.shapes.OVAL, { x: 0.6, y, w: 0.95, h: 0.95, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `nxC${k}` });
+    s.addImage({ data: im, x: 0.82, y: y + 0.22, w: 0.5, h: 0.5, objectName: `nxI${k}` });
+    s.addText([{ text: h, options: { fontSize: 20, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 15, color: C.accent4 } }],
+      { x: 1.85, y: y - 0.05, w: 10.8, h: 1.1, valign: "middle", margin: 0, isTextBox: true, objectName: `nxT${k}` });
+  });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.95, w: 12.1, h: 0.8, fill: { color: C.accent1 }, line: { color: C.accent1 }, rectRadius: 0.12, objectName: "closing" });
+  s.addText("機器幫忙決定先看誰・證據鏈告訴你為什麼・最後由人決定要不要去", { x: 0.9, y: 5.95, w: 11.5, h: 0.8, fontSize: 20, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: "closingT" });
+  s.addNotes("最後，這套流程全用開放資料與開源工具，程式公開，高雄完成完整流程，另外四個區域也測試過衛星與事件比對。接下來請專家盲判與第一線同仁實際操作，依結果調整規則。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
+
+  await pres.writeFile({ fileName: "TASTI_SatDashboard-決賽簡報.pptx" });
+  await applyTheme("TASTI_SatDashboard-決賽簡報.pptx", THEME);
+  console.log("done");
+})();
