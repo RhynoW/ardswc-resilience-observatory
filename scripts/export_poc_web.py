@@ -206,6 +206,10 @@ def main():
                 if p.exists():
                     d["layers"]["s2_new"] = vectorize(np.load(p), tf, 30)
                     d["s2_new_pair"] = pair
+        wl = jload(AREAS / name / "su_ndre" / "web_layer.json")      # region_su_ndre.py export：坡面 NDRE 持續下降（花蓮、太魯閣）
+        if wl:
+            d["layers"]["ndre_drop"] = wl["layer"]
+            d["metrics"]["ndre"] = wl["metrics"]
         (WEB / f"{name}.json").write_text(json.dumps(round_coords(d), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         print(name, round((WEB / f"{name}.json").stat().st_size / 1e6, 2), "MB", {k: len(v["features"]) for k, v in d["layers"].items()}, flush=True)
         index.append({"id": tag, "name": name, "label": label, "bbox": bbox, "center": d["center"], "file": f"/static/poc/{name}.json"})

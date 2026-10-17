@@ -5,7 +5,7 @@
     持續下降＝下降日本身低於基準 −0.08、其後 6 筆至少 3 筆低於、之後中位數與 60 天後中位數都低於。
   - 花蓮的基準期改為 2024-07-01～2025-06-30（2024-04-03 花蓮地震之後、2025-07 颱風之前的一整年）；觀測到 2026-09-30。
   - 對照：hualien.json 的事件目錄圖層（2025-07 丹娜絲薇帕、0728 豪雨；含 688 ha 超大崩塌）落在坡面內的面積。
-用法：python scripts/region_su_ndre.py H su|fetch|build|all
+用法：python scripts/region_su_ndre.py H su|fetch|build|export|all
 輸出：data/biggis_interp/areas/<name>/su_ndre/（labels.npz、units.json、items/、su_ndre.json、summary.json）
 限制：與高雄相同（門檻看過高雄資料後訂、未獨立驗證；高雄人工盲判屬實約 2 成）。
 """
@@ -191,10 +191,57 @@ def event_area(c, units):
     return {u["su_id"]: round(float(a[u["key"]]), 2) for u in units}
 
 
+def export(c):
+    """網頁用：持續下降坡面的有效坡面多邊形（WGS84，簡化）＋指標（偵測率依事件占比分組）→ <out>/web_layer.json；export_poc_web.py 會併入 /poc。"""
+    import cv2
+    from pyproj import Transformer
+    from scipy import ndimage as ndi
+    L = np.load(c["out"] / "labels.npz")
+    lab, x0, y0 = L["key_eff"], float(L["x0"]), float(L["y0"])
+    units = {u["su_id"]: u for u in json.load(open(c["out"] / "units.json", encoding="utf-8"))["units"]}
+    j = json.load(open(c["out"] / "su_ndre.json", encoding="utf-8"))
+    su, ev = j["su"], j["event_ha"]
+    summ = json.load(open(c["out"] / "summary.json", encoding="utf-8"))
+    to_ll = Transformer.from_crs(3826, 4326, always_xy=True)
+    objs = ndi.find_objects(lab + 1)
+    feats = []
+    for sid, r in su.items():
+        if not r["drop"]:
+            continue
+        k = units[sid]["key"]
+        sl = objs[k]
+        if sl is None:
+            continue
+        sub = np.pad((lab[sl] == k).astype(np.uint8), 1)
+        cs, _ = cv2.findContours(sub, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        polys = []
+        for cc in cs:
+            if len(cc) < 3:
+                continue
+            ap = cv2.approxPolyDP(cc, 1.2, True)[:, 0, :].astype(float) - 1
+            if len(ap) < 3:
+                continue
+            X, Y = x0 + (ap[:, 0] + sl[1].start + 0.5) * 20, y0 - (ap[:, 1] + sl[0].start + 0.5) * 20
+            lon, lat = to_ll.transform(X, Y)
+            ring = [[round(float(a_), 5), round(float(b_), 5)] for a_, b_ in zip(lon, lat)]
+            polys.append([ring + [ring[0]]])
+        if polys:
+            feats.append({"type": "Feature", "geometry": {"type": "MultiPolygon", "coordinates": polys},
+                          "properties": {"su_id": sid, "date": r["drop"]["date"], "delta": r["drop"]["delta"], "event_ha": ev.get(sid, 0), "eff_ha": units[sid]["eff_ha"]}})
+    bins = []
+    for lo, hi, lab_ in ((0.0001, 0.05, "<5%"), (0.05, 0.1, "5–10%"), (0.1, 0.2, "10–20%"), (0.2, 0.4, "20–40%"), (0.4, 99, "≥40%")):
+        ss = [s for s in su if su[s].get("base") is not None and lo <= ev.get(s, 0) / max(units[s]["eff_ha"], 0.01) < hi]
+        bins.append({"bin": lab_, "n": len(ss), "detected": sum(bool(su[s]["drop"]) for s in ss)})
+    nz = [s for s in su if ev.get(s, 0) == 0 and su[s].get("base") is not None]
+    metrics = {**summ, "by_event_share": bins, "false_rate_no_event": round(float(np.mean([bool(su[s]["drop"]) for s in nz])), 3), "n_no_event": len(nz)}
+    (c["out"] / "web_layer.json").write_text(json.dumps({"layer": {"type": "FeatureCollection", "features": feats}, "metrics": metrics}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    log("網頁圖層", len(feats), "個坡面", round((c["out"] / "web_layer.json").stat().st_size / 1e6, 2), "MB")
+
+
 if __name__ == "__main__":
     rid, step = sys.argv[1], sys.argv[2]
     c = cfg(rid)
     c["tm2"] = tm2_bbox(c["bbox"])
-    for name, fn in (("su", su), ("fetch", fetch), ("build", build)):
+    for name, fn in (("su", su), ("fetch", fetch), ("build", build), ("export", export)):
         if step in (name, "all"):
             fn(c)
