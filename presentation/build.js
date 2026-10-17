@@ -120,27 +120,40 @@ async function icon(Comp, hex) {
   });
   s.addNotes("方法上，我們以坡面為單位。依輔導委員建議，用集水區重疊法切坡面，只保留坡度 15 度以上的有效坡面，每個單元都是完整區塊。每個坡面有四類證據：事件目錄是主骨架，照片是補充，衛星只回答最近還有沒有變化，再加上影像品質提醒。四類分開呈現、不相加、不給總分，最後只給三種候選層級。（約 50 秒）");
 
-  // 4 證據鏈頁
+  // 4 案例：太魯閣
   pres.addSection({ title: "成果與驗證" });
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
-  s.addText("每個坡面一頁：過去發生過什麼、最近還有沒有變化", { placeholder: "title" });
-  const poster = "image/png;base64," + require("fs").readFileSync("poster.png").toString("base64");
-  s.addMedia({ type: "video", path: "demo_su.mp4", x: 0.6, y: 1.5, w: 8.12, h: 4.57, cover: poster, objectName: "suVideo" });
-  s.addText("線上系統操作錄影（約 27 秒，點一下播放）：查詢坡面 → 證據鏈 → 切換 Wayback 歷史影像", { x: 0.6, y: 6.15, w: 8.12, h: 0.4, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "vidCap" });
-  const pts = [["為什麼是這個層級", "列出觸發的條件與提醒，不是分數"], ["事件歷史", "凱米颱風在此坡面新增 0.81 ha"], ["近期衛星變化", "NDRE 逐月曲線與下降日"], ["高解析佐證", "Wayback 拍攝日選單，人工目視確認"]];
-  pts.forEach(([h, d], k) => {
-    const y = 1.5 + k * 1.3;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 9.05, y, w: 3.65, h: 1.1, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `pt${k}` });
-    s.addText([{ text: h, options: { fontSize: 16, bold: true, color: C.text2, breakLine: true } }, { text: d, options: { fontSize: 13, color: C.text1 } }],
-      { x: 9.25, y: y + 0.08, w: 3.3, h: 0.95, valign: "middle", margin: 0, isTextBox: true, objectName: `ptT${k}` });
+  s.addText("案例：太魯閣 0403 地震，一個坡面的證據鏈", { placeholder: "title" });
+  s.addImage({ path: "taroko_s2.gif", x: 0.6, y: 1.4, w: 4.75, h: 4.75, objectName: "tarokoGif" });
+  s.addText("白線＝坡面；橘線＝事件目錄的地震崩塌（官方判釋）", { x: 0.6, y: 6.25, w: 4.75, h: 0.5, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "gifCap" });
+  const ts = JSON.parse(require("fs").readFileSync("taroko_ndre_series.json", "utf8"));
+  const lab4 = ts.months.map(m => m.slice(2).replace("-", "/"));
+  s.addChart(pres.charts.LINE, [
+    { name: "此坡面", labels: lab4, values: ts.su.map(v => v == null ? null : v) },
+    { name: "全區中位數", labels: lab4, values: ts.region },
+  ], { x: 5.75, y: 1.35, w: 6.95, h: 3.05, showTitle: true, title: "NDRE 逐月中位數（地震 2024/04）", titleFontSize: 14, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
+       chartColors: [HEX.accent2, HEX.accent4], lineSize: 2.5, lineDataSymbol: "none", displayBlanksAs: "span",
+       showLegend: true, legendPos: "b", legendFontSize: 11, legendFontFace: "+mn-lt", catAxisLabelFontSize: 10, valAxisLabelFontSize: 10, catAxisLabelFontFace: "+mn-lt", valAxisLabelFontFace: "+mn-lt",
+       catAxisLabelColor: HEX.accent4, valAxisLabelColor: HEX.accent4, valAxisMinVal: 0, valAxisMaxVal: 0.8, valAxisMajorUnit: 0.2, valGridLine: { color: "DDE5DF", size: 0.5 }, catGridLine: { style: "none" },
+       catAxisLabelFrequency: 3, objectName: "ndreChart" });
+  const chain = [["①", "事件目錄", "0403 地震崩塌在此坡面 10.7 ha（有效坡面 21.4 ha 的一半）"], ["③", "近期衛星變化", "NDRE 自 2024-04-14 持續下降（0.53 → 0.20），全區沒有同步"], ["→", "結論", "列入人工判讀候選；是否現勘由人決定"]];
+  chain.forEach(([n, h, d], k) => {
+    const y = 4.6 + k * 0.72;
+    s.addShape(pres.shapes.OVAL, { x: 5.75, y: y + 0.06, w: 0.48, h: 0.48, fill: { color: k == 2 ? C.accent2 : C.accent1 }, line: { color: k == 2 ? C.accent2 : C.accent1 }, objectName: `chD${k}` });
+    s.addText(n, { x: 5.75, y: y + 0.06, w: 0.48, h: 0.48, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `chN${k}` });
+    s.addText([{ text: h + "　", options: { bold: true, color: C.text1 } }, { text: d, options: { color: C.text1 } }], { x: 6.4, y, w: 6.3, h: 0.6, fontSize: 14, valign: "middle", margin: 0, isTextBox: true, objectName: `chT${k}` });
   });
-  s.addNotes("（點一下影片播放）這是線上系統的坡面頁操作。地圖上紅色是官方判釋的崩塌，黃線是這個坡面。右邊依序是為什麼列為優先、事件歷史、近期衛星變化曲線，還可以切換 Wayback 歷史影像做人工目視確認。整個高雄 POC 目前有 411 個坡面列為優先人工判讀。（約 45 秒）");
+  s.addNotes("看一個太魯閣的例子。白線是一個坡面，橘線是官方事件目錄圈出的地震崩塌，占了這個坡面的一半。地震前 3 月底，紅邊指標 0.53；地震後 11 天掉到 0.20，之後一直沒有回來，而全區中位數只是正常的季節起伏。事件目錄、衛星變化兩類證據指向同一件事，這個坡面就會被列入人工判讀候選，最後由人決定要不要去。線上系統的太魯閣頁可以看到全部 329 個下降坡面。（約 45 秒）");
 
   // 5 驗證
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
   s.addText("我們量了它準不準：訊號只能「請人看」", { placeholder: "title" });
-  s.addImage({ path: "gaemi_s2.gif", x: 0.6, y: 1.45, w: 4.3, h: 4.3, objectName: "gaemiGif" });
-  s.addText("凱米颱風前後（Sentinel-2，白線＝坡面）：NDRE 從 0.42 降到接近 0", { x: 0.6, y: 5.85, w: 4.3, h: 0.7, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "gifCap" });
+  s.addChart(pres.charts.BAR, [{ name: "被抓到的比例", labels: ["<5%", "5–10%", "10–20%", "20–40%", "≥40%"], values: [7, 15, 42, 75, 93] }],
+    { x: 0.6, y: 1.4, w: 4.45, h: 4.4, barDir: "col", showTitle: true, title: "太魯閣：崩塌占坡面越大，越抓得到", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
+      chartColors: [HEX.accent1], showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: '0"%"', dataLabelFontSize: 12, dataLabelColor: HEX.dk1, dataLabelFontFace: "+mn-lt",
+      catAxisLabelFontSize: 11, valAxisHidden: true, catAxisLabelColor: HEX.accent4, catAxisLabelFontFace: "+mn-lt", valAxisMinVal: 0, valAxisMaxVal: 100,
+      valGridLine: { style: "none" }, catGridLine: { style: "none" }, showLegend: false, barGapWidthPct: 60, objectName: "detChart" });
+  s.addText("橫軸：事件目錄崩塌占坡面有效面積；縱軸：NDRE 持續下降被抓到的比例（太魯閣 5,469 個坡面）", { x: 0.6, y: 5.9, w: 4.45, h: 0.7, fontSize: 11, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "chartCap" });
   const val = [
     ["69%", "目視與官方圖層「有無裸露」一致", "人工盲測 n=29"],
     ["約 1/4", "舊版「近期有變化」訊號屬實", "24 個分層坡面"],
@@ -157,7 +170,7 @@ async function icon(Comp, hex) {
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.3, y: 5.5, w: 7.4, h: 1.3, fill: { color: C.text2 }, line: { color: C.text2 }, rectRadius: 0.12, objectName: "concl" });
   s.addText([{ text: "所以：", options: { bold: true, color: C.accent5 } }, { text: "紅邊指標適合大事件後找出植被大片消失的坡面，平時零星變化不可靠；自動訊號只排「先看誰」，最後由人確認。", options: { color: C.background1 } }],
     { x: 5.55, y: 5.55, w: 6.95, h: 1.2, fontSize: 15, valign: "middle", margin: 0, isTextBox: true, objectName: "conclT" });
-  s.addNotes("左邊是凱米颱風前後的同一個坡面，颱風後 5 天整片植被消失，紅邊指標從 0.42 掉到接近 0。我們不只做系統，也量了它準不準。影像目視與官方圖層的有無裸露一致率只有 69%；舊版近期變化訊號約四分之一屬實。我們參考水保署電子報改用紅邊指標。在高雄全區，零星的下降經盲判只有 5/26 屬實；但在大事件後，花蓮有 75%、太魯閣有 43% 的崩塌坡面被抓到，沒有事件的坡面誤報約 2%。所以紅邊指標適合大事件後快速找出植被大片消失的坡面，自動訊號只用來排出先看誰，最後一定由人確認。（約 55 秒）");
+  s.addNotes("我們不只做系統，也量了它準不準。影像目視與官方圖層的有無裸露一致率只有 69%；舊版近期變化訊號約四分之一屬實。我們參考水保署電子報改用紅邊指標。在高雄全區，零星的下降經盲判只有 5/26 屬實；但在大事件後，花蓮有 75%、太魯閣有 43% 的崩塌坡面被抓到，沒有事件的坡面誤報約 2%。左邊這張圖是太魯閣：崩塌占坡面不到 5% 時只抓到 7%，超過四成時抓到 93%。所以紅邊指標適合大事件後快速找出植被大片消失的坡面，自動訊號只用來排出先看誰，最後一定由人確認。（約 55 秒）");
 
   // 6 落地
   pres.addSection({ title: "落地" });
@@ -165,7 +178,7 @@ async function icon(Comp, hex) {
   s.addText("可複製、可檢驗，接下來交給第一線檢驗", { placeholder: "title" });
   const nx = [
     [ic.open, "全用開放資料與開源工具", "水保署 BigGIS、歷史影像平台、內政部 20 m DEM、Sentinel-2；程式公開在 GitHub"],
-    [ic.map, "流程可搬到其他流域", "高雄完成完整證據鏈；花蓮、太魯閣、中部、嘉義已測試事件目錄與衛星比對"],
+    [ic.map, "流程可搬到其他流域", "高雄完成完整證據鏈；花蓮、太魯閣加做坡面紅邊檢核；中部、嘉義已測試事件目錄與衛星比對"],
     [ic.people, "人工驗證持續進行", "專家盲判 2–3 位、實務人員操作測試 3–5 位；依結果調整候選規則"],
   ];
   nx.forEach(([im, h, d], k) => {
@@ -177,7 +190,7 @@ async function icon(Comp, hex) {
   });
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.95, w: 12.1, h: 0.8, fill: { color: C.accent1 }, line: { color: C.accent1 }, rectRadius: 0.12, objectName: "closing" });
   s.addText("機器幫忙決定先看誰・證據鏈告訴你為什麼・最後由人決定要不要去", { x: 0.9, y: 5.95, w: 11.5, h: 0.8, fontSize: 20, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: "closingT" });
-  s.addNotes("最後，這套流程全用開放資料與開源工具，程式公開，高雄完成完整流程，另外四個區域也測試過衛星與事件比對。接下來請專家盲判與第一線同仁實際操作，依結果調整規則。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
+  s.addNotes("最後，這套流程全用開放資料與開源工具，程式公開，高雄完成完整流程，花蓮、太魯閣也加做了坡面紅邊檢核，另外兩區測試過衛星與事件比對。接下來請專家盲判與第一線同仁實際操作，依結果調整規則。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
 
   await pres.writeFile({ fileName: "TASTI_SatDashboard-決賽簡報.pptx" });
   await applyTheme("TASTI_SatDashboard-決賽簡報.pptx", THEME);
