@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>系統藍圖對照｜坡地韌性哨兵</title>
+<meta name="description" content="對照「山坡地崩塌智慧防災與事件反應平台」構想的六個模組：本系統現在有的、缺口與下一步；附道路聚落暴露與各地層崩塌密度。">
+<style>
+  :root{ --bg:#fff; --surface:#f7f7f8; --raised:#fff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f; --accent:#0b5fd4; --focus:#0b5fd4; --warn:#b7791f;
+    --ok:#2e7d32; --part:#1565c0; --none:#757575; --hi:#fbe3d6; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb; --accent:#6aa9ff; --focus:#8bbcff; --warn:#e0b45a; --ok:#81c784; --part:#6aa9ff; --none:#a0a0a8; --hi:#4a2f26; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:var(--radius);z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none} nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap} nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);text-decoration:none}
+  h1{font-size:clamp(22px,3.4vw,30px);margin:24px 0 6px;line-height:1.3} h2{font-size:20px;margin:28px 0 6px}
+  .sub{color:var(--muted);margin:0 0 12px;max-width:62em}
+  .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:10px 14px;font-size:14.5px}
+  .tw{overflow-x:auto} table{border-collapse:collapse;font-size:14.5px;width:100%;margin:6px 0} th,td{border-bottom:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;background:var(--surface)} td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.mod{font-weight:700;white-space:nowrap} tr.hi td{background:var(--hi);font-weight:600} tr.tot td{font-weight:700;background:var(--surface)}
+  .st{display:inline-block;font-size:13px;font-weight:700;padding:1px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+  .st.part{background:var(--part)} .st.none{background:var(--none)}
+  .new{display:inline-block;font-size:12px;font-weight:700;color:var(--ok);border:1px solid var(--ok);border-radius:4px;padding:0 5px;margin-left:4px}
+  .pos{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin:12px 0}
+  .muted{color:var(--muted)} .small{font-size:13.5px}
+  @media (max-width:700px){ td.mod{white-space:normal} }
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:18px 0;color:var(--muted);font-size:14px;margin-top:28px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">坡地韌性哨兵 · 系統藍圖對照</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/su">坡面證據鏈</a></li></ul></nav>
+  <div id="site-badge"></div>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="wrap">
+  <h1>系統藍圖對照：現在在哪、下一步</h1>
+  <p class="sub">專家提出「山坡地崩塌智慧防災與事件反應平台」構想，分六個模組。下表逐一對照本系統的現況（2026-10-25）。我們目前做的是構想中的<b>平時篩查</b>：幫第一線決定先看哪個坡面；事件即時反應、災害鏈與應變工作流還沒做。</p>
+  <div class="callout" role="note">AI 與自動訊號只排出「先看誰」並附上可檢視的證據，最後由人確認——這點與構想一致。每項自動訊號都附有實測準確度與信賴區間（見<a href="/poc">五個 POC 區域</a>）。</div>
+
+  <h2>和現有系統對照</h2>
+  <div class="tw"><table>
+    <thead><tr><th scope="col">構想模組</th><th scope="col">狀態</th><th scope="col">我們現在有的</th><th scope="col">缺口</th></tr></thead>
+    <tbody>
+      <tr><td class="mod">一、坡地風險底圖</td><td><span class="st part">部分</span></td>
+        <td>20 m DEM、≥15° 有效坡面、坡面單元、事件目錄、四年崩塌圖層、大規模崩塌潛勢區（只當對照）；<br>
+          道路與聚落暴露（OpenStreetMap，坡面內與外推 100 m）<span class="new">新增</span>；<br>
+          各地層崩塌密度（小比例尺地層面，見下方）<span class="new">新增</span></td>
+        <td>五萬分之一地質向量（斷層、地層位態、不連續面、崩積區）尚未取得，所以斷層距離與順向坡還不能分析</td></tr>
+      <tr><td class="mod">二、降雨觸發與前期含水</td><td><span class="st none">未做</span></td><td>沒有</td><td>全缺。雨量 I-D、前期累積雨量、土壤含水都沒做</td></tr>
+      <tr><td class="mod">三、多源監測與異常偵測</td><td><span class="st part">部分</span></td>
+        <td>Sentinel-2 NDRE 時間序列、Sentinel-1（只抓得到很大的崩塌）、現地照片、Wayback 人工查證</td>
+        <td>微地動、InSAR、水位都沒有；UAV 已依陳組長建議停止</td></tr>
+      <tr><td class="mod">四、AI 輔助判釋</td><td><span class="st part">部分</span></td>
+        <td>候選層級、每個坡面的證據頁、每項訊號的準確度與信賴區間</td>
+        <td>自動產生「研判摘要、待確認事項」還沒做</td></tr>
+      <tr><td class="mod">五、下游影響與災害鏈</td><td><span class="st none">未做</span></td>
+        <td>沒有（花蓮堰塞湖只做了崩塌偵測）；坡面證據頁已列出崩塌可能碰到的道路與建物，但沒有土砂與河道的串接</td>
+        <td>全缺：崩塌 → 土砂 → 河道 → 堰塞 → 下游</td></tr>
+      <tr><td class="mod">六、應變工作流</td><td><span class="st part">部分</span></td>
+        <td>實務人員測試頁（判斷要不要現勘）</td>
+        <td>事件建立、任務派發、決策紀錄都沒有</td></tr>
+    </tbody>
+  </table></div>
+  <div class="pos"><b>目前位置：</b>平時篩查（構想第一階段尾、第二階段開頭）。<br><b>下一步：</b>取得五萬分之一地質向量、串接降雨觸發與下游影響，從平時篩查走向事件反應。</div>
+
+  <h2>道路與聚落暴露（OpenStreetMap）<span class="new">新增</span></h2>
+  <p>每個坡面的<a href="/su">證據頁</a>第⑤區塊列出：坡面內與外推 100 m 的道路長度、建物數、最近的聚落。只回答「如果崩了會碰到什麼」，<b>不改候選層級</b>。高雄 POC 的 411 個優先人工判讀坡面中，200 個在外推 100 m 內有道路（其中 106 個是主要或一般道路），25 個有建物。</p>
+  <p class="small muted">OSM 由志工繪製，山區建物與產業道路常缺漏，數字是「至少有這些」。資料：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>（ODbL），Geofabrik 臺灣擷取 2026-10-25。OSM 幾乎沒有崩塌地圖徵（臺灣 <code>natural=landslide</code> 0 筆），崩塌仍用水保署官方圖層。</p>
+
+  <h2>各地層崩塌密度（粗尺度）<span class="new">新增</span></h2>
+  <p>高雄 POC 的 ≥15° 有效坡面，疊上 2021–2024 年度崩塌圖層聯集。<b>崩塌密度</b>＝崩塌面積 ÷ 有效坡面面積；<b>頻率比</b>＝該地層密度 ÷ 全區密度，大於 1 表示比平均容易崩。</p>
+  <div class="tw"><table id="geo"><thead><tr><th scope="col">地層</th><th scope="col">年代</th><th scope="col" class="n">有效坡面 km²</th><th scope="col" class="n">崩塌 ha</th><th scope="col" class="n">崩塌密度</th><th scope="col" class="n">頻率比</th><th scope="col" class="n">NDRE 下降坡面</th></tr></thead><tbody><tr><td colspan="7" class="muted">載入中…</td></tr></tbody></table></div>
+  <p class="small"><b>讀法：</b>始新世西村層（板岩）的崩塌密度最高，約為全區平均的 1.5 倍；上新世錦水頁岩最低。NDRE 持續下降的比例在面積大的主要地層都約 2%，差異不大。</p>
+  <p class="small muted"><b>限制：</b>地層來自 BigGIS 引用的公開地層圖（geodac.ncku.edu.tw，小比例尺；POC 內一塊地層面中位數約 160 ha），只有地層，沒有斷層、位態與崩積區。這是描述性統計，不是崩塌敏感度模型。有效坡面不到 2 km² 的地層樣本太小，未列出。</p>
+</div></main>
+
+<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）、Copernicus Sentinel-1／2、國土測繪中心 DTM、OpenStreetMap、BigGIS 引用之地層圖。分析腳本：scripts/su_osm_exposure.py、scripts/geology_landslide_density.py。</div></footer>
+
+<script src="/static/site_badge.js"></script>
+<script>
+const esc = s => String(s==null?"—":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = (v,d=1) => Number(v).toLocaleString("zh-Hant",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct = (v,d=1) => (v*100).toFixed(d)+"%";
+fetch("/static/poc/geology_density.json").then(r=>r.json()).then(g=>{
+  const rows = g.rows.filter(r=>!r.small).map(r=>`<tr${r.fr>=1.2?' class="hi"':""}><td>${esc(r.name)}（${esc(r.abbrev)}）</td><td>${esc(r.age)}</td><td class="n">${num(r.eff_km2)}</td><td class="n">${num(r.ls_ha,0)}</td><td class="n">${pct(r.density)}</td><td class="n">${r.fr.toFixed(2)}</td><td class="n">${r.n_su?pct(r.drop_rate)+"（"+r.n_drop+"/"+r.n_su.toLocaleString()+"）":"—"}</td></tr>`);
+  const m = g.meta;
+  rows.push(`<tr class="tot"><td>全區</td><td></td><td class="n">${num(m.eff_km2)}</td><td class="n">${num(m.ls_ha,0)}</td><td class="n">${pct(m.density)}</td><td class="n">1.00</td><td class="n">${pct(m.drop_rate)}（${m.n_drop}/${m.n_su.toLocaleString()}）</td></tr>`);
+  document.querySelector("#geo tbody").innerHTML = rows.join("");
+}).catch(()=>{document.querySelector("#geo tbody").innerHTML='<tr><td colspan="7">資料載入失敗。</td></tr>'});
+</script>
+</body>
+</html>

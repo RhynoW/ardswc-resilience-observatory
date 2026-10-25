@@ -819,6 +819,12 @@ def su_page():
     return send_from_directory(HERE / "static", "su_detail.html")
 
 
+@app.route("/roadmap")
+def roadmap_page():
+    """系統藍圖對照：專家構想六模組 vs 現況、道路聚落暴露、各地層崩塌密度（static/roadmap.html）。"""
+    return send_from_directory(HERE / "static", "roadmap.html")
+
+
 # ── 測試入口（實務人員操作測試與專家盲判）：4 碼存取碼才解密提供；加密檔在 private_kits/（base64 文字，見 scripts/su_usability_lock.py）
 # 注意：repo 公開，4 碼只擋一般訪客與避免洩題，不是機密保護。
 _TEST_FAILS = {}            # ip → 失敗時間戳記（記憶體內；單一程序）

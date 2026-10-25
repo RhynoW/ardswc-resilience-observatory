@@ -1,10 +1,11 @@
 """坡面詳細頁資料（候選排序＋證據鏈）：把每個 ≥15° 有效坡面單元的證據整理成網頁用 JSON（webapp/change_detect_viewer/static/poc/su/）。
-每個單元的證據（分四類，不相加、不給總分）：
+每個單元的證據（分五類，不相加、不給總分）：
   E1 衛星事件目錄／年度圖層：類別、四年裸露面積、新增裸露、窗口內事件（名稱、日期、在此單元的面積 ha）
   E2 現地歷史照片：筆數與年份、描述分類（規則式初分）；重要地景照不計入災害
   E3 近期衛星變化（v1，2026-10-15 改版）：Sentinel-2 L2A 反射率 NDRE 時間序列（s2_ndre_series.py；SCL 去雲、有效坡面中位數、
      基準期 2023-11～2024-06）；「持續下降」日期與幅度、最近 6 個月相對基準的差、逐月中位數。取代舊的 8-bit 真彩色兩期規則。
   E4 影像品質與偏移提醒：有效面積與比例、Sentinel-2 有效觀測筆數、Wayback 拍攝日（下降日 ±7 日有無高解析影像可目視確認）、Wayback 偏移風險
+  E5 道路與聚落（OpenStreetMap，su_osm_exposure.py）：坡面內與外推 100 m 的道路長度、建物數、最近聚落；只回答「崩了會碰到什麼」，不改層級
 候選層級（POC 規則 v1，未經驗證；只有三種，不給總分；規則與驗證限制寫在頁面）：
   資料不足：有效面積 <1 ha，或有效坡面占比 <0.2，或 Sentinel-2 有效觀測不足（基準期 <3 筆或之後 <6 筆；雲、陰影），近期變化無從判斷
   優先人工判讀（任一）：
@@ -62,6 +63,7 @@ def main():
     pm = jl(POC / "su_photo_meta.json")
     wb = {r["su_id"]: r for r in jl(POC / "wayback_su_depth.json", [])}
     ts = jl(POC / "s2ts" / "su_ndre.json")
+    osm = jl(POC / "su_osm_exposure.json", {"su": {}, "meta": None})  # su_osm_exposure.py；只作暴露資訊，不影響層級
     tsu = ts["su"] if ts else {}
     n = len(T)
     m = lab >= 0
@@ -152,7 +154,7 @@ def main():
         rec = {"su_id": sid, "uid": u["su_uid"], "tier": tier, "why": why, "caution": caution, "area_ha": u["area_ha"], "eff_ha": u["eff_area_ha"], "eff_frac": u["eff_frac"], "slope": u["mean_slope_deg"],
                "cat": t["category"], "bare": t["bare_ha"], "new_total": t["new_bare_ha_total"], "dom_event": t["dominant_event"], "explained": t["explained_by_events"], "growth_pairs": t["growth_pairs"],
                "events": events[:6], "photos": dict(photo_cls), "photo_years": sorted({y for y, _ in pl}), "s2_new_ha": round(float(new_ha[i]), 2), "s2_riv": round(riv_frac, 2),
-               "ndre": {k: e3.get(k) for k in ("base", "drop", "recent_delta", "n_obs", "n_base", "n_after", "monthly")}, "wb_check": wb_check,
+               "ndre": {k: e3.get(k) for k in ("base", "drop", "recent_delta", "n_obs", "n_base", "n_after", "monthly")}, "wb_check": wb_check, "osm": osm["su"].get(sid),
                "photo_list": [list(x) for x in sorted(ph_ids.get(sid, []), reverse=True)[:10]], "wb_n": w.get("n_dates"), "wb_last": wb_last, "cx": t["cx"], "cy": t["cy"], "i": i}
         code = ("a" if u["eff_area_ha"] < 1.0 else "") + ("b" if u["eff_frac"] < 0.2 else "") + ("c" if ts and (e3.get("n_base", 0) < 3 or e3.get("n_after", 0) < 6) else "")
         idx.append([sid, tier, 1 if has_ev else 0, code])
@@ -185,7 +187,7 @@ def main():
         recs[sid]["ring"] = geo.get(sid, [])
     (WEB / "su_records.json").write_text(json.dumps(recs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (WEB / "su_index.json").write_text(json.dumps({"rules": RULES_VERSION, "su_version": meta["params"]["su_version"], "n": len(idx), "tiers": dict(tiers), "rows": idx}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    rules = {"version": RULES_VERSION, "ndre_months": ts["months"] if ts else [], "ndre_window": ts["window"] if ts else None, "ndre_thr": ts["thr"] if ts else None, "tiers": dict(tiers), "n_with_record": len(recs), "priority_reasons": dict(reasons), "doc": __doc__}
+    rules = {"version": RULES_VERSION, "ndre_months": ts["months"] if ts else [], "ndre_window": ts["window"] if ts else None, "ndre_thr": ts["thr"] if ts else None, "osm_meta": osm["meta"], "tiers": dict(tiers), "n_with_record": len(recs), "priority_reasons": dict(reasons), "doc": __doc__}
     (WEB / "rules.json").write_text(json.dumps(rules, ensure_ascii=False, indent=1), encoding="utf-8")
     print("單元", len(idx), "有完整記錄", len(recs), "層級", dict(tiers), "優先理由計數", dict(reasons))
     for f in ("su_records.json", "su_index.json", "rules.json"):

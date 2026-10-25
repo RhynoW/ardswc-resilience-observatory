@@ -192,6 +192,65 @@ async function icon(Comp, hex) {
   s.addText("機器幫忙決定先看誰・證據鏈告訴你為什麼・最後由人決定要不要去", { x: 0.9, y: 5.95, w: 11.5, h: 0.8, fontSize: 20, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: "closingT" });
   s.addNotes("最後，這套流程全用開放資料與開源工具，程式公開，高雄完成完整流程，花蓮、太魯閣也加做了坡面紅邊檢核，另外兩區測試過衛星與事件比對。接下來請專家盲判與第一線同仁實際操作，依結果調整規則。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
 
+  // 7 備用：對照專家的崩塌智慧防災構想（不在 5 分鐘主線，問答時再翻）
+  pres.addSection({ title: "備用" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "備用" });
+  s.addText("備用｜對照崩塌智慧防災構想：現在在哪、下一步", { placeholder: "title" });
+  const mods = [
+    ["一、坡地風險底圖", 1, "20 m DEM、≥15° 有效坡面、事件目錄、四年崩塌圖層；新增 OSM 道路與建物暴露（坡面外推 100 m）", "五萬分之一斷層、位態、順向坡尚缺向量（小比例尺地層見下頁）"],
+    ["二、降雨觸發與前期含水", 0, "—", "雨量 I-D 曲線、前期累積雨量、土壤含水"],
+    ["三、多源監測與異常偵測", 1, "Sentinel-2 紅邊時間序列、Sentinel-1、現地照片、Wayback 人工查證", "InSAR、微地動、水位；UAV 依輔導建議暫停"],
+    ["四、AI 輔助判釋", 1, "三級候選、坡面證據頁、每項訊號的準確度與 95% 信賴區間", "自動產生研判摘要與待確認事項"],
+    ["五、下游影響與災害鏈", 0, "花蓮堰塞湖只做到崩塌偵測", "崩塌 → 土砂 → 河道 → 堰塞 → 下游的串接"],
+    ["六、應變工作流", 1, "實務人員測試頁：判斷要不要現勘", "事件建立、任務派發、決策紀錄"],
+  ];
+  mods.forEach(([h, st, have, gap], k) => {
+    const x = 0.6 + (k % 3) * 4.1, y = 1.35 + Math.floor(k / 3) * 2.5;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 3.9, h: 2.35, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `mod${k}` });
+    s.addText(h, { x: x + 0.2, y: y + 0.12, w: 2.7, h: 0.45, fontSize: 16, bold: true, color: C.text1, margin: 0, valign: "middle", isTextBox: true, objectName: `modH${k}` });
+    const col = st ? C.accent1 : C.accent4;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 2.95, y: y + 0.17, w: 0.75, h: 0.36, fill: { color: col }, line: { color: col }, rectRadius: 0.18, objectName: `modP${k}` });
+    s.addText(st ? "部分" : "未做", { x: x + 2.95, y: y + 0.17, w: 0.75, h: 0.36, fontSize: 12, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `modPT${k}` });
+    s.addText([{ text: "已有　", options: { bold: true, color: C.text2 } }, { text: have, options: { color: C.text1, breakLine: true } },
+               { text: "缺口　", options: { bold: true, color: C.accent4 } }, { text: gap, options: { color: C.accent4 } }],
+      { x: x + 0.2, y: y + 0.65, w: 3.5, h: 1.6, fontSize: 14, valign: "top", margin: 0, paraSpaceAfter: 4, isTextBox: true, objectName: `modT${k}` });
+  });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.3, w: 12.1, h: 0.6, fill: { color: C.text2 }, line: { color: C.text2 }, rectRadius: 0.1, objectName: "posBar" });
+  s.addText([{ text: "目前位置：", options: { bold: true, color: C.accent5 } }, { text: "平時篩查（構想第一階段尾、第二階段開頭）　", options: { color: C.background1 } },
+             { text: "下一步：", options: { bold: true, color: C.accent5 } }, { text: "取得地質向量、串接降雨觸發與下游影響，走向事件反應", options: { color: C.background1 } }],
+    { x: 0.85, y: 6.3, w: 11.6, h: 0.6, fontSize: 14, valign: "middle", margin: 0, isTextBox: true, objectName: "posBarT" });
+  s.addNotes("（備用，評審問到系統藍圖或下一步時再翻。）專家提出的崩塌智慧防災平台有六個模組。我們目前做到的是平時篩查：坡地底圖、多源監測和 AI 輔助判釋都有一部分，其中道路與建物暴露是用 OpenStreetMap 疊合，回答坡面崩了會碰到什麼，但不改候選層級。地質目前只拿到影像圖磚，五萬分之一的斷層、位態、順向坡要取得向量後才能分析。降雨觸發、下游災害鏈和應變工作流還沒做，這是從平時篩查走向事件反應的下一步。");
+
+  // 8 備用：各地層崩塌密度（小比例尺地層面，geology_landslide_density.py）
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "備用" });
+  s.addText("備用｜地質：哪些地層比較容易崩（粗尺度）", { placeholder: "title" });
+  const gd = JSON.parse(require("fs").readFileSync("geology_landslide_density.json", "utf8"));
+  const pct = (x, d = 1) => (x * 100).toFixed(d) + "%";
+  const fmt = (x, d = 1) => x.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const hd = ["地層", "年代", "有效坡面 km²", "崩塌 ha", "崩塌密度", "頻率比", "NDRE 下降坡面"].map(t => ({ text: t, options: { bold: true, color: HEX.lt1, fill: { color: HEX.dk2 } } }));
+  const body = gd.rows.filter(r => !r.small).map(r => {
+    const hi = r.fr >= 1.2, lo = r.fr <= 0.6;
+    const o = { color: HEX.dk1, fill: { color: hi ? "FBE3D6" : "FFFFFF" }, bold: hi };
+    return [`${r.name}（${r.abbrev}）`, r.age, fmt(r.eff_km2), fmt(r.ls_ha, 0), pct(r.density), r.fr.toFixed(2), r.n_su ? `${pct(r.drop_rate)}（${r.n_drop}/${r.n_su.toLocaleString("en-US")}）` : "—"]
+      .map((t, k) => ({ text: t, options: { ...o, color: k == 5 && lo ? HEX.accent4 : o.color } }));
+  });
+  const m = gd.meta;
+  body.push(["全區", "", fmt(m.eff_km2), fmt(m.ls_ha, 0), pct(m.density), "1.00", `${pct(m.drop_rate)}（${m.n_drop}/${m.n_su.toLocaleString("en-US")}）`]
+    .map(t => ({ text: t, options: { bold: true, color: HEX.dk1, fill: { color: HEX.lt2 } } })));
+  s.addTable([hd, ...body], { x: 0.6, y: 1.3, w: 12.1, colW: [3.3, 1.75, 1.35, 1.1, 1.2, 1.0, 2.4], rowH: 0.36, fontSize: 12, fontFace: FONT, margin: [0.02, 0.08, 0.02, 0.08], valign: "middle",
+    align: "left", border: { type: "solid", pt: 0.5, color: "DDE5DF" }, objectName: "geoTable" });
+  const notes8 = [
+    ["讀法", "崩塌密度＝2021–2024 年度崩塌圖層聯集 ÷ ≥15° 有效坡面；頻率比 >1 表示比全區平均容易崩。始新世西村層（板岩）1.53 最高，上新世錦水頁岩 0.32 最低。NDRE 下降比例在面積大的主要地層都約 2%，差異不大（小地層樣本太少）。"],
+    ["限制", "公開的只有小比例尺地層面（POC 內一塊中位數約 160 ha），沒有斷層、位態、崩積區；這是描述性統計，不是敏感度模型。斷層距離與順向坡要五萬分之一向量。"],
+  ];
+  notes8.forEach(([h, t], k) => {
+    const x = 0.6 + k * 6.15;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 5.5, w: 5.95, h: 1.4, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `geoN${k}` });
+    s.addText([{ text: h + "　", options: { bold: true, color: k ? C.accent4 : C.text2 } }, { text: t, options: { color: C.text1 } }],
+      { x: x + 0.2, y: 5.55, w: 5.55, h: 1.3, fontSize: 12, valign: "middle", margin: 0, isTextBox: true, objectName: `geoNT${k}` });
+  });
+  s.addNotes("（備用，評審問到地質時再翻。）我們用 BigGIS 引用的公開地層圖，疊上 2021 到 2024 年的年度崩塌圖層，以坡度 15 度以上的有效坡面當分母，算每個地層的崩塌密度。全區約 5.3%；始新世的西村層，也就是板岩，8.1%，是平均的 1.5 倍；上新世的錦水頁岩只有 1.7%。紅邊下降的比例在幾個主要地層都約 2%，差異不大。限制是這份地層圖比例尺小，沒有斷層和位態，只能做描述性統計；斷層距離和順向坡要取得五萬分之一的向量才能分析。");
+
   await pres.writeFile({ fileName: "TASTI_SatDashboard-決賽簡報.pptx" });
   await applyTheme("TASTI_SatDashboard-決賽簡報.pptx", THEME);
   console.log("done");

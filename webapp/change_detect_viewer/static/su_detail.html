@@ -46,7 +46,7 @@
 <a class="skip" href="#main">跳到主要內容</a>
 <header class="site"><div class="wrap">
   <a class="brand" href="/">坡地韌性哨兵 · 坡面證據鏈</a>
-  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li></ul></nav>
+  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li></ul></nav>
   <div id="site-badge"></div>
 </div></header>
 
@@ -73,7 +73,7 @@
       <div class="panel" id="detail"><p class="muted">點選地圖上的坡面、清單中的項目，或輸入 SU ID。</p></div>
     </section>
   </div>
-  <details class="panel"><summary>候選層級的規則與驗證限制（POC 規則 v0）</summary><div id="rules" class="small"></div></details>
+  <details class="panel"><summary>候選層級的規則與驗證限制（POC 規則 v1）</summary><div id="rules" class="small"></div></details>
 </div></main>
 <footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
 
@@ -167,6 +167,15 @@ function ndreBlock(e){
   return `${svg}<p class="small">${txt}${rec} 綠線＝有效坡面 NDRE 的逐月中位數<b>減去同日全區中位數</b>（距平，扣掉季節與大氣的共同起伏；SCL 去雲、有效像元 ≥50% 的日期）；灰虛線＝基準期（2023-11～2024-06），紅虛線＝基準減 ${RULES.ndre_thr||0.08}，紅直線＝下降日。持續下降還要求下降日 60 天後仍偏低。</p>
   <p class="small muted">小試驗（凱米颱風 15 對案例／對照）：持續下降規則抓到 7/15、對照誤報 0/15；坡面中位數約只看得到占有效坡面兩成以上的變化，小崩塌會漏。紅邊未捕捉不代表沒有變化；NDRE 受季節、陰影、薄雲影響，只用來「請人看」。</p>`;
 }
+function osmBlock(o){
+  const M=RULES.osm_meta;
+  if(!o) return `<p class="small muted">無 OpenStreetMap 暴露資料。</p>`;
+  const km=x=>{const t=(x.major||0)+(x.minor||0)+(x.track||0); return t?`${num(t/1000,2)} km（主要道路 ${num((x.major||0)/1000,2)}、一般道路 ${num((x.minor||0)/1000,2)}、產業道路與小徑 ${num((x.track||0)/1000,2)}）`:"無"};
+  const pl=o.place?`${esc(o.place.name||"（未命名）")}（${esc(o.place.type)}），距坡面 ${o.place.m<1?"0（在坡面內）":num(o.place.m/1000,2)+" km"}`:"—";
+  return `<table><tbody><tr><th>道路長度・坡面內</th><td>${km(o.road_in)}</td></tr><tr><th>道路長度・外推 100 m</th><td>${km(o.road_100)}</td></tr>
+  <tr><th>建物數・坡面內／外推 100 m</th><td>${o.bld_in}／${o.bld_100} 棟</td></tr><tr><th>最近的聚落點</th><td>${pl}</td></tr></tbody></table>
+  <p class="small muted">只說明「如果崩了會碰到什麼」，不改候選層級。OSM 由志工繪製，山區建物與產業道路常缺漏，數字是「至少有這些」。資料：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>（ODbL）${M&&M.extract_date?"，"+esc(M.extract_date)+" 擷取":""}。</p>`;
+}
 function select(id){
   const r = REC[id];
   const q = IDX.rows.find(x=>x[0]===id);
@@ -201,6 +210,8 @@ function select(id){
   <h3>④ 影像品質與偏移提醒</h3>
   <p class="small">Sentinel-2 有效觀測 ${r.ndre&&r.ndre.n_obs!=null?r.ndre.n_obs+" 個日期（基準期 "+r.ndre.n_base+"、之後 "+r.ndre.n_after+"）":"—"}；只採用坡面內有效像元 ≥50% 的日期。Wayback 2017 年起 ${r.wb_n==null?"無紀錄":r.wb_n+" 個拍攝日，最新 "+esc(r.wb_last||"—")}。Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。</p>
   <p class="small"><a href="https://livingatlas.arcgis.com/wayback/#mapCenter=${lon}%2C${lat}%2C17" target="_blank" rel="noopener">在 Esri Wayback 開啟此位置（新分頁，人工複核用）</a></p>
+  <h3>⑤ 道路與聚落（OpenStreetMap）</h3>
+  ${osmBlock(r.osm)}
   <p class="small muted">是否現勘由人決定；本頁不提供風險分數。</p>`;
 }
 init();
