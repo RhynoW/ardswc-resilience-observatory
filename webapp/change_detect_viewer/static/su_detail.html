@@ -28,6 +28,7 @@
   .mapbtns{position:absolute;left:10px;bottom:22px;z-index:1600;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .mapbtns button,.mapbtns select{font:600 13px/1 var(--font);padding:7px 11px;border-radius:6px;border:1px solid #888;background:#fff;color:#1c1c1e;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3)}
   .mapbtns button[aria-pressed=true]{background:#1c1c1e;color:#fff}
+  #mapwrap.in3d .leaflet-top.leaflet-right{z-index:1700}
   #st3d{font-size:12px;background:rgba(0,0,0,.65);color:#fff;padding:4px 8px;border-radius:4px}
   #mapwrap.full{position:fixed;inset:0;z-index:5000;background:#000} #mapwrap.full #map,#mapwrap.full #cesium3d{height:100%!important;border-radius:0;border:0}
   .bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 8px;font-size:14px}
@@ -333,15 +334,16 @@ V3.refresh=async function(fly){
 };
 async function toggle3d(){
   const btn=document.getElementById("btn3d"), box=document.getElementById("cesium3d"), ex=document.getElementById("exag3d");
-  if(V3.on){V3.on=false; box.hidden=true; ex.hidden=true; btn.setAttribute("aria-pressed","false"); btn.textContent="3D 地形"; st3d(""); map.invalidateSize(); return;}
+  const wrap=document.getElementById("mapwrap");
+  if(V3.on){V3.on=false; wrap.classList.remove("in3d"); box.hidden=true; ex.hidden=true; btn.setAttribute("aria-pressed","false"); btn.textContent="3D 地形"; st3d(""); map.invalidateSize(); return;}
   btn.disabled=true; st3d("載入 3D 地形…");
   try{
     await loadCesium();
     box.hidden=false;
     if(!V3.viewer) V3.viewer=makeViewer();
-    V3.on=true; ex.hidden=false; btn.setAttribute("aria-pressed","true"); btn.textContent="回到 2D";
+    V3.on=true; wrap.classList.add("in3d"); ex.hidden=false; btn.setAttribute("aria-pressed","true"); btn.textContent="回到 2D";
     await V3.refresh("now");
-    st3d("拖曳平移、右鍵或 Ctrl＋拖曳調整視角、滾輪縮放；點坡面看證據鏈。地形：內政部 20 m DTM");
+    st3d("拖曳平移、右鍵或 Ctrl＋拖曳調整視角、滾輪縮放；右上角可換底圖與疊圖；點坡面看證據鏈。地形：內政部 20 m DTM");
   }catch(e){ box.hidden=true; st3d("3D 載入失敗："+e.message); }
   btn.disabled=false;
 }
@@ -354,10 +356,14 @@ function toggleFull(){
 }
 document.addEventListener("fullscreenchange",()=>{ if(!document.fullscreenElement && document.getElementById("mapwrap").classList.contains("full")) toggleFull(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !document.fullscreenElement && document.getElementById("mapwrap").classList.contains("full")) toggleFull(); });
+function resync3d(){ if(V3.on) setTimeout(()=>syncImagery(V3.viewer),120); }
 document.getElementById("btn3d").addEventListener("click",toggle3d);
 document.getElementById("btnfull").addEventListener("click",toggleFull);
 document.getElementById("exag3d").addEventListener("change",e=>{ if(V3.viewer) V3.viewer.scene.verticalExaggeration=parseFloat(e.target.value); });
-init();
+init().then(()=>{
+  map.on("baselayerchange overlayadd overlayremove",resync3d);
+  map.getContainer().querySelector(".leaflet-top.leaflet-right").addEventListener("change",resync3d);
+});
 </script>
 </body>
 </html>
