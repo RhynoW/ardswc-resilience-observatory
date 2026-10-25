@@ -313,7 +313,7 @@ def holdout(cam, X, uv, clean, w, h, seed=7):
 
 
 def find_rec(eid):
-    for f in ("uav_cands.json", "uav_cands_2025.json"):
+    for f in ("uav_cands.json", "uav_cands_2025.json", "uav_cands_2026c.json"):   # 2026c：2026-08-27 之後上傳（2026-10-25 抓取）
         for r in json.loads((HERE / f).read_text(encoding="utf-8")):
             if r["EventID"] == eid:
                 return r

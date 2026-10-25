@@ -180,7 +180,14 @@ def _hide_legacy():
 
 
 @app.route("/")
+def landing():
+    """決賽展示用首頁：技術亮點、架構創新、韌性呈現、對公部門與全民的啟示五大主題（static/landing.html）。"""
+    return send_from_directory(HERE / "static", "landing.html")
+
+
+@app.route("/system")
 def index():
+    """完整技術說明（原首頁：方法、驗證、參考資訊）。"""
     return render_template("index.html", apple_enabled=GT.apple_is_available())
 
 

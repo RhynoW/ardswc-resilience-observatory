@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>地景複發熱點觀測站｜坡地韌性哨兵</title>
+<meta name="description" content="把事件目錄、現地照片與衛星影像整理成每個坡面的證據鏈：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。">
+<style>
+  :root{ --bg:#fbfcfa; --surface:#f1f5ef; --raised:#fff; --border:#d5ddd3; --text:#1e2b22; --muted:#56625a; --accent:#2c5f2d; --accent-2:#b85042; --link:#1d5fa8; --focus:#1d5fa8;
+    --radius:10px; --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#161a17; --surface:#1f2520; --raised:#252c26; --border:#3b463d; --text:#eef2ec; --muted:#b2bcb3; --accent:#8fc58f; --accent-2:#ff9a8a; --link:#8cbcff; --focus:#8cbcff; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--link)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:8px;z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none}
+  nav ul{list-style:none;margin:0;padding:0;display:flex;gap:2px;flex-wrap:wrap} nav a{display:inline-block;padding:5px 10px;border-radius:8px;text-decoration:none;font-size:15px}
+  nav a:hover{background:var(--raised)}
+  .hero{padding:36px 0 12px}
+  .hero h1{font-size:clamp(28px,5vw,44px);line-height:1.2;margin:0;color:var(--accent)} .hero .sub{font-size:clamp(17px,2.4vw,22px);font-weight:700;margin:4px 0 10px}
+  .hero p{max-width:46em;color:var(--muted);margin:0 0 6px}
+  .motto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 8px}
+  .motto div{background:var(--accent);color:#fff;border-radius:var(--radius);padding:12px 14px;line-height:1.35}
+  @media (prefers-color-scheme: dark){ .motto div{color:#10200f} }
+  .motto small{display:block;font-size:14px;opacity:.85} .motto b{font-size:20px}
+  @media (max-width:640px){ .motto{grid-template-columns:1fr} }
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px;padding:0;list-style:none}
+  .toc a{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--border);background:var(--raised);border-radius:999px;padding:5px 14px;text-decoration:none;color:var(--text);font-weight:600;font-size:15px}
+  .toc a span{color:var(--accent);font-weight:800}
+  section.theme{border-top:1px solid var(--border);padding:26px 0 10px;scroll-margin-top:8px}
+  .theme h2{font-size:clamp(21px,3vw,27px);margin:0 0 2px;display:flex;gap:10px;align-items:baseline}
+  .theme h2 .n{color:var(--accent);font-size:.9em;font-weight:800}
+  .lead{font-size:17px;font-weight:600;margin:2px 0 12px;max-width:52em}
+  .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  @media (max-width:900px){ .cards{grid-template-columns:1fr} }
+  .card{background:var(--raised);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .card h3{font-size:16.5px;margin:0 0 4px} .card p{margin:0;font-size:15px;color:var(--muted)}
+  .big{display:block;font-size:26px;font-weight:800;color:var(--accent);line-height:1.2;margin:2px 0 4px;font-variant-numeric:tabular-nums}
+  .big.warn{color:var(--accent-2)}
+  .go{margin:10px 0 0;font-size:15px} .go a{font-weight:600}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:4px 0 14px;padding:0;list-style:none}
+  .flow li{flex:1 1 150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;position:relative}
+  .flow li b{display:block;font-size:15.5px} .flow li span{font-size:13.5px;color:var(--muted)}
+  .flow li.human{background:var(--accent);border-color:var(--accent);color:#fff} .flow li.human span{color:#fff;opacity:.9}
+  @media (prefers-color-scheme: dark){ .flow li.human{color:#10200f} .flow li.human span{color:#10200f} }
+  .note{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:18px 0;color:var(--muted);font-size:14px;margin-top:30px}
+  footer ul{margin:4px 0 0;padding-left:18px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">坡地韌性哨兵</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/su">坡面證據鏈</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li><li><a href="/system">完整技術說明</a></li></ul></nav>
+  <div id="site-badge"></div>
+</div></header>
+
+<main id="main" tabindex="-1"><div class="wrap">
+  <div class="hero">
+    <h1>地景複發熱點觀測站</h1>
+    <div class="sub">坡地韌性哨兵：把事件目錄、現地照片與衛星影像，整理成每個坡面的證據鏈</div>
+    <p>山區坡面上萬個，巡查人力有限。我們不重新發明崩塌判釋，而是把水保署既有的證據整理到同一個坡面上，幫第一線決定先看哪裡。</p>
+    <div class="motto" role="list">
+      <div role="listitem"><small>機器幫忙決定</small><b>先看誰</b></div>
+      <div role="listitem"><small>證據鏈告訴你</small><b>為什麼</b></div>
+      <div role="listitem"><small>最後由人決定</small><b>要不要去</b></div>
+    </div>
+    <ul class="toc" aria-label="五大主題">
+      <li><a href="#tech"><span>1</span>技術亮點</a></li><li><a href="#arch"><span>2</span>架構創新</a></li><li><a href="#resilience"><span>3</span>韌性呈現</a></li>
+      <li><a href="#gov"><span>4</span>對公部門的啟示</a></li><li><a href="#public"><span>5</span>對全民的啟示</a></li>
+    </ul>
+  </div>
+
+  <section class="theme" id="tech" aria-labelledby="h-tech">
+    <h2 id="h-tech"><span class="n">1</span>技術亮點</h2>
+    <p class="lead">用免費衛星與開放資料，在大事件後快速找出植被大片消失的坡面，而且每個數字都量過準確度。</p>
+    <div class="cards">
+      <div class="card"><h3>坡面單元，不是網格</h3><span class="big">13,175</span><p>個坡面單元（高雄 POC），其中 12,730 個有坡度 ≥15° 的有效坡面。依輔導委員建議以集水區重疊法切分，每個單元都是完整區塊。</p></div>
+      <div class="card"><h3>Sentinel-2 紅邊時間序列</h3><span class="big">75%・43%</span><p>花蓮・太魯閣事件後，崩塌坡面被抓到的比例；沒有事件的坡面誤報約 2%。用「同日全區中位數」扣掉季節與大氣起伏。</p></div>
+      <div class="card"><h3>沒有 GPS 的空拍也能定位</h3><span class="big">35</span><p>組歷史影像平台的 UAV 照片（含 2026-10-15 高雄六龜寶來），以 LoFTR 特徵匹配與 20 m DTM 自動對位，貼回地形檢視（已依輔導建議停止擴充，保留成果）。</p></div>
+    </div>
+    <p class="go"><a href="/poc">看五個 POC 區域的偵測結果 →</a>　<a href="/static/uav_cesium.html">看 UAV 3D 疊合 →</a></p>
+  </section>
+
+  <section class="theme" id="arch" aria-labelledby="h-arch">
+    <h2 id="h-arch"><span class="n">2</span>架構創新</h2>
+    <p class="lead">以坡面為單位串起證據鏈；各類證據分開呈現、不相加、不給總分，最後只給三種候選層級。</p>
+    <ol class="flow" aria-label="系統流程">
+      <li><b>開放資料</b><span>事件目錄、年度崩塌圖層、現地照片、Sentinel-2、DEM、OSM</span></li>
+      <li><b>坡面單元</b><span>SUv2，版本化 ID，可追溯</span></li>
+      <li><b>證據鏈</b><span>①事件與年度圖層 ②現地照片 ③近期衛星變化 ④影像品質 ⑤道路與聚落</span></li>
+      <li><b>三種候選層級</b><span>優先人工判讀・一般判讀・資料不足</span></li>
+      <li class="human"><b>人決定</b><span>是否現勘；判讀結果回饋規則</span></li>
+    </ol>
+    <div class="cards">
+      <div class="card"><h3>不給總分</h3><p>分數會掩蓋「為什麼」。每個坡面列出各類證據與它的限制，由判讀者自己權衡。</p></div>
+      <div class="card"><h3>「資料不足」是一種結果</h3><p>雲、陰影、有效面積太小時明說看不到，不把「沒資料」當成「沒問題」。</p></div>
+      <div class="card"><h3>可稽核的驗證</h3><p>盲判題目與結果附 SHA-256 稽核清單；高解析影像只用來「怎麼看」，不改衛星數值。</p></div>
+    </div>
+    <p class="go"><a href="/su">打開一個坡面的證據鏈 →</a></p>
+  </section>
+
+  <section class="theme" id="resilience" aria-labelledby="h-res">
+    <h2 id="h-res"><span class="n">3</span>韌性呈現</h2>
+    <p class="lead">每個坡面有一份履歷：過去壞過幾次、最近還在不在變、崩了會碰到誰。</p>
+    <div class="cards">
+      <div class="card"><h3>事件後快篩</h3><span class="big">229</span><p>太魯閣 330 個紅邊持續下降的坡面中，229 個出現在 0403 地震當月——大事件後幾週內就能列出要先看的坡面。</p></div>
+      <div class="card"><h3>崩了會碰到誰</h3><span class="big">200／411</span><p>高雄優先人工判讀坡面中，外推 100 m 內有道路的數量；25 個有建物（OpenStreetMap，數字是下限）。67 個位在土石流潛勢溪流集水區內，崩落土砂可能進入溪流。</p></div>
+      <div class="card"><h3>哪裡本來就容易壞</h3><span class="big">1.5 倍</span><p>始新世西村層（板岩）的崩塌密度是全區平均的 1.5 倍（小比例尺地層圖，描述性統計）。</p></div>
+    </div>
+    <p class="go"><a href="/poc">看太魯閣、花蓮的事件後結果 →</a>　<a href="/roadmap">看道路聚落與地層表 →</a></p>
+  </section>
+
+  <section class="theme" id="gov" aria-labelledby="h-gov">
+    <h2 id="h-gov"><span class="n">4</span>對公部門的啟示</h2>
+    <p class="lead">自動訊號只能排「先看誰」，不能拿來判定；導入前要先量它準不準。</p>
+    <div class="cards">
+      <div class="card"><h3>量過才用</h3><span class="big warn">約 25%</span><p>平時零星的紅邊下降經分層盲判只有約 25% 屬實（95% 信賴區間 5–45%），大事件後才可靠。系統把這些限制直接寫在頁面上。</p></div>
+      <div class="card"><h3>可複製、成本低</h3><p>全部是開放資料與開源程式；換一個流域只要換範圍重跑。Sentinel-2 免費，一個 POC 約 1–2 小時下載計算。</p></div>
+      <div class="card"><h3>資料治理的小改變，大效益</h3><p>UAV 照片上傳時保留拍攝座標與時間（EXIF）、事件目錄附判釋日期，就能大幅減少事後對位與比對的工作。</p></div>
+    </div>
+    <p class="go"><a href="/roadmap">看與專家構想的對照與下一步 →</a></p>
+  </section>
+
+  <section class="theme" id="public" aria-labelledby="h-pub">
+    <h2 id="h-pub"><span class="n">5</span>對全民的啟示</h2>
+    <p class="lead">坡地安全的資訊應該看得懂、查得到、也能一起補。</p>
+    <div class="cards">
+      <div class="card"><h3>透明，也誠實</h3><p>不給「風險分數」，避免把不確定的訊號說成定論；看不到就說看不到，每個數字附誤差。</p></div>
+      <div class="card"><h3>查得到身邊的坡</h3><p>每個坡面頁列出附近的道路、建物與聚落，以及官方事件紀錄，居民與地方政府都能看懂。</p></div>
+      <div class="card"><h3>一起補資料</h3><p>山區建物與產業道路在 OpenStreetMap 常缺漏；志工補上的每一筆，都會讓「崩了會碰到誰」更完整。程式全部開源。</p></div>
+    </div>
+    <p class="go"><a href="https://github.com/RhynoW/ardswc-resilience-observatory" target="_blank" rel="noopener">GitHub 原始碼 →</a></p>
+  </section>
+</div></main>
+
+<footer><div class="wrap">
+  TASTI_SatDashboard｜開源空間資訊於國家韌性應用黑客松 OSSInt 2026。資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台、Copernicus Sentinel-1／2、內政部 20 m DTM、Esri Wayback、© OpenStreetMap contributors（ODbL）。
+  <ul><li><a href="/system">完整技術說明（原首頁：方法、驗證、參考資訊）</a></li></ul>
+</div></footer>
+<script src="/static/qrcode.js"></script>
+<script src="/static/site_badge.js"></script>
+</body>
+</html>

@@ -712,3 +712,8 @@
 - **道路與聚落暴露**：Geofabrik 臺灣 OSM 擷取（Overpass 長時間 502／504，改用整包 PBF＋GDAL OSM driver 切 POC），高雄 POC 道路 6,994 段、建物 1,760 棟、聚落點 208 個。每個 SUv2 原始坡面計算坡面內與外推 100 m 的道路長度（主要／一般／產業道路與小徑）、建物數（建物代表點）、最近聚落與距離。放在 `/su` 證據頁第⑤區塊（E5），標示 © OpenStreetMap contributors（ODbL）；**不影響候選層級**。411 個優先坡面中 200 個外推 100 m 內有道路（106 個為主要或一般道路）、25 個有建物。OSM 山區缺漏多，數字是下限。OSM 幾乎沒有崩塌地圖徵（臺灣 `natural=landslide` 0、`hazard=landslide` 1），不採用。
 - **各地層崩塌密度**：BigGIS 的五萬分之一地質圖是地礦中心影像圖磚（getTile.cfm），找不到公開向量；改用 BigGIS 引用的 `geodac.ncku.edu.tw/SWCB_LLGIS/地質圖.kml`（小比例尺地層面，1,576 面，只有地層）。分母為 SUv2 有效坡面，崩塌為 2021–2024 年度圖層聯集。全區密度 5.3%；西村層（Eh）FR 1.53 最高、錦水頁岩（P1）0.32 最低；NDRE 下降比例主要地層都約 2%。描述性統計，未控制坡度、雨量等因子；斷層距離與順向坡需五萬分之一向量。
 - 簡報新增備用第 7 頁（專家構想六模組對照）、第 8 頁（地層崩塌密度），不在 5 分鐘主線。
+
+## 附二十：土石流潛勢溪流連結與人工判讀參考疊圖（2026-10-25，`su_debris_link.py`；資料取自 Rust_WMTS_Server 專案的盤點）
+- **土石流潛勢溪流**：水保署 BigGIS 公開向量圖磚（`gis.ardswc.gov.tw/api/ardswc/vectortiles/shp/{debris_flow,debris_watershed,debris_affect}`），由 Rust_WMTS_Server 的 `make_ardswc_geojson.py` 抓 z12 合併成 GeoJSON（2026-10-02 快照，約 10 m、已簡化），複製到 `poc/debris/`。每個 SUv2 坡面：所在潛勢溪流集水區（重疊 ≥10%）、外推 100 m 碰到的影響範圍與保全住戶、最近潛勢溪流。POC 內溪流 168 條；1,603 個坡面在集水區內、624 個碰到影響範圍；411 個優先坡面中 67、29 個。放在 `/su` 第⑤區塊（E5），不改層級；`/roadmap` 模組五改為「部分」。
+- **參考疊圖**（`/su` 地圖，只供目視）：地調所山崩地質資訊雲端服務平臺圖磚（`landslide.geologycloud.tw/jlwmts/jetlink/{Dislope,HistoryLS,SensitiveArea}`，順向坡與土石流在 z14 以上為空白，故 maxNativeZoom 13）、國土測繪中心 PHOTO2014–2025 逐年正射航照（WMTS，年度下拉）、空載光達地形變異分析圖 DDEM05（WMS）。使用條款未逐一查證，頁尾已標示出處。
+- Rust_WMTS_Server 其他資料（Copernicus 30 m DEM、太魯閣 3D 地形、BigGIS UAV 正射目錄、OSM DuckDB）未採用：我們已有 20 m DTM、同源且較新的 UAV 正射清單與 OSM 擷取；3D 已依輔導建議停止。

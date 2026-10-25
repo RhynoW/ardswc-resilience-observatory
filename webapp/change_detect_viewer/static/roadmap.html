@@ -36,7 +36,7 @@
 <a class="skip" href="#main">跳到主要內容</a>
 <header class="site"><div class="wrap">
   <a class="brand" href="/">坡地韌性哨兵 · 系統藍圖對照</a>
-  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/su">坡面證據鏈</a></li></ul></nav>
+  <nav aria-label="主要導覽"><ul><li><a href="/">首頁</a></li><li><a href="/system">完整技術說明</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/su">坡面證據鏈</a></li></ul></nav>
   <div id="site-badge"></div>
 </div></header>
 
@@ -52,18 +52,19 @@
       <tr><td class="mod">一、坡地風險底圖</td><td><span class="st part">部分</span></td>
         <td>20 m DEM、≥15° 有效坡面、坡面單元、事件目錄、四年崩塌圖層、大規模崩塌潛勢區（只當對照）；<br>
           道路與聚落暴露（OpenStreetMap，坡面內與外推 100 m）<span class="new">新增</span>；<br>
-          各地層崩塌密度（小比例尺地層面，見下方）<span class="new">新增</span></td>
+          各地層崩塌密度（小比例尺地層面，見下方）<span class="new">新增</span>；<br>
+          坡面地圖可疊順向坡判釋目錄、歷史山崩目錄、地質敏感區（地調所）、國土測繪中心逐年航照與光達地形變異，供人工判讀參考<span class="new">新增</span></td>
         <td>五萬分之一地質向量（斷層、地層位態、不連續面、崩積區）尚未取得，所以斷層距離與順向坡還不能分析</td></tr>
       <tr><td class="mod">二、降雨觸發與前期含水</td><td><span class="st none">未做</span></td><td>沒有</td><td>全缺。雨量 I-D、前期累積雨量、土壤含水都沒做</td></tr>
       <tr><td class="mod">三、多源監測與異常偵測</td><td><span class="st part">部分</span></td>
         <td>Sentinel-2 NDRE 時間序列、Sentinel-1（只抓得到很大的崩塌）、現地照片、Wayback 人工查證</td>
-        <td>微地動、InSAR、水位都沒有；UAV 已依陳組長建議停止（<a href="/static/uav_cesium.html">已完成成果：30 組 UAV 自動套合與 3D 檢視</a>）</td></tr>
+        <td>微地動、InSAR、水位都沒有；UAV 已依陳組長建議停止（<a href="/static/uav_cesium.html">已完成成果：35 組 UAV 自動套合與 3D 檢視</a>）</td></tr>
       <tr><td class="mod">四、AI 輔助判釋</td><td><span class="st part">部分</span></td>
         <td>候選層級、每個坡面的證據頁、每項訊號的準確度與信賴區間</td>
         <td>自動產生「研判摘要、待確認事項」還沒做</td></tr>
-      <tr><td class="mod">五、下游影響與災害鏈</td><td><span class="st none">未做</span></td>
-        <td>沒有（花蓮堰塞湖只做了崩塌偵測）；坡面證據頁已列出崩塌可能碰到的道路與建物，但沒有土砂與河道的串接</td>
-        <td>全缺：崩塌 → 土砂 → 河道 → 堰塞 → 下游</td></tr>
+      <tr><td class="mod">五、下游影響與災害鏈</td><td><span class="st part">部分</span></td>
+        <td>坡面證據頁列出所在的土石流潛勢溪流集水區、外推 100 m 碰到的影響範圍與保全住戶（水保署）<span class="new">新增</span>：411 個優先坡面中 67 個在潛勢溪流集水區內、29 個碰到影響範圍；另列出附近道路與建物。花蓮堰塞湖只做了崩塌偵測</td>
+        <td>土砂量、河道輸送、堰塞與下游淹水的動態串接都沒有</td></tr>
       <tr><td class="mod">六、應變工作流</td><td><span class="st part">部分</span></td>
         <td>實務人員測試頁（判斷要不要現勘）</td>
         <td>事件建立、任務派發、決策紀錄都沒有</td></tr>

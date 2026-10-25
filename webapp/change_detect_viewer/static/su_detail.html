@@ -46,7 +46,7 @@
 <a class="skip" href="#main">跳到主要內容</a>
 <header class="site"><div class="wrap">
   <a class="brand" href="/">坡地韌性哨兵 · 坡面證據鏈</a>
-  <nav aria-label="主要導覽"><ul><li><a href="/">決策系統</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li></ul></nav>
+  <nav aria-label="主要導覽"><ul><li><a href="/">首頁</a></li><li><a href="/system">完整技術說明</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li></ul></nav>
   <div id="site-badge"></div>
 </div></header>
 
@@ -75,7 +75,7 @@
   </div>
   <details class="panel"><summary>候選層級的規則與驗證限制（POC 規則 v1）</summary><div id="rules" class="small"></div></details>
 </div></main>
-<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
+<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM 與逐年正射航照、空載光達地形變異分析圖；土石流潛勢溪流（水保署 BigGIS）；順向坡、歷史山崩、地質敏感區（經濟部地質調查及礦業管理中心山崩地質資訊雲端服務平臺，僅供參考疊圖）；道路與聚落 © OpenStreetMap contributors。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
 
 <script src="/static/leaflet.js"></script>
 <script src="/static/site_badge.js"></script>
@@ -104,7 +104,7 @@ async function init(){
       d.innerHTML='<div style="font-size:12px">Esri Wayback（此處的拍攝日）</div>';d.appendChild(sel);d.appendChild(note);L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);return d};
     box.addTo(map);
     const setRel=n=>wb.setUrl(WB_TILE.replace("{rel}",n));
-    sel.addEventListener("change",()=>{if(!sel.value)return;setRel(sel.value);if(!map.hasLayer(wb)){[esri,osm].forEach(l=>map.removeLayer(l));wb.addTo(map)}});
+    sel.addEventListener("change",()=>{if(!sel.value)return;setRel(sel.value);if(!map.hasLayer(wb)){map.eachLayer(l=>{if(l instanceof L.TileLayer && !l.options.overlay && l!==wb)map.removeLayer(l)});wb.addTo(map)}});
     ctl.addBaseLayer(wb,"Esri Wayback（歷史影像）");
     let lastKey="",timer=null,seq=0;
     const fmt=d=>d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8);
@@ -127,6 +127,29 @@ async function init(){
     }
     map.on("moveend",()=>{clearTimeout(timer);timer=setTimeout(query,800)});
     map.whenReady(()=>setTimeout(query,800));
+  })();
+  // 國土測繪中心逐年正射航照（WMTS，2014–2025；官方正射，與 DTM 的對位通常比 Wayback 好）：底圖＋年度下拉
+  (function(){
+    const YRS=[2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014];
+    const ph=L.tileLayer(`https://wmts.nlsc.gov.tw/wmts/PHOTO${YRS[0]}/default/GoogleMapsCompatible/{z}/{y}/{x}`,{maxZoom:19,maxNativeZoom:18,attribution:"國土測繪中心 正射影像"});
+    ctl.addBaseLayer(ph,"國土測繪中心航照（逐年）");
+    const sel=document.createElement("select");sel.setAttribute("aria-label","國土測繪中心航照年度");sel.style.cssText="font-size:12px;margin-left:4px";
+    sel.innerHTML=YRS.map(y=>`<option value="${y}">${y}</option>`).join("");
+    const box=L.control({position:"topright"});
+    box.onAdd=()=>{const d=L.DomUtil.create("div","leaflet-bar");d.style.cssText="background:#fff;padding:4px 6px;color:#222;font-size:12px";
+      d.append("國土測繪中心航照年度");d.appendChild(sel);L.DomEvent.disableClickPropagation(d);return d};
+    box.addTo(map);
+    sel.addEventListener("change",()=>{ph.setUrl(`https://wmts.nlsc.gov.tw/wmts/PHOTO${sel.value}/default/GoogleMapsCompatible/{z}/{y}/{x}`);
+      if(!map.hasLayer(ph)){map.eachLayer(l=>{if(l instanceof L.TileLayer && !l.options.overlay)map.removeLayer(l)});ph.addTo(map)}});
+  })();
+  // 參考疊圖（只供人工判讀，不參與候選層級）：地調所山崩地質資訊雲端服務平臺圖磚、國土測繪中心空載光達地形變異分析圖
+  (function(){
+    const LS="https://landslide.geologycloud.tw/jlwmts/jetlink/{L}/GoogleMapsCompatible/{z}/{x}/{y}.png", AT="經濟部地質調查及礦業管理中心 山崩地質資訊雲端服務平臺";
+    const mk=(id,nz,op)=>L.tileLayer(LS.replace("{L}",id),{maxZoom:19,maxNativeZoom:nz,opacity:op,overlay:true,attribution:AT});
+    ctl.addOverlay(mk("Dislope",13,0.7),"順向坡判釋目錄（地調所）");
+    ctl.addOverlay(mk("HistoryLS",16,0.7),"歷史山崩目錄（地調所）");
+    ctl.addOverlay(mk("SensitiveArea",16,0.5),"地質敏感區：山崩與地滑（地調所）");
+    ctl.addOverlay(L.tileLayer.wms("https://wms.nlsc.gov.tw/wms",{layers:"DDEM05",format:"image/png",transparent:true,opacity:0.7,overlay:true,attribution:"國土測繪中心 空載光達地形變異分析圖"}),"光達地形變異（國土測繪中心）");
   })();
   map.fitBounds([[22.95,120.55],[23.35,120.95]]);
   ["優先人工判讀","一般判讀","資料不足"].forEach(t=>{
@@ -166,6 +189,15 @@ function ndreBlock(e){
   const rec=e.recent_delta!=null?`最近 6 個月相對基準 ${e.recent_delta>=0?"+":""}${num(e.recent_delta,2)}。`:"";
   return `${svg}<p class="small">${txt}${rec} 綠線＝有效坡面 NDRE 的逐月中位數<b>減去同日全區中位數</b>（距平，扣掉季節與大氣的共同起伏；SCL 去雲、有效像元 ≥50% 的日期）；灰虛線＝基準期（2023-11～2024-06），紅虛線＝基準減 ${RULES.ndre_thr||0.08}，紅直線＝下降日。持續下降還要求下降日 60 天後仍偏低。</p>
   <p class="small muted">小試驗（凱米颱風 15 對案例／對照）：持續下降規則抓到 7/15、對照誤報 0/15；坡面中位數約只看得到占有效坡面兩成以上的變化，小崩塌會漏。紅邊未捕捉不代表沒有變化；NDRE 受季節、陰影、薄雲影響，只用來「請人看」。</p>`;
+}
+function debrisBlock(x){
+  const M=RULES.debris_meta;
+  if(!x) return "";
+  const ws=x.ws.length?x.ws.map(w=>`${esc(w[0])}（占坡面 ${num(w[1]*100,0)}%）`).join("、"):"不在任何潛勢溪流的集水區內";
+  const af=x.affect.length?x.affect.map(a=>`${esc(a[0])}（保全住戶 ${a[1]==null?"未載":a[1]+" 戶"}）`).join("、"):"無";
+  const nr=x.near?`${esc(x.near.id)} ${x.near.name&&x.near.name!=="-"?esc(x.near.name):""}（風險：${esc(x.near.risk||"—")}），距坡面 ${x.near.m<1?"0（穿過坡面）":num(x.near.m/1000,2)+" km"}`:"—";
+  return `<table><tbody><tr><th>所在潛勢溪流集水區</th><td>${ws}</td></tr><tr><th>外推 100 m 碰到的影響範圍</th><td>${af}</td></tr><tr><th>最近的潛勢溪流</th><td>${nr}</td></tr></tbody></table>
+  <p class="small muted">坡面在潛勢溪流集水區內，表示崩落的土砂可能進入該溪流。資料：農業部農村發展及水土保持署 BigGIS 土石流潛勢溪流（公開向量圖磚${M&&M.snapshot?"，"+esc(M.snapshot)+" 快照":""}，精度約 10 m）。</p>`;
 }
 function osmBlock(o){
   const M=RULES.osm_meta;
@@ -210,8 +242,8 @@ function select(id){
   <h3>④ 影像品質與偏移提醒</h3>
   <p class="small">Sentinel-2 有效觀測 ${r.ndre&&r.ndre.n_obs!=null?r.ndre.n_obs+" 個日期（基準期 "+r.ndre.n_base+"、之後 "+r.ndre.n_after+"）":"—"}；只採用坡面內有效像元 ≥50% 的日期。Wayback 2017 年起 ${r.wb_n==null?"無紀錄":r.wb_n+" 個拍攝日，最新 "+esc(r.wb_last||"—")}。Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。</p>
   <p class="small"><a href="https://livingatlas.arcgis.com/wayback/#mapCenter=${lon}%2C${lat}%2C17" target="_blank" rel="noopener">在 Esri Wayback 開啟此位置（新分頁，人工複核用）</a></p>
-  <h3>⑤ 道路與聚落（OpenStreetMap）</h3>
-  ${osmBlock(r.osm)}
+  <h3>⑤ 崩了會碰到什麼：道路、聚落與土石流潛勢溪流</h3>
+  ${osmBlock(r.osm)}${debrisBlock(r.debris)}
   <p class="small muted">是否現勘由人決定；本頁不提供風險分數。</p>`;
 }
 init();
