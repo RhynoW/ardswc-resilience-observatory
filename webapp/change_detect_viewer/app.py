@@ -167,9 +167,10 @@ def _report_marker(site, date_a, date_b, roi):
 
 
 # ── 依輔導委員意見（停止 3D／UAV／自動套合／格網熱點主軸）：舊階段頁面預設不對外；設 SHOW_LEGACY=1 可還原（程式與資料都保留）
-_LEGACY_PREFIXES = ("/review", "/analytics", "/accessible", "/api/ge_trace", "/static/uav_cesium.html", "/static/spatial3d.html",
-                    "/static/uav/", "/static/analytics.html", "/static/landing_aria.html", "/api/uav_registration",
-                    "/api/capture_custom", "/api/dtm_heights")
+# UAV 套合 3D 檢視頁（uav_cesium.html、static/uav/、/api/uav_registration(s)、/api/dtm_heights）保留為唯讀成果展示，
+# 由 /roadmap 連入並標示「已停止開發」；會觸發計算的 /api/capture_custom 仍隱藏。
+_LEGACY_PREFIXES = ("/review", "/analytics", "/accessible", "/api/ge_trace", "/static/spatial3d.html",
+                    "/static/analytics.html", "/static/landing_aria.html", "/api/capture_custom")
 
 
 @app.before_request
