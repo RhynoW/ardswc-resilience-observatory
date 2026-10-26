@@ -55,6 +55,8 @@ async function icon(Comp, hex) {
     cat: await icon(fa.FaSatellite, HEX.accent1), cam: await icon(fa.FaCamera, HEX.accent1), img: await icon(fa.FaLayerGroup, HEX.accent1),
     robot: await icon(fa.FaSearchLocation, HEX.lt1), link: await icon(fa.FaLink, HEX.lt1), user: await icon(fa.FaUserCheck, HEX.lt1),
     open: await icon(fa.FaCodeBranch, HEX.accent1), people: await icon(fa.FaUsers, HEX.accent1), map: await icon(fa.FaMapMarkedAlt, HEX.accent1),
+    ruler: await icon(fa.FaRulerCombined, HEX.accent1), copy: await icon(fa.FaClone, HEX.accent1), db: await icon(fa.FaDatabase, HEX.accent1),
+    eye: await icon(fa.FaEye, HEX.accent1), home: await icon(fa.FaHome, HEX.accent1), hands: await icon(fa.FaHandsHelping, HEX.accent1),
   };
 
   // 1 封面
@@ -75,8 +77,8 @@ async function icon(Comp, hex) {
   s.addNotes("我們是 TASTI_SatDashboard。這個系統不是要取代崩塌判釋，而是把水保署已經有的事件型崩塌目錄、歷史現地照片和近期衛星影像，整理成每個坡面的證據鏈。一句話：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。（約 20 秒）");
 
   // 2 問題
-  pres.addSection({ title: "問題與方法" });
-  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "問題與方法" });
+  pres.addSection({ title: "問題" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "問題" });
   s.addText("巡查先看哪裡？證據散在三個地方", { placeholder: "title" });
   const src = [
     [ic.cat, "事件型崩塌目錄", "衛星判釋每次事件「新生或擴大」的部分；只涵蓋看得到的大事件"],
@@ -98,56 +100,133 @@ async function icon(Comp, hex) {
   });
   s.addNotes("巡查人力有限，但山區坡面上萬個。要判斷先去哪裡，證據散在三個地方：事件型崩塌目錄、現地歷史照片、近期衛星影像，各有盲點。以高雄 POC 為例，約 1,800 平方公里、1 萬 3 千個坡面、近 9 千張現地照片。（約 40 秒）");
 
-  // 3 方法
-  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "問題與方法" });
-  s.addText("以坡面為單位，四類證據分開，不給總分", { placeholder: "title" });
-  s.addImage({ path: "v2_only.png", x: 0.6, y: 1.45, w: 4.6, h: 4.6, objectName: "suMap" });
-  s.addText("集水區重疊法（正、反 DEM）切坡面，只保留坡度 ≥15° 的有效坡面；每個單元都是完整區塊（舊版 85% 不連續 → 0%）",
-    { x: 0.6, y: 6.1, w: 4.6, h: 0.75, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "suCap" });
-  const ev = [["①", "事件目錄與年度圖層", "主骨架：歷次新增、擴大掛到同一坡面"], ["②", "現地照片", "補充證據，與①分開計、不相加"], ["③", "近期衛星變化", "Sentinel-2 時間序列，只回答「最近還有沒有變化」"], ["④", "影像品質提醒", "雲、陰影、有效觀測筆數、Wayback 偏移"]];
-  ev.forEach(([n, h, d], k) => {
-    const y = 1.5 + k * 0.95;
-    s.addShape(pres.shapes.OVAL, { x: 5.7, y: y + 0.05, w: 0.6, h: 0.6, fill: { color: C.accent1 }, line: { color: C.accent1 }, objectName: `evDot${k}` });
-    s.addText(n, { x: 5.7, y: y + 0.05, w: 0.6, h: 0.6, fontSize: 18, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `evN${k}` });
-    s.addText([{ text: h, options: { fontSize: 18, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 14, color: C.accent4 } }],
-      { x: 6.5, y, w: 6.2, h: 0.8, valign: "middle", margin: 0, isTextBox: true, objectName: `evT${k}` });
+  // 3 技術亮點
+  pres.addSection({ title: "技術亮點" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "技術亮點" });
+  s.addText("技術亮點：免費衛星＋開放資料，每個數字都量過", { placeholder: "title" });
+  const tech = [
+    ["13,175", "個坡面單元，不是網格", "集水區重疊法切分；12,730 個有 ≥15° 有效坡面。舊版 85% 不連續 → 0%"],
+    ["75%・43%", "大事件後抓到崩塌坡面", "Sentinel-2 紅邊時間序列（花蓮・太魯閣）；沒事件的坡面誤報約 2%"],
+    ["35", "組沒有 GPS 的 UAV 照片自動對位", "LoFTR 特徵匹配＋20 m DTM，貼回地形；含 2026-10-15 六龜寶來"],
+  ];
+  tech.forEach(([n, h, d], k) => {
+    const x = 0.6 + k * 4.1;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.35, w: 3.9, h: 5.45, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `techBg${k}` });
+    if (k === 0) s.addImage({ path: "v2_only.png", x: x + 0.15, y: 1.5, w: 3.6, h: 2.75, sizing: { type: "cover", w: 3.6, h: 2.75 }, objectName: "techImg0" });
+    if (k === 2) s.addImage({ path: "uav_baolai3d.png", x: x + 0.15, y: 1.5, w: 3.6, h: 2.75, sizing: { type: "cover", w: 3.6, h: 2.75 }, objectName: "techImg2" });
+    s.addText(n, { x: x + 0.25, y: 4.35, w: 3.4, h: 0.7, fontSize: 32, bold: true, color: k == 1 ? C.accent2 : C.text2, margin: 0, isTextBox: true, objectName: `techN${k}` });
+    s.addText(h, { x: x + 0.25, y: 5.05, w: 3.4, h: 0.45, fontSize: 16, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: `techH${k}` });
+    s.addText(d, { x: x + 0.25, y: 5.55, w: 3.4, h: 1.15, fontSize: 13, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: `techD${k}` });
   });
-  const tiers = [["優先人工判讀", C.accent2], ["一般判讀", C.accent1], ["資料不足", C.accent4]];
-  s.addText("只給三種候選層級，由人決定是否現勘：", { x: 5.7, y: 5.4, w: 7, h: 0.4, fontSize: 15, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "tierLead" });
-  tiers.forEach(([t, col], k) => {
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.7 + k * 2.35, y: 5.95, w: 2.15, h: 0.6, fill: { color: col }, line: { color: col }, rectRadius: 0.3, objectName: `tier${k}` });
-    s.addText(t, { x: 5.7 + k * 2.35, y: 5.95, w: 2.15, h: 0.6, fontSize: 15, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `tierT${k}` });
-  });
-  s.addNotes("方法上，我們以坡面為單位。依輔導委員建議，用集水區重疊法切坡面，只保留坡度 15 度以上的有效坡面，每個單元都是完整區塊。每個坡面有四類證據：事件目錄是主骨架，照片是補充，衛星只回答最近還有沒有變化，再加上影像品質提醒。四類分開呈現、不相加、不給總分，最後只給三種候選層級。（約 50 秒）");
+  s.addChart(pres.charts.BAR, [{ name: "被抓到的比例", labels: ["<5%", "5–10%", "10–20%", "20–40%", "≥40%"], values: [7, 15, 42, 75, 93] }],
+    { x: 4.85, y: 1.5, w: 3.6, h: 2.75, barDir: "col", showTitle: true, title: "太魯閣：崩塌占坡面越大越抓得到", titleFontSize: 11, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
+      chartColors: [HEX.accent1], showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: '0"%"', dataLabelFontSize: 10, dataLabelColor: HEX.dk1, dataLabelFontFace: "+mn-lt",
+      catAxisLabelFontSize: 9, valAxisHidden: true, catAxisLabelColor: HEX.accent4, catAxisLabelFontFace: "+mn-lt", valAxisMinVal: 0, valAxisMaxVal: 110,
+      valGridLine: { style: "none" }, catGridLine: { style: "none" }, showLegend: false, barGapWidthPct: 50, plotArea: { fill: { color: HEX.lt1 } }, objectName: "techChart" });
+  s.addNotes("技術亮點有三個。第一，以坡面為單位：依輔導委員建議用集水區重疊法切出 1 萬 3 千個坡面，每個都是完整區塊。第二，用免費的 Sentinel-2 紅邊時間序列，在花蓮、太魯閣大事件後抓到 75% 和 43% 的崩塌坡面，沒有事件的坡面誤報約 2%；中間這張圖顯示，崩塌占坡面越大越抓得到。第三，水保署歷史影像平台上的 UAV 照片沒有 GPS，我們用特徵匹配和 20 m 地形自動對位，目前 35 組，包括 10 月 15 日剛上傳的六龜寶來。重點是：每個數字我們都量過準確度。（約 50 秒）");
 
-  // 4 案例：太魯閣
-  pres.addSection({ title: "成果與驗證" });
-  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
-  s.addText("案例：太魯閣 0403 地震，一個坡面的證據鏈", { placeholder: "title" });
+  // 4 架構創新
+  pres.addSection({ title: "架構創新" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "架構創新" });
+  s.addText("架構創新：證據鏈分開呈現，不給總分，最後由人決定", { placeholder: "title" });
+  const flow2 = [["開放資料", "事件目錄・年度圖層・照片・Sentinel-2・DEM・OSM"], ["坡面單元", "SUv2，版本化 ID"], ["證據鏈", "五類證據，各附限制"], ["三種候選層級", "優先・一般・資料不足"], ["人決定", "要不要現勘；結果回饋規則"]];
+  flow2.forEach(([h, d], k) => {
+    const x = 0.6 + k * 2.47, last = k === 4;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 1.4, w: 2.27, h: 1.45, fill: { color: last ? C.accent2 : C.accent1 }, line: { color: last ? C.accent2 : C.accent1 }, rectRadius: 0.1, objectName: `flw${k}` });
+    s.addText([{ text: h, options: { fontSize: 17, bold: true, color: C.background1, breakLine: true } }, { text: d, options: { fontSize: 12, color: C.background2 } }],
+      { x: x + 0.15, y: 1.45, w: 1.97, h: 1.35, valign: "middle", margin: 0, isTextBox: true, objectName: `flwT${k}` });
+    if (k < 4) s.addText("▶", { x: x + 2.24, y: 1.95, w: 0.26, h: 0.35, fontSize: 12, color: C.accent4, align: "center", margin: 0, isTextBox: true, objectName: `flwA${k}` });
+  });
+  const evid = [["①", "事件目錄與年度圖層", "主骨架"], ["②", "現地照片", "補充，與①不相加"], ["③", "近期衛星變化", "Sentinel-2 紅邊時間序列"], ["④", "影像品質", "雲、陰影、觀測筆數、偏移"], ["⑤", "崩了會碰到什麼", "道路、聚落、土石流潛勢溪流"]];
+  s.addText("每個坡面的五類證據", { x: 0.6, y: 3.1, w: 5.6, h: 0.4, fontSize: 15, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "evLead" });
+  evid.forEach(([n, h, d], k) => {
+    const y = 3.6 + k * 0.62;
+    s.addShape(pres.shapes.OVAL, { x: 0.6, y: y + 0.04, w: 0.46, h: 0.46, fill: { color: C.accent1 }, line: { color: C.accent1 }, objectName: `ev2D${k}` });
+    s.addText(n, { x: 0.6, y: y + 0.04, w: 0.46, h: 0.46, fontSize: 13, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `ev2N${k}` });
+    s.addText([{ text: h + "　", options: { bold: true, color: C.text1 } }, { text: d, options: { color: C.accent4 } }], { x: 1.2, y, w: 5.0, h: 0.55, fontSize: 14, valign: "middle", margin: 0, isTextBox: true, objectName: `ev2T${k}` });
+  });
+  const prin = [["不給總分", "分數會掩蓋「為什麼」；各類證據並列，由判讀者權衡。"], ["「資料不足」也是結果", "雲、陰影、面積太小時明說看不到，不把沒資料當沒問題。"], ["可稽核", "盲判題目與結果附 SHA-256 清單；高解析影像只決定「怎麼看」，不改衛星數值。"]];
+  prin.forEach(([h, d], k) => {
+    const y = 3.1 + k * 1.25;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.6, y, w: 6.1, h: 1.1, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `prin${k}` });
+    s.addText([{ text: h, options: { fontSize: 16, bold: true, color: C.text2, breakLine: true } }, { text: d, options: { fontSize: 13, color: C.text1 } }],
+      { x: 6.85, y: y + 0.05, w: 5.7, h: 1.0, valign: "middle", margin: 0, isTextBox: true, objectName: `prinT${k}` });
+  });
+  s.addNotes("架構上，資料全部是開放資料，切成坡面單元後，每個坡面掛五類證據：事件目錄是主骨架，照片是補充，衛星只回答最近還有沒有變化，再加上影像品質提醒，以及崩了會碰到什麼——道路、聚落和土石流潛勢溪流。我們刻意不給總分，因為分數會掩蓋為什麼；看不到就標資料不足；驗證紀錄可以稽核。最後只給三種候選層級，由人決定要不要去。（約 45 秒）");
+
+  // 5 韌性呈現（太魯閣案例＋坡面履歷）
+  pres.addSection({ title: "韌性呈現" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "韌性呈現" });
+  s.addText("韌性呈現：每個坡面一份履歷——壞過、在變、會碰到誰", { placeholder: "title" });
   s.addImage({ path: "taroko_s2.gif", x: 0.6, y: 1.4, w: 4.75, h: 4.75, objectName: "tarokoGif" });
-  s.addText("白線＝坡面；橘線＝事件目錄的地震崩塌（官方判釋）", { x: 0.6, y: 6.25, w: 4.75, h: 0.5, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "gifCap" });
+  s.addText("太魯閣 0403 地震：白線＝坡面；橘線＝事件目錄的地震崩塌（官方判釋）", { x: 0.6, y: 6.25, w: 4.75, h: 0.5, fontSize: 12, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "gifCap" });
   const ts = JSON.parse(require("fs").readFileSync("taroko_ndre_series.json", "utf8"));
   const lab4 = ts.months.map(m => m.slice(2).replace("-", "/"));
   s.addChart(pres.charts.LINE, [
     { name: "此坡面", labels: lab4, values: ts.su.map(v => v == null ? null : v) },
     { name: "全區中位數", labels: lab4, values: ts.region },
-  ], { x: 5.75, y: 1.35, w: 6.95, h: 3.05, showTitle: true, title: "NDRE 逐月中位數（地震 2024/04）", titleFontSize: 14, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
+  ], { x: 5.75, y: 1.35, w: 6.95, h: 2.8, showTitle: true, title: "此坡面 NDRE：地震後 0.53 → 0.20，之後沒有回來", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
        chartColors: [HEX.accent2, HEX.accent4], lineSize: 2.5, lineDataSymbol: "none", displayBlanksAs: "span",
-       showLegend: true, legendPos: "b", legendFontSize: 11, legendFontFace: "+mn-lt", catAxisLabelFontSize: 10, valAxisLabelFontSize: 10, catAxisLabelFontFace: "+mn-lt", valAxisLabelFontFace: "+mn-lt",
+       showLegend: true, legendPos: "b", legendFontSize: 10, legendFontFace: "+mn-lt", catAxisLabelFontSize: 9, valAxisLabelFontSize: 9, catAxisLabelFontFace: "+mn-lt", valAxisLabelFontFace: "+mn-lt",
        catAxisLabelColor: HEX.accent4, valAxisLabelColor: HEX.accent4, valAxisMinVal: 0, valAxisMaxVal: 0.8, valAxisMajorUnit: 0.2, valGridLine: { color: "DDE5DF", size: 0.5 }, catGridLine: { style: "none" },
        catAxisLabelFrequency: 3, objectName: "ndreChart" });
-  const chain = [["①", "事件目錄", "0403 地震崩塌在此坡面 10.7 ha（有效坡面 21.4 ha 的一半）"], ["③", "近期衛星變化", "NDRE 自 2024-04-14 持續下降（0.53 → 0.20），全區沒有同步"], ["→", "結論", "列入人工判讀候選；是否現勘由人決定"]];
-  chain.forEach(([n, h, d], k) => {
-    const y = 4.6 + k * 0.72;
-    s.addShape(pres.shapes.OVAL, { x: 5.75, y: y + 0.06, w: 0.48, h: 0.48, fill: { color: k == 2 ? C.accent2 : C.accent1 }, line: { color: k == 2 ? C.accent2 : C.accent1 }, objectName: `chD${k}` });
-    s.addText(n, { x: 5.75, y: y + 0.06, w: 0.48, h: 0.48, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `chN${k}` });
-    s.addText([{ text: h + "　", options: { bold: true, color: C.text1 } }, { text: d, options: { color: C.text1 } }], { x: 6.4, y, w: 6.3, h: 0.6, fontSize: 14, valign: "middle", margin: 0, isTextBox: true, objectName: `chT${k}` });
+  const res = [["229／330", "太魯閣紅邊持續下降的坡面出現在地震當月——事件後幾週內列出先看的坡面"], ["200／411", "高雄優先坡面外推 100 m 內有道路；25 個有建物（OpenStreetMap）"], ["67", "個優先坡面位在土石流潛勢溪流集水區內，崩落土砂可能進入溪流（水保署）"]];
+  res.forEach(([n, d], k) => {
+    const y = 4.35 + k * 0.8;
+    s.addText(n, { x: 5.75, y, w: 1.9, h: 0.7, fontSize: 24, bold: true, color: k == 0 ? C.accent2 : C.text2, valign: "middle", margin: 0, isTextBox: true, objectName: `resN${k}` });
+    s.addText(d, { x: 7.7, y, w: 5.0, h: 0.7, fontSize: 13, color: C.text1, valign: "middle", margin: 0, isTextBox: true, objectName: `resD${k}` });
   });
-  s.addNotes("看一個太魯閣的例子。白線是一個坡面，橘線是官方事件目錄圈出的地震崩塌，占了這個坡面的一半。地震前 3 月底，紅邊指標 0.53；地震後 11 天掉到 0.20，之後一直沒有回來，而全區中位數只是正常的季節起伏。事件目錄、衛星變化兩類證據指向同一件事，這個坡面就會被列入人工判讀候選，最後由人決定要不要去。線上系統的太魯閣頁可以看到全部 329 個下降坡面。（約 45 秒）");
+  s.addNotes("韌性呈現在於每個坡面都有一份履歷。左邊是太魯閣一個坡面：橘線是官方圈出的地震崩塌，地震後紅邊指標從 0.53 掉到 0.20，之後沒有回來，全區只是正常季節起伏。太魯閣 330 個持續下降的坡面中，229 個出現在地震當月，大事件後幾週內就能列出要先看的坡面。履歷也回答崩了會碰到誰：高雄 411 個優先坡面中，200 個附近有道路，67 個位在土石流潛勢溪流集水區。（約 55 秒）");
 
-  // 5 驗證
-  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "成果與驗證" });
-  s.addText("我們量了它準不準：訊號只能「請人看」", { placeholder: "title" });
+  // 6 對公部門的啟示
+  pres.addSection({ title: "啟示" });
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "啟示" });
+  s.addText("對公部門的啟示：自動訊號只排「先看誰」，先量再用", { placeholder: "title" });
+  const gv = [["75%・43%", "大事件後抓到崩塌坡面（花蓮・太魯閣）", "95% CI 66–83%・38–48%；誤報約 2%"], ["約 25%", "平時零星的紅邊下降經盲判屬實", "分層加權，95% CI 5–45%"], ["69%", "影像目視與官方圖層「有無裸露」一致", "人工盲測 n=29，95% CI 51–83%"]];
+  gv.forEach(([n, l, c], k) => {
+    const y = 1.4 + k * 1.75;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y, w: 4.9, h: 1.6, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `gv${k}` });
+    s.addText(n, { x: 0.85, y: y + 0.1, w: 4.5, h: 0.6, fontSize: 28, bold: true, color: k == 1 ? C.accent2 : C.text2, margin: 0, valign: "middle", isTextBox: true, objectName: `gvN${k}` });
+    s.addText(l, { x: 0.85, y: y + 0.72, w: 4.5, h: 0.4, fontSize: 14, color: C.text1, margin: 0, isTextBox: true, objectName: `gvL${k}` });
+    s.addText(c, { x: 0.85, y: y + 1.12, w: 4.5, h: 0.35, fontSize: 11, color: C.accent4, margin: 0, isTextBox: true, objectName: `gvC${k}` });
+  });
+  const gp = [[ic.ruler, "量過才用", "大事件後可靠、平時零星變化不可靠；系統把這些限制直接寫在每個坡面頁上，只用來排序，不用來判定。"],
+              [ic.copy, "可複製、成本低", "全部開放資料與開源程式；換一個流域只要換範圍重跑，Sentinel-2 免費，一個 POC 約 1–2 小時計算。"],
+              [ic.db, "資料治理的小改變，大效益", "UAV 照片上傳時保留拍攝座標與時間（EXIF）、事件目錄附判釋日期，就能省下大量事後對位與比對。"]];
+  gp.forEach(([im, h, d], k) => {
+    const y = 1.45 + k * 1.75;
+    s.addShape(pres.shapes.OVAL, { x: 5.95, y: y + 0.1, w: 0.85, h: 0.85, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `gpC${k}` });
+    s.addImage({ data: im, x: 6.15, y: y + 0.3, w: 0.45, h: 0.45, objectName: `gpI${k}` });
+    s.addText([{ text: h, options: { fontSize: 18, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 14, color: C.accent4 } }],
+      { x: 7.0, y, w: 5.7, h: 1.5, valign: "middle", margin: 0, isTextBox: true, objectName: `gpT${k}` });
+  });
+  s.addNotes("對公部門的啟示：我們量了準確度。大事件後，花蓮 75%、太魯閣 43% 的崩塌坡面被抓到；但平時零星的紅邊下降，經分層盲判只有約 25% 屬實；連人看影像和官方圖層的一致率也只有 69%。所以自動訊號只能排先看誰，不能拿來判定，導入前一定要先量。這套流程全用開放資料、可以搬到其他流域；而 UAV 照片上傳時保留座標、事件目錄附判釋日期，這種小改變就能省下大量事後工作。（約 50 秒）");
+
+  // 7 對全民的啟示＋結語
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "啟示" });
+  s.addText("對全民的啟示：看得懂、查得到、一起補", { placeholder: "title" });
+  s.addImage({ path: "su3d_clean.png", x: 0.6, y: 1.35, w: 5.6, h: 4.62, sizing: { type: "cover", w: 5.6, h: 4.62 }, objectName: "su3d" });
+  s.addText("坡面頁 3D 檢視：國土測繪中心航照貼在 20 m 地形上；黃線＝選取的坡面", { x: 0.6, y: 6.0, w: 5.6, h: 0.35, fontSize: 11, color: C.accent4, margin: 0, isTextBox: true, objectName: "su3dCap" });
+  const pb = [[ic.eye, "透明，也誠實", "不給「風險分數」，避免把不確定的訊號說成定論；看不到就說看不到，每個數字附誤差。"],
+              [ic.home, "查得到身邊的坡", "每個坡面頁列出附近道路、建物、聚落與土石流潛勢溪流，可切 3D 與逐年航照。"],
+              [ic.hands, "一起補資料", "山區建物與產業道路在 OpenStreetMap 常缺漏，志工補上的每一筆都讓「會碰到誰」更完整；程式全部開源。"]];
+  pb.forEach(([im, h, d], k) => {
+    const y = 1.4 + k * 1.5;
+    s.addShape(pres.shapes.OVAL, { x: 6.6, y: y + 0.05, w: 0.8, h: 0.8, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `pbC${k}` });
+    s.addImage({ data: im, x: 6.78, y: y + 0.23, w: 0.44, h: 0.44, objectName: `pbI${k}` });
+    s.addText([{ text: h, options: { fontSize: 18, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 13.5, color: C.accent4 } }],
+      { x: 7.6, y: y - 0.05, w: 5.1, h: 1.35, valign: "middle", margin: 0, isTextBox: true, objectName: `pbT${k}` });
+  });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fill: { color: C.accent1 }, line: { color: C.accent1 }, rectRadius: 0.1, objectName: "closing" });
+  s.addText([{ text: "機器幫忙決定先看誰・證據鏈告訴你為什麼・最後由人決定要不要去　", options: { bold: true, color: C.background1 } }, { text: "rhynowu-ardswc-resilience-observatory.hf.space", options: { color: C.background2 } }],
+    { x: 0.85, y: 6.35, w: 11.6, h: 0.55, fontSize: 15, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: "closingT" });
+  s.addNotes("最後，對全民的啟示：坡地資訊要看得懂、查得到、也能一起補。我們不給風險分數，看不到就說看不到；每個坡面頁列出附近的道路、建物和土石流潛勢溪流，還能用 3D 和逐年航照看；山區建物在 OpenStreetMap 常缺漏，志工補上的每一筆都有用，程式全部開源。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
+
+
+  pres.addSection({ title: "備用" });
+  // 8 備用：驗證細節（原主線的驗證頁）
+  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "備用" });
+  s.addText("備用｜驗證細節：訊號只能「請人看」", { placeholder: "title" });
   s.addChart(pres.charts.BAR, [{ name: "被抓到的比例", labels: ["<5%", "5–10%", "10–20%", "20–40%", "≥40%"], values: [7, 15, 42, 75, 93] }],
     { x: 0.6, y: 1.4, w: 4.45, h: 4.4, barDir: "col", showTitle: true, title: "太魯閣：崩塌占坡面越大，越抓得到", titleFontSize: 13, titleColor: HEX.dk1, titleFontFace: "+mn-lt",
       chartColors: [HEX.accent1], showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: '0"%"', dataLabelFontSize: 12, dataLabelColor: HEX.dk1, dataLabelFontFace: "+mn-lt",
@@ -172,28 +251,8 @@ async function icon(Comp, hex) {
     { x: 5.55, y: 5.55, w: 6.95, h: 1.2, fontSize: 15, valign: "middle", margin: 0, isTextBox: true, objectName: "conclT" });
   s.addNotes("我們不只做系統，也量了它準不準。影像目視與官方圖層的有無裸露一致率只有 69%；舊版近期變化訊號約四分之一屬實。我們參考水保署電子報改用紅邊指標。在高雄全區，零星的下降經分層盲判只有約 25% 屬實，信賴區間 5% 到 45%；但在大事件後，花蓮有 75%、太魯閣有 43% 的崩塌坡面被抓到，沒有事件的坡面誤報約 2%。左邊這張圖是太魯閣：崩塌占坡面不到 5% 時只抓到 7%，超過四成時抓到 93%。所以紅邊指標適合大事件後快速找出植被大片消失的坡面，自動訊號只用來排出先看誰，最後一定由人確認。（約 55 秒）");
 
-  // 6 落地
-  pres.addSection({ title: "落地" });
-  s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "落地" });
-  s.addText("可複製、可檢驗，接下來交給第一線檢驗", { placeholder: "title" });
-  const nx = [
-    [ic.open, "全用開放資料與開源工具", "水保署 BigGIS、歷史影像平台、內政部 20 m DEM、Sentinel-2；程式公開在 GitHub"],
-    [ic.map, "流程可搬到其他流域", "高雄完成完整證據鏈；花蓮、太魯閣加做坡面紅邊檢核；中部、嘉義已測試事件目錄與衛星比對"],
-    [ic.people, "人工驗證持續進行", "專家盲判 2–3 位、實務人員操作測試 3–5 位；依結果調整候選規則"],
-  ];
-  nx.forEach(([im, h, d], k) => {
-    const y = 1.5 + k * 1.45;
-    s.addShape(pres.shapes.OVAL, { x: 0.6, y, w: 0.95, h: 0.95, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: `nxC${k}` });
-    s.addImage({ data: im, x: 0.82, y: y + 0.22, w: 0.5, h: 0.5, objectName: `nxI${k}` });
-    s.addText([{ text: h, options: { fontSize: 20, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 15, color: C.accent4 } }],
-      { x: 1.85, y: y - 0.05, w: 10.8, h: 1.1, valign: "middle", margin: 0, isTextBox: true, objectName: `nxT${k}` });
-  });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.95, w: 12.1, h: 0.8, fill: { color: C.accent1 }, line: { color: C.accent1 }, rectRadius: 0.12, objectName: "closing" });
-  s.addText("機器幫忙決定先看誰・證據鏈告訴你為什麼・最後由人決定要不要去", { x: 0.9, y: 5.95, w: 11.5, h: 0.8, fontSize: 20, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: "closingT" });
-  s.addNotes("最後，這套流程全用開放資料與開源工具，程式公開，高雄完成完整流程，花蓮、太魯閣也加做了坡面紅邊檢核，另外兩區測試過衛星與事件比對。接下來請專家盲判與第一線同仁實際操作，依結果調整規則。我們不是重新發明崩塌判釋，而是把既有證據整理成可追蹤的坡面履歷：機器幫忙決定先看誰，證據鏈告訴你為什麼，最後由人決定要不要去。謝謝。（約 40 秒）");
+  // 9 備用：對照專家的崩塌智慧防災構想（不在 5 分鐘主線，問答時再翻）
 
-  // 7 備用：對照專家的崩塌智慧防災構想（不在 5 分鐘主線，問答時再翻）
-  pres.addSection({ title: "備用" });
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "備用" });
   s.addText("備用｜對照崩塌智慧防災構想：現在在哪、下一步", { placeholder: "title" });
   const mods = [
@@ -221,7 +280,7 @@ async function icon(Comp, hex) {
     { x: 0.85, y: 6.3, w: 11.6, h: 0.6, fontSize: 14, valign: "middle", margin: 0, isTextBox: true, objectName: "posBarT" });
   s.addNotes("（備用，評審問到系統藍圖或下一步時再翻。）專家提出的崩塌智慧防災平台有六個模組。我們目前做到的是平時篩查：坡地底圖、多源監測和 AI 輔助判釋都有一部分，其中道路與建物暴露是用 OpenStreetMap 疊合，回答坡面崩了會碰到什麼，但不改候選層級。地質目前只拿到影像圖磚，五萬分之一的斷層、位態、順向坡要取得向量後才能分析。下游影響目前只列出坡面所在的土石流潛勢溪流集水區與影響範圍；降雨觸發、土砂與河道的動態串接和應變工作流還沒做，這是從平時篩查走向事件反應的下一步。");
 
-  // 8 備用：各地層崩塌密度（小比例尺地層面，geology_landslide_density.py）
+  // 10 備用：各地層崩塌密度（小比例尺地層面，geology_landslide_density.py）
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "備用" });
   s.addText("備用｜地質：哪些地層比較容易崩（粗尺度）", { placeholder: "title" });
   const gd = JSON.parse(require("fs").readFileSync("geology_landslide_density.json", "utf8"));
