@@ -63,9 +63,10 @@ def main():
     geo["ls_ha"] = geo.intersection(ls_u).area / 1e4
     nd = json.load(open(POC / "s2ts" / "su_ndre.json", encoding="utf-8"))["su"]
     pts = gpd.GeoDataFrame(eff[["su_id"]], geometry=eff.representative_point(), crs=3826)
-    pts = pts[pts["su_id"].isin(nd) & pts["su_id"].map(lambda s: nd.get(s, {}).get("base") is not None)]
+    in_tiers = {t["su_id"] for t in json.load(open(POC / "su_table_eff.json", encoding="utf-8"))}   # 與候選層級同一批坡面（12,730），NDRE 下降數才會和 P3 的 242 一致
+    pts = pts[pts["su_id"].isin(in_tiers) & pts["su_id"].isin(nd) & pts["su_id"].map(lambda s: nd.get(s, {}).get("base") is not None)]
     pts["drop"] = pts["su_id"].map(lambda s: bool(nd[s].get("drop")))
-    j = gpd.sjoin(pts, geo[["abbrev", "geometry"]], predicate="within")
+    j = gpd.sjoin(pts, geo[["abbrev", "geometry"]], predicate="intersects").drop_duplicates("su_id")   # 代表點落在地層邊界時只算一次
     cnt = j.groupby("abbrev")["drop"].agg(["size", "sum"])
     tot_eff, tot_ls = geo["eff_km2"].sum(), geo["ls_ha"].sum()
     dens_all = tot_ls / (tot_eff * 100)

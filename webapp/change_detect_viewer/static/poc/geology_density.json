@@ -7,8 +7,8 @@
   "eff_km2": 1718.4,
   "ls_ha": 9147.1,
   "density": 0.0532,
-  "n_su": 12776,
-  "n_drop": 243,
+  "n_su": 12699,
+  "n_drop": 242,
   "drop_rate": 0.019
  },
  "rows": [
@@ -20,7 +20,7 @@
    "ls_ha": 1964.5,
    "density": 0.0306,
    "fr": 0.57,
-   "n_su": 4869,
+   "n_su": 4858,
    "n_drop": 95,
    "drop_rate": 0.02,
    "small": false
@@ -46,8 +46,8 @@
    "ls_ha": 2357.3,
    "density": 0.0577,
    "fr": 1.08,
-   "n_su": 2908,
-   "n_drop": 65,
+   "n_su": 2905,
+   "n_drop": 64,
    "drop_rate": 0.022,
    "small": false
   },
@@ -59,9 +59,9 @@
    "ls_ha": 272.5,
    "density": 0.0496,
    "fr": 0.93,
-   "n_su": 448,
+   "n_su": 431,
    "n_drop": 9,
-   "drop_rate": 0.02,
+   "drop_rate": 0.021,
    "small": false
   },
   {
@@ -72,7 +72,7 @@
    "ls_ha": 87.2,
    "density": 0.0172,
    "fr": 0.32,
-   "n_su": 465,
+   "n_su": 425,
    "n_drop": 0,
    "drop_rate": 0.0,
    "small": false
@@ -111,7 +111,7 @@
    "ls_ha": 15.4,
    "density": 0.0491,
    "fr": 0.92,
-   "n_su": 27,
+   "n_su": 21,
    "n_drop": 0,
    "drop_rate": 0.0,
    "small": false

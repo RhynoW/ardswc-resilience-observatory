@@ -1,5 +1,5 @@
 """把講稿 Markdown（標題、段落、引言、清單、表格、粗體、行內程式碼、分隔線）轉成 Word 檔。
-用法：python presentation/md2docx.py presentation/講稿與背景說明.md presentation/講稿與背景說明.docx
+用法：python presentation/md2docx.py <輸入.md> <輸出.docx>（例：presentation/講稿與背景說明.md、presentation/評審問答演練.md）
 """
 import re
 import sys
@@ -139,6 +139,13 @@ def main(src, dst):
             for r in p.runs:
                 r.bold = True
             p.paragraph_format.space_after = Pt(10)
+        elif s.startswith("### "):
+            p = doc.add_heading(level=2)
+            p.text = ""
+            add_inline(p, s[4:], 13, GREEN)
+            for r in p.runs:
+                r.bold = True
+            p.paragraph_format.space_before = Pt(10)
         elif s.startswith("## "):
             p = doc.add_heading(level=1)
             p.text = ""
@@ -159,7 +166,7 @@ def main(src, dst):
             p = doc.add_paragraph()
             add_inline(p, s, 11, GRAY if s.startswith("簡報檔") else None)
         i += 1
-    doc.core_properties.title = "決賽簡報：講稿與背景說明"
+    doc.core_properties.title = next((l[2:].strip() for l in lines if l.startswith("# ")), "決賽簡報")
     doc.core_properties.author = "TASTI_SatDashboard"
     doc.save(dst)
     print("saved", dst)
