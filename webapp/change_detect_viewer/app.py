@@ -37,6 +37,7 @@
 熱點座標理論上必落在原始擷取影像正中央，因擷取本來就是以該座標為相機中心，計算結果與此
 預期完全吻合）。無 `.jgw`、或反解結果落在影像範圍外時回傳 `None`（fail-closed，不畫錯的點）。
 """
+import gzip
 import hashlib
 import html
 import io
@@ -78,6 +79,43 @@ ARDSWC_META_CACHE = REPO / "data" / "ardswc_meta_cache"
 CONTOUR_CACHE = REPO / "data" / "contour_cache" / TERRAIN_TAG
 
 app = Flask(__name__)
+
+# ── 傳輸效能：文字類回應（JSON／HTML／JS／CSS）gzip 壓縮；/static 資料檔快取 1 小時（HTML 每次確認，重新部署即生效）
+_GZIP_TYPES = ("application/json", "text/html", "text/css", "text/javascript", "application/javascript",
+               "image/svg+xml", "application/geo+json", "text/plain")
+_GZIP_CACHE = {}  # (path, etag) → 壓縮後位元組；靜態檔只壓一次
+_STATIC_MAX_AGE = 3600
+
+
+@app.after_request
+def _compress_and_cache(resp):
+    if request.method == "GET" and request.path.startswith("/static/") and resp.status_code in (200, 304):
+        if resp.mimetype == "text/html":
+            resp.headers["Cache-Control"] = "no-cache"
+        else:
+            resp.headers["Cache-Control"] = f"public, max-age={_STATIC_MAX_AGE}"
+    if (resp.status_code != 200 or resp.mimetype not in _GZIP_TYPES or "Content-Encoding" in resp.headers
+            or "gzip" not in request.headers.get("Accept-Encoding", "").lower()):
+        return resp
+    etag = resp.headers.get("ETag")
+    key = (request.path, etag) if etag else None
+    body = _GZIP_CACHE.get(key) if key else None
+    if body is None:
+        resp.direct_passthrough = False
+        raw = resp.get_data()
+        if len(raw) < 1024:
+            return resp
+        body = gzip.compress(raw, compresslevel=6)
+        if key and len(_GZIP_CACHE) < 256:
+            _GZIP_CACHE[key] = body
+    if hasattr(resp.response, "close"):
+        resp.response.close()
+    resp.direct_passthrough = False
+    resp.set_data(body)
+    resp.headers["Content-Encoding"] = "gzip"
+    resp.headers["Content-Length"] = str(len(body))
+    resp.headers.add("Vary", "Accept-Encoding")
+    return resp
 
 
 def _load_json(path, default):

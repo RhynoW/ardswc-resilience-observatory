@@ -104,7 +104,7 @@ let IDX, REC, RULES, map, layers={}, cur=null, curLayer=null;
 
 async function init(){
   [IDX, REC, RULES] = await Promise.all(["su_index.json","su_records.json","rules.json"].map(f=>fetch("/static/poc/su/"+f).then(r=>r.json())));
-  map = L.map("map");
+  map = L.map("map",{preferCanvas:true});
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri World Imagery"}).addTo(map);
   const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"});
   const ctl=L.control.layers({"衛星影像（Esri）":esri,"街道圖（OSM）":osm},null,{collapsed:false}).addTo(map);
