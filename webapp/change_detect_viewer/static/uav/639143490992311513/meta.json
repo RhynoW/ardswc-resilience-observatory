@@ -1,0 +1,46 @@
+{
+ "id": "639143490992311513",
+ "title": "嘉義縣阿里山鄉豐山村（UAV 空拍，2025-08-20）",
+ "description": "20250820_嘉義縣阿里山鄉豐山村-嘉縣DF041",
+ "source_page": "https://photo.ardswc.gov.tw/Repository/ViewEvent/639143490992311513",
+ "attribution": "財團法人中興工程顧問社（照片授權方式：姓名標示，CC-BY）；農業部農村發展及水土保持署歷史影像平台",
+ "bounds_merc": {
+  "minx": 13442584.870641382,
+  "maxy": 2701005.125516714,
+  "maxx": 13443376.910518922,
+  "miny": 2700430.7329608947
+ },
+ "view": {
+  "heading": 0,
+  "pitch": -35,
+  "range": 1800
+ },
+ "corners_lonlat_homography": null,
+ "image": "rect.webp",
+ "bounds_lonlat": {
+  "west": 120.75679447370995,
+  "south": 23.56450914950307,
+  "east": 120.76390948898619,
+  "north": 23.56923864287829
+ },
+ "center_lonlat": [
+  120.760352,
+  23.566874
+ ],
+ "method": "DTM 合成斜視圖匹配：以 20 m DTM＋Esri 底圖渲染合成斜視圖（相機姿態粗搜），LoFTR 匹配真實照片與合成圖 → 合成圖的 3D 位置 → 相機姿態解算（PnP + 穩健最小二乘）→ 沿相機光線與 DTM 求交的正射重採樣；UAV 無 EXIF，純影像內容對位",
+ "quality": {
+  "joint_inliers": 83,
+  "fit_rmse_m": null,
+  "holdout_rmse_m": 7.57,
+  "holdout_median_m": 6.86,
+  "homography_holdout_median_m": 225.14,
+  "gsd_m_per_px": 0.5,
+  "camera": {
+   "f_px": 1690.5,
+   "k1": -0.138,
+   "agl_m": 490
+  },
+  "note": "（斜拍照，經合成斜視圖匹配）留出點（佔 30%）地面誤差 RMSE 7.6 m、中位數 6.9 m（同批點上單應矩陣平面假設的中位數為 225.1 m；該批點由相機模型篩選，對單應矩陣偏不利，僅供參考）。已用 DTM 與相機姿態處理地形視差，但限制仍在：DTM 為 20 m 解析度、遮擋以 DTM 近似（樹冠、建物未建模）、底圖本身有數公尺定位誤差、焦距與相機高度在地形起伏小時互相補償（無 EXIF）；遠景、被山遮擋與拉伸過度的區域已裁掉（透明）。屬『較精確的地形糾正』，非測量級正射。",
+  "support_cover": 0.44
+ }
+}

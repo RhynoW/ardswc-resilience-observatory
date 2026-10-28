@@ -107,7 +107,7 @@ async function icon(Comp, hex) {
   const tech = [
     ["13,175", "個坡面單元，不是網格", "集水區重疊法切分；12,730 個有 ≥15° 有效坡面。舊版 85% 不連續 → 0%"],
     ["75%・43%", "大事件後抓到崩塌坡面", "Sentinel-2 紅邊時間序列（花蓮・太魯閣）；沒事件的坡面誤報約 2%"],
-    ["35", "組沒有 GPS 的 UAV 照片自動對位", "LoFTR 特徵匹配＋20 m DTM，貼回地形；含 2026-10-15 六龜寶來"],
+    ["50", "組沒有 GPS 的 UAV 照片自動對位", "LoFTR 特徵匹配＋20 m DTM，貼回地形；19 組在高雄，誤差中位數 2.2 m"],
   ];
   tech.forEach(([n, h, d], k) => {
     const x = 0.6 + k * 4.1;
@@ -123,7 +123,7 @@ async function icon(Comp, hex) {
       chartColors: [HEX.accent1], showValue: true, dataLabelPosition: "outEnd", dataLabelFormatCode: '0"%"', dataLabelFontSize: 10, dataLabelColor: HEX.dk1, dataLabelFontFace: "+mn-lt",
       catAxisLabelFontSize: 9, valAxisHidden: true, catAxisLabelColor: HEX.accent4, catAxisLabelFontFace: "+mn-lt", valAxisMinVal: 0, valAxisMaxVal: 110,
       valGridLine: { style: "none" }, catGridLine: { style: "none" }, showLegend: false, barGapWidthPct: 50, plotArea: { fill: { color: HEX.lt1 } }, objectName: "techChart" });
-  s.addNotes("技術亮點有三個。第一，以坡面為單位：依輔導委員建議用集水區重疊法切出 1 萬 3 千個坡面，每個都是完整區塊。第二，用免費的 Sentinel-2 紅邊時間序列，在花蓮、太魯閣大事件後抓到 75% 和 43% 的崩塌坡面，沒有事件的坡面誤報約 2%；中間這張圖顯示，崩塌占坡面越大越抓得到。第三，水保署歷史影像平台上的 UAV 照片沒有 GPS，我們用特徵匹配和 20 m 地形自動對位，目前 35 組，包括 10 月 15 日剛上傳的六龜寶來。重點是：每個數字我們都量過準確度。（約 50 秒）");
+  s.addNotes("技術亮點有三個。第一，以坡面為單位：依輔導委員建議用集水區重疊法切出 1 萬 3 千個坡面，每個都是完整區塊。第二，用免費的 Sentinel-2 紅邊時間序列，在花蓮、太魯閣大事件後抓到 75% 和 43% 的崩塌坡面，沒有事件的坡面誤報約 2%；中間這張圖顯示，崩塌占坡面越大越抓得到。第三，水保署歷史影像平台上的 UAV 照片沒有 GPS，我們用特徵匹配和 20 m 地形自動對位，目前 50 組，其中 19 組在高雄，留出點誤差中位數約 2 公尺。重點是：每個數字我們都量過準確度。（約 50 秒）");
 
   // 4 架構創新
   pres.addSection({ title: "架構創新" });
