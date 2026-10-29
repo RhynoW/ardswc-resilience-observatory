@@ -182,7 +182,7 @@ async function icon(Comp, hex) {
   pres.addSection({ title: "啟示" });
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "啟示" });
   s.addText("對公部門的啟示：自動訊號只排「先看誰」，先量再用", { placeholder: "title" });
-  const gv = [["75%・43%", "大事件後抓到崩塌坡面（花蓮・太魯閣）", "95% CI 66–83%・38–48%；誤報約 2%"], ["約 25%", "平時零星的紅邊下降經盲判屬實", "分層加權，95% CI 5–45%"], ["69%", "影像目視與官方圖層「有無裸露」一致", "人工盲測 n=29，95% CI 51–83%"]];
+  const gv = [["75%・43%", "大事件後抓到崩塌坡面（花蓮・太魯閣）", "只列出 3%・5% 的坡面；95% CI 66–83%・38–48%"], ["約 25%", "平時零星的紅邊下降經盲判屬實", "分層加權，95% CI 5–45%"], ["69%", "影像目視與官方圖層「有無裸露」一致", "人工盲測 n=29，95% CI 51–83%"]];
   gv.forEach(([n, l, c], k) => {
     const y = 1.4 + k * 1.75;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y, w: 4.9, h: 1.6, fill: { color: C.background2 }, line: { color: C.background2 }, rectRadius: 0.1, objectName: `gv${k}` });
@@ -191,7 +191,7 @@ async function icon(Comp, hex) {
     s.addText(c, { x: 0.85, y: y + 1.12, w: 4.5, h: 0.35, fontSize: 11, color: C.accent4, margin: 0, isTextBox: true, objectName: `gvC${k}` });
   });
   const gp = [[ic.ruler, "量過才用", "大事件後可靠、平時零星變化不可靠；系統把這些限制直接寫在每個坡面頁上，只用來排序，不用來判定。"],
-              [ic.copy, "可複製、成本低", "全部開放資料與開源程式；換一個流域只要換範圍重跑，Sentinel-2 免費，一個 POC 約 1–2 小時計算。"],
+              [ic.copy, "可複製、可延展、能落地", "開放資料＋開源程式，換流域只要換範圍重跑（花蓮、太魯閣已套用）；新證據可直接加一類，不必重訂總分；資料都來自水保署既有平台，產出接得上現有巡查流程。"],
               [ic.db, "資料治理的小改變，大效益", "UAV 照片上傳時保留拍攝座標與時間（EXIF）、事件目錄附判釋日期，就能省下大量事後對位與比對。"]];
   gp.forEach(([im, h, d], k) => {
     const y = 1.45 + k * 1.75;
@@ -200,7 +200,7 @@ async function icon(Comp, hex) {
     s.addText([{ text: h, options: { fontSize: 18, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 14, color: C.accent4 } }],
       { x: 7.0, y, w: 5.7, h: 1.5, valign: "middle", margin: 0, isTextBox: true, objectName: `gpT${k}` });
   });
-  s.addNotes("對公部門的啟示：我們量了準確度。大事件後，花蓮 75%、太魯閣 43% 的崩塌坡面被抓到；但平時零星的紅邊下降，經分層盲判只有約 25% 屬實；連人看影像和官方圖層的一致率也只有 69%。所以自動訊號只能排先看誰，不能拿來判定，導入前一定要先量。這套流程全用開放資料、可以搬到其他流域；而 UAV 照片上傳時保留座標、事件目錄附判釋日期，這種小改變就能省下大量事後工作。（約 50 秒）");
+  s.addNotes("對公部門的啟示：我們量了準確度。大事件後，花蓮 75%、太魯閣 43% 的崩塌坡面被抓到；但平時零星的紅邊下降，經分層盲判只有約 25% 屬實；所以自動訊號只能排先看誰，不能拿來判定，導入前一定要先量。量過之後效益很清楚：花蓮只要先看 3% 的坡面，就涵蓋四分之三的崩塌坡面。這套流程可複製、可延展、能落地：花蓮、太魯閣已用同一套跑過，新證據可以直接加一類；資料都來自水保署既有平台，產出的候選清單接得上現有巡查流程。UAV 照片上傳時保留座標，這種小改變也能省下大量事後工作。（約 50 秒）");
 
   // 7 對全民的啟示＋結語
   s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "啟示" });
