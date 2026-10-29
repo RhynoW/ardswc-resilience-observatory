@@ -7,6 +7,8 @@
   E4 影像品質與偏移提醒：有效面積與比例、Sentinel-2 有效觀測筆數、Wayback 拍攝日（下降日 ±7 日有無高解析影像可目視確認）、Wayback 偏移風險
   E5 道路、聚落與土石流潛勢溪流（su_osm_exposure.py、su_debris_link.py）：坡面內與外推 100 m 的道路長度、建物數、最近聚落（OSM）；
      所在潛勢溪流集水區、外推 100 m 碰到的影響範圍與保全住戶、最近潛勢溪流（水保署）。只回答「崩了會碰到什麼」，不改層級
+  E1 補充：水保署 BigGIS「崩塌報告專區」新生崩塌判釋報告（biggis_reports.py；2025-01 起各事件，PDF 解析的點位落在此坡面者）：
+     事件、影像日期、面積、該鄉鎮完成判釋比率。補上事件目錄之後的事件；只作佐證，不改層級
 候選層級（POC 規則 v1，未經驗證；只有三種，不給總分；規則與驗證限制寫在頁面）：
   資料不足：有效面積 <1 ha，或有效坡面占比 <0.2，或 Sentinel-2 有效觀測不足（基準期 <3 筆或之後 <6 筆；雲、陰影），近期變化無從判斷
   優先人工判讀（任一）：
@@ -66,6 +68,7 @@ def main():
     ts = jl(POC / "s2ts" / "su_ndre.json")
     osm = jl(POC / "su_osm_exposure.json", {"su": {}, "meta": None})  # su_osm_exposure.py；只作暴露資訊，不影響層級
     debris = jl(POC / "su_debris.json", {"su": {}, "meta": None})  # su_debris_link.py；土石流潛勢溪流連結，不影響層級
+    reports = jl(POC / "su_reports.json", {"su": {}, "meta": None})  # biggis_reports.py；官方新生崩塌判釋報告點位，不影響層級
     tsu = ts["su"] if ts else {}
     n = len(T)
     m = lab >= 0
@@ -151,12 +154,13 @@ def main():
             caution.append("Wayback 在此點 2017 年起 %d 個拍攝日，最新 %s；Wayback 對 DTM／Sentinel-2 常有 10–25 m 偏移，疊圖時輪廓可能錯位。" % (w.get("n_dates", 0), wb_last or "—"))
         else:
             caution.append("無 Wayback 高解析影像紀錄（2017 年起）。")
-        has_ev = t["category"] != "無崩塌" or pl or events or bool(drop)
+        rep = reports["su"].get(sid, [])
+        has_ev = t["category"] != "無崩塌" or pl or events or bool(drop) or bool(rep)
         photo_cls = Counter(c for _, c in pl)
         rec = {"su_id": sid, "uid": u["su_uid"], "tier": tier, "why": why, "caution": caution, "area_ha": u["area_ha"], "eff_ha": u["eff_area_ha"], "eff_frac": u["eff_frac"], "slope": u["mean_slope_deg"],
                "cat": t["category"], "bare": t["bare_ha"], "new_total": t["new_bare_ha_total"], "dom_event": t["dominant_event"], "explained": t["explained_by_events"], "growth_pairs": t["growth_pairs"],
                "events": events[:6], "photos": dict(photo_cls), "photo_years": sorted({y for y, _ in pl}), "s2_new_ha": round(float(new_ha[i]), 2), "s2_riv": round(riv_frac, 2),
-               "ndre": {k: e3.get(k) for k in ("base", "drop", "recent_delta", "n_obs", "n_base", "n_after", "monthly")}, "wb_check": wb_check, "osm": osm["su"].get(sid), "debris": debris["su"].get(sid),
+               "ndre": {k: e3.get(k) for k in ("base", "drop", "recent_delta", "n_obs", "n_base", "n_after", "monthly")}, "wb_check": wb_check, "osm": osm["su"].get(sid), "debris": debris["su"].get(sid), "reports": rep[:8], "n_reports": len(rep),
                "photo_list": [list(x) for x in sorted(ph_ids.get(sid, []), reverse=True)[:10]], "wb_n": w.get("n_dates"), "wb_last": wb_last, "cx": t["cx"], "cy": t["cy"], "i": i}
         code = ("a" if u["eff_area_ha"] < 1.0 else "") + ("b" if u["eff_frac"] < 0.2 else "") + ("c" if ts and (e3.get("n_base", 0) < 3 or e3.get("n_after", 0) < 6) else "")
         idx.append([sid, tier, 1 if has_ev else 0, code])
@@ -189,7 +193,7 @@ def main():
         recs[sid]["ring"] = geo.get(sid, [])
     (WEB / "su_records.json").write_text(json.dumps(recs, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (WEB / "su_index.json").write_text(json.dumps({"rules": RULES_VERSION, "su_version": meta["params"]["su_version"], "n": len(idx), "tiers": dict(tiers), "rows": idx}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    rules = {"version": RULES_VERSION, "ndre_months": ts["months"] if ts else [], "ndre_window": ts["window"] if ts else None, "ndre_thr": ts["thr"] if ts else None, "osm_meta": osm["meta"], "debris_meta": debris["meta"], "tiers": dict(tiers), "n_with_record": len(recs), "priority_reasons": dict(reasons), "doc": __doc__}
+    rules = {"version": RULES_VERSION, "ndre_months": ts["months"] if ts else [], "ndre_window": ts["window"] if ts else None, "ndre_thr": ts["thr"] if ts else None, "osm_meta": osm["meta"], "debris_meta": debris["meta"], "reports_meta": reports["meta"], "tiers": dict(tiers), "n_with_record": len(recs), "priority_reasons": dict(reasons), "doc": __doc__}
     (WEB / "rules.json").write_text(json.dumps(rules, ensure_ascii=False, indent=1), encoding="utf-8")
     print("單元", len(idx), "有完整記錄", len(recs), "層級", dict(tiers), "優先理由計數", dict(reasons))
     for f in ("su_records.json", "su_index.json", "rules.json"):

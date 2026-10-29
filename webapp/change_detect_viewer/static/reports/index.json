@@ -1,0 +1,266 @@
+{
+ "generated": "2026-10-30",
+ "site": "https://rhynowu-ardswc-resilience-observatory.hf.space",
+ "reports": [
+  {
+   "key": "387",
+   "id": 387,
+   "event": "0822暨0901豪雨",
+   "date": "2026-08-22",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/387",
+   "n": 85,
+   "ha": 32.6,
+   "n_poc": 22,
+   "n_su": 22,
+   "img_from": "2026-08-26",
+   "img_to": "2026-09-27",
+   "files": {
+    "pdf": "reports/387/report.pdf",
+    "csv": "reports/387/landslides.csv",
+    "geojson": "reports/387/landslides.geojson"
+   },
+   "pdf_kb": 1438,
+   "seconds": 4.3
+  },
+  {
+   "key": "388",
+   "id": 388,
+   "event": "0709巴威颱風",
+   "date": "2026-07-09",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/388",
+   "n": 155,
+   "ha": 42.0,
+   "n_poc": 9,
+   "n_su": 8,
+   "img_from": "2026-07-13",
+   "img_to": "2026-08-03",
+   "files": {
+    "pdf": "reports/388/report.pdf",
+    "csv": "reports/388/landslides.csv",
+    "geojson": "reports/388/landslides.geojson"
+   },
+   "pdf_kb": 1399,
+   "seconds": 4.4
+  },
+  {
+   "key": "384",
+   "id": 384,
+   "event": "萬里溪堰塞湖暨0625豪雨",
+   "date": "2026-06-25",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/384",
+   "n": 13,
+   "ha": 4.1,
+   "n_poc": 5,
+   "n_su": 5,
+   "img_from": "2026-06-29",
+   "img_to": "2026-07-01",
+   "files": {
+    "pdf": "reports/384/report.pdf",
+    "csv": "reports/384/landslides.csv",
+    "geojson": "reports/384/landslides.geojson"
+   },
+   "pdf_kb": 1380,
+   "seconds": 3.8
+  },
+  {
+   "key": "383",
+   "id": 383,
+   "event": "0608豪雨",
+   "date": "2026-06-08",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/383",
+   "n": 28,
+   "ha": 26.0,
+   "n_poc": 15,
+   "n_su": 15,
+   "img_from": "2026-06-17",
+   "img_to": "2026-06-22",
+   "files": {
+    "pdf": "reports/383/report.pdf",
+    "csv": "reports/383/landslides.csv",
+    "geojson": "reports/383/landslides.geojson"
+   },
+   "pdf_kb": 1374,
+   "seconds": 4.4
+  },
+  {
+   "key": "382",
+   "id": 382,
+   "event": "0404豪雨",
+   "date": "2026-04-04",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/382",
+   "n": 6,
+   "ha": 3.97,
+   "n_poc": 0,
+   "n_su": 0,
+   "img_from": "2026-04-10",
+   "img_to": "2026-04-13",
+   "files": {
+    "pdf": "reports/382/report.pdf",
+    "csv": "reports/382/landslides.csv",
+    "geojson": "reports/382/landslides.geojson"
+   },
+   "pdf_kb": 927,
+   "seconds": 2.5
+  },
+  {
+   "key": "395",
+   "id": 395,
+   "event": "1110鳳凰颱風",
+   "date": "2025-11-10",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/395",
+   "n": 11,
+   "ha": 2.68,
+   "n_poc": 0,
+   "n_su": 0,
+   "img_from": "2025-11-16",
+   "img_to": "2025-11-30",
+   "files": {
+    "pdf": "reports/395/report.pdf",
+    "csv": "reports/395/landslides.csv",
+    "geojson": "reports/395/landslides.geojson"
+   },
+   "pdf_kb": 936,
+   "seconds": 3.2
+  },
+  {
+   "key": "392",
+   "id": 392,
+   "event": "1020豪雨",
+   "date": "2025-10-20",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/392",
+   "n": 9,
+   "ha": 3.45,
+   "n_poc": 0,
+   "n_su": 0,
+   "img_from": "2025-11-07",
+   "img_to": "2025-11-07",
+   "files": {
+    "pdf": "reports/392/report.pdf",
+    "csv": "reports/392/landslides.csv",
+    "geojson": "reports/392/landslides.geojson"
+   },
+   "pdf_kb": 920,
+   "seconds": 3.6
+  },
+  {
+   "key": "396",
+   "id": 396,
+   "event": "0921樺加沙颱風",
+   "date": "2025-09-21",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/396",
+   "n": 141,
+   "ha": 65.62,
+   "n_poc": 8,
+   "n_su": 6,
+   "img_from": "2025-09-25",
+   "img_to": "2025-10-05",
+   "files": {
+    "pdf": "reports/396/report.pdf",
+    "csv": "reports/396/landslides.csv",
+    "geojson": "reports/396/landslides.geojson"
+   },
+   "pdf_kb": 1391,
+   "seconds": 4.0
+  },
+  {
+   "key": "394",
+   "id": 394,
+   "event": "0812楊柳颱風",
+   "date": "2025-08-12",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/394",
+   "n": 50,
+   "ha": 13.28,
+   "n_poc": 15,
+   "n_su": 15,
+   "img_from": "2025-08-14",
+   "img_to": "2025-08-21",
+   "files": {
+    "pdf": "reports/394/report.pdf",
+    "csv": "reports/394/landslides.csv",
+    "geojson": "reports/394/landslides.geojson"
+   },
+   "pdf_kb": 1384,
+   "seconds": 3.8
+  },
+  {
+   "key": "391",
+   "id": 391,
+   "event": "0728豪雨",
+   "date": "2025-07-28",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/391",
+   "n": 954,
+   "ha": 558.35,
+   "n_poc": 511,
+   "n_su": 410,
+   "img_from": "2025-08-01",
+   "img_to": "2025-08-11",
+   "files": {
+    "pdf": "reports/391/report.pdf",
+    "csv": "reports/391/landslides.csv",
+    "geojson": "reports/391/landslides.geojson"
+   },
+   "pdf_kb": 1864,
+   "seconds": 4.1
+  },
+  {
+   "key": "393",
+   "id": 393,
+   "event": "0705丹娜絲颱風、0718薇帕颱風暨0721豪雨",
+   "date": "2025-07-05",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/393",
+   "n": 67,
+   "ha": 791.73,
+   "n_poc": 13,
+   "n_su": 11,
+   "img_from": "2025-07-13",
+   "img_to": "2025-07-28",
+   "files": {
+    "pdf": "reports/393/report.pdf",
+    "csv": "reports/393/landslides.csv",
+    "geojson": "reports/393/landslides.geojson"
+   },
+   "pdf_kb": 1480,
+   "seconds": 3.6
+  },
+  {
+   "key": "390",
+   "id": 390,
+   "event": "0613豪雨",
+   "date": "2025-06-13",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/390",
+   "n": 19,
+   "ha": 7.73,
+   "n_poc": 7,
+   "n_su": 6,
+   "img_from": "2025-06-14",
+   "img_to": "2025-06-20",
+   "files": {
+    "pdf": "reports/390/report.pdf",
+    "csv": "reports/390/landslides.csv",
+    "geojson": "reports/390/landslides.geojson"
+   },
+   "pdf_kb": 1366,
+   "seconds": 3.3
+  },
+  {
+   "key": "389",
+   "id": 389,
+   "event": "0121嘉義地震",
+   "date": "2025-01-21",
+   "url": "https://gis.ardswc.gov.tw/news/collapses/389",
+   "n": 29,
+   "ha": 10.1,
+   "n_poc": 17,
+   "n_su": 15,
+   "img_from": "2025-01-21",
+   "img_to": "2025-01-24",
+   "files": {
+    "pdf": "reports/389/report.pdf",
+    "csv": "reports/389/landslides.csv",
+    "geojson": "reports/389/landslides.geojson"
+   },
+   "pdf_kb": 1367,
+   "seconds": 4.2
+  }
+ ]
+}

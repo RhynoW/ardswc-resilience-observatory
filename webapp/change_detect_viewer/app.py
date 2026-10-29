@@ -865,6 +865,12 @@ def su_page():
     return send_from_directory(HERE / "static", "su_detail.html")
 
 
+@app.route("/reports")
+def reports_page():
+    """新生崩塌報告：水保署判釋報告點位 → 自動產製的坡面報告 PDF 與 CSV／GeoJSON（static/reports.html；產製見 scripts/landslide_report.py）。"""
+    return send_from_directory(HERE / "static", "reports.html")
+
+
 @app.route("/roadmap")
 def roadmap_page():
     """系統藍圖對照：專家構想六模組 vs 現況、道路聚落暴露、各地層崩塌密度（static/roadmap.html）。"""

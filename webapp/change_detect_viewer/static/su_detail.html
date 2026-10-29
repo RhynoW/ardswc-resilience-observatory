@@ -53,7 +53,7 @@
 <a class="skip" href="#main">跳到主要內容</a>
 <header class="site"><div class="wrap">
   <a class="brand" href="/">坡地韌性哨兵 · 坡面證據鏈</a>
-  <nav aria-label="主要導覽"><ul><li><a href="/">首頁</a></li><li><a href="/system">完整技術說明</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li></ul></nav>
+  <nav aria-label="主要導覽"><ul><li><a href="/">首頁</a></li><li><a href="/system">完整技術說明</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li><li><a href="/reports">新生崩塌報告</a></li></ul></nav>
   <div id="site-badge"></div>
 </div></header>
 
@@ -91,7 +91,7 @@
   </div>
   <details class="panel"><summary>候選層級的規則與驗證限制（POC 規則 v1）</summary><div id="rules" class="small"></div></details>
 </div></main>
-<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM 與逐年正射航照、空載光達地形變異分析圖；土石流潛勢溪流（水保署 BigGIS）；順向坡、歷史山崩、地質敏感區（經濟部地質調查及礦業管理中心山崩地質資訊雲端服務平臺，僅供參考疊圖）；道路與聚落 © OpenStreetMap contributors。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
+<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS（事件型崩塌目錄、全臺崩塌地圖層、崩塌報告專區）與歷史影像平台（現地照片）、Copernicus Sentinel-2、Esri Wayback、國土測繪中心 DTM 與逐年正射航照、空載光達地形變異分析圖；土石流潛勢溪流（水保署 BigGIS）；順向坡、歷史山崩、地質敏感區（經濟部地質調查及礦業管理中心山崩地質資訊雲端服務平臺，僅供參考疊圖）；道路與聚落 © OpenStreetMap contributors。SU 版本與參數見各單元的 su_uid。事件判釋與照片描述皆非現地確認；照片描述分類是規則式初分。<br>分層人工驗證紀錄：<a href="/static/poc/audit/review.html#audit">判讀表（唯讀）</a>・<a href="/static/poc/audit/manifest.json">稽核清單</a>。</div></footer>
 
 <script src="/static/leaflet.js"></script>
 <script src="/static/site_badge.js"></script>
@@ -166,6 +166,12 @@ async function init(){
     ctl.addOverlay(mk("HistoryLS",16,0.7),"歷史山崩目錄（地調所）");
     ctl.addOverlay(mk("SensitiveArea",16,0.5),"地質敏感區：山崩與地滑（地調所）");
     ctl.addOverlay(L.tileLayer.wms("https://wms.nlsc.gov.tw/wms",{layers:"DDEM05",format:"image/png",transparent:true,opacity:0.7,overlay:true,attribution:"國土測繪中心 空載光達地形變異分析圖"}),"光達地形變異（國土測繪中心）");
+    // 水保署崩塌報告專區的新生崩塌點位（2025-01 起；PDF 解析，落在 POC 坡面內者）
+    const rp=L.layerGroup();
+    fetch("/static/poc/su/report_points.json").then(r=>r.json()).then(j=>{ j.points.forEach(([lon,lat,rid,ev,d,ha])=>
+      L.circleMarker([lat,lon],{radius:4+Math.min(4,Math.sqrt(ha||0)*2),color:"#fff",weight:1,fillColor:"#ff6f00",fillOpacity:0.9})
+        .bindTooltip(`${esc(ev)}・影像 ${esc(d||"—")}・${num(ha,2)} ha`).addTo(rp)); }).catch(()=>{});
+    ctl.addOverlay(rp,"官方新生崩塌點位 2025–2026（水保署報告）");
   })();
   map.fitBounds([[22.95,120.55],[23.35,120.95]]);
   ["優先人工判讀","一般判讀","資料不足"].forEach(t=>{
@@ -205,6 +211,20 @@ function ndreBlock(e){
   const rec=e.recent_delta!=null?`最近 6 個月相對基準 ${e.recent_delta>=0?"+":""}${num(e.recent_delta,2)}。`:"";
   return `${svg}<p class="small">${txt}${rec} 綠線＝有效坡面 NDRE 的逐月中位數<b>減去同日全區中位數</b>（距平，扣掉季節與大氣的共同起伏；SCL 去雲、有效像元 ≥50% 的日期）；灰虛線＝基準期（2023-11～2024-06），紅虛線＝基準減 ${RULES.ndre_thr||0.08}，紅直線＝下降日。持續下降還要求下降日 60 天後仍偏低。</p>
   <p class="small muted">小試驗（凱米颱風 15 對案例／對照）：持續下降規則抓到 7/15、對照誤報 0/15；坡面中位數約只看得到占有效坡面兩成以上的變化，小崩塌會漏。紅邊未捕捉不代表沒有變化；NDRE 受季節、陰影、薄雲影響，只用來「請人看」。</p>`;
+}
+function repNote(r){
+  if(!r.n_reports) return "";
+  const last=r.reports[0];
+  return `<p class="small" style="border-left:3px solid #ff6f00;padding-left:8px">水保署新生崩塌判釋報告在此坡面有 <b>${r.n_reports} 處</b>（最近：${esc(last.ev)}，影像 ${esc(last.img_date||"—")}）。這些報告晚於規則 v1 使用的事件目錄，<b>層級尚未納入</b>，判讀時請一併參考（見①）。</p>`;
+}
+function reportsBlock(r){
+  const M=RULES.reports_meta;
+  if(!r.n_reports) return M?`<p class="small muted">水保署 ${M.n_reports} 份新生崩塌判釋報告（${esc((M.reports.at(-1)||{}).date||"")} 起）沒有點位落在此坡面。</p>`:"";
+  const rows=r.reports.map(p=>`<tr><td>${esc(p.img_date||"—")}</td><td><a href="${esc("https://gis.ardswc.gov.tw/news/collapses/"+p.rid)}" target="_blank" rel="noopener">${esc(p.ev)}</a></td><td>${esc(p.img||"—")}</td><td class="n">${num(p.ha,2)}</td><td class="n">${p.cov==null?"—":num(p.cov,0)+"%"}</td></tr>`).join("");
+  return `<p class="small" style="margin-top:10px"><b>水保署新生崩塌判釋報告（2025 起；只作佐證，不改層級）</b></p>
+  <table><thead><tr><th>影像日期</th><th>事件（連到報告）</th><th>影像</th><th class="n">ha</th><th class="n">該鄉鎮完成判釋</th></tr></thead><tbody>${rows}</tbody></table>
+  ${r.n_reports>r.reports.length?`<p class="small muted">共 ${r.n_reports} 處，列出最近 ${r.reports.length} 處。</p>`:""}
+  <p class="small muted">官方以 PlanetScope、Sentinel-2 等衛星影像人工圈繪 ≥0.1 ha 的新生崩塌；「完成判釋」&lt;100% 表示該鄉鎮部分地區受雲覆尚未判釋，沒有點位不代表沒有崩塌。點位由報告 PDF 解析${M?"（"+esc(M.fetched)+" 擷取）":""}。資料：農業部農村發展及水土保持署 <a href="${esc(M?M.list_url:"https://gis.ardswc.gov.tw/news/collapses")}" target="_blank" rel="noopener">BigGIS 崩塌報告專區</a>。各事件的坡面報告 PDF 與點位 CSV 見 <a href="/reports">新生崩塌報告</a>。</p>`;
 }
 function debrisBlock(x){
   const M=RULES.debris_meta;
@@ -248,10 +268,10 @@ function select(id){
   const lon = r.ring&&r.ring[0]&&r.ring[0][0]?r.ring[0][0][0]:120.75, lat = r.ring&&r.ring[0]&&r.ring[0][0]?r.ring[0][0][1]:23.15;
   d.innerHTML = `<h2>${esc(r.su_id)} <span class="tier ${tc}">${esc(r.tier)}</span></h2>
   <p class="small muted">版本化 ID：${esc(r.uid)}　有效坡面 ${num(r.eff_ha)} ha（占單元 ${num(r.eff_frac*100,0)}%，平均坡度 ${num(r.slope,0)}°）</p>
-  <h3>為什麼是這個層級</h3>${why}${cau}
+  <h3>為什麼是這個層級</h3>${why}${repNote(r)}${cau}
   <h3>① 衛星事件目錄與年度圖層</h3>
   <p class="small">年度圖層全期類別：<b>${esc(r.cat)}</b>；新增裸露（四年鏈）合計 ${num(r.new_total)} ha；主因事件 ${esc(r.dom_event||"—")}（歸因 ${num(r.explained*100,0)}%）。官方判釋為衛星判釋，不是現地確認；年度圖層與影像目視的「有無裸露」一致率只有約 69%。</p>
-  ${bareBars(r.bare)}${ev}
+  ${bareBars(r.bare)}${ev}${reportsBlock(r)}
   <h3>② 現地歷史照片（補充證據，不與①相加）</h3>
   <p class="small">${pc?`災害事件＋媒體報導照片：${pc}；年份 ${esc((r.photo_years||[]).join("、"))}。`:"此單元沒有災害事件或媒體報導照片。"} 照片張數不是災害次數；描述分類為規則式初分；多拍在道路可達處。</p>${pl}
   <h3>③ 近期衛星變化（Sentinel-2 L2A 紅邊指標 NDRE，${esc((RULES.ndre_window||[]).join("～"))}）</h3>

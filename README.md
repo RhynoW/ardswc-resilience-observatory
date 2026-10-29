@@ -35,6 +35,7 @@ license: mit
 | [`/`](https://rhynowu-ardswc-resilience-observatory.hf.space/) | 首頁：五大主題 |
 | [`/su`](https://rhynowu-ardswc-resilience-observatory.hf.space/su) | **坡面證據鏈**（高雄 POC）：每個坡面的①事件目錄與年度圖層 ②現地照片 ③Sentinel-2 紅邊時間序列 ④影像品質 ⑤崩了會碰到什麼（道路、聚落、土石流潛勢溪流），與三種候選層級。地圖可切 **3D 地形**（CesiumJS＋20 m DTM）與**全頁顯示**；底圖含 Esri Wayback、國土測繪中心 2014–2025 逐年航照；參考疊圖含地調所順向坡、歷史山崩、地質敏感區與國土測繪中心光達地形變異 |
 | [`/poc`](https://rhynowu-ardswc-resilience-observatory.hf.space/poc) | 五個 POC 區域：高雄、花蓮（馬太鞍溪堰塞湖）、太魯閣（0403 地震）、中部、嘉義的衛星與事件目錄比對、坡面紅邊檢核 |
+| [`/reports`](https://rhynowu-ardswc-resilience-observatory.hf.space/reports) | 新生崩塌報告：水保署 13 份新生崩塌判釋報告的點位（PDF 解析），自動產製每個事件的坡面報告 PDF 與 CSV／GeoJSON 點位檔，附高雄 POC 坡面證據鏈 |
 | [`/roadmap`](https://rhynowu-ardswc-resilience-observatory.hf.space/roadmap) | 系統藍圖對照：專家構想的六個模組 vs 現況、道路聚落暴露、各地層崩塌密度 |
 | [`/static/uav_cesium.html`](https://rhynowu-ardswc-resilience-observatory.hf.space/static/uav_cesium.html) | UAV 自動套合 3D 檢視（已完成成果，依輔導建議停止擴充） |
 | [`/system`](https://rhynowu-ardswc-resilience-observatory.hf.space/system) | 完整技術說明（原首頁：方法演進、驗證、參考資訊） |
@@ -69,6 +70,7 @@ license: mit
 | Sentinel-2 紅邊時間序列 | `scripts/s2_ndre_series.py`（高雄）、`scripts/region_su_ndre.py`（花蓮、太魯閣） |
 | 證據鏈與候選層級 | `scripts/su_pages_build.py` |
 | 道路聚落、土石流潛勢溪流 | `scripts/su_osm_exposure.py`、`scripts/su_debris_link.py` |
+| 新生崩塌判釋報告解析、自動產製報告 PDF／CSV | `scripts/biggis_reports.py`、`scripts/landslide_report.py` |
 | 地層崩塌密度 | `scripts/geology_landslide_density.py` |
 | 驗證與信賴區間 | `scripts/ndre_validation.py`、`scripts/accuracy_ci.py` |
 | UAV 自動對位 | `scripts/uav_synth.py`、`scripts/uav_register/` |

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>新生崩塌報告｜坡地韌性哨兵</title>
+<meta name="description" content="從水保署新生崩塌判釋報告的點位，自動產製每個事件的坡面報告 PDF 與 CSV／GeoJSON 點位檔，附高雄 POC 坡面證據鏈。">
+<style>
+  :root{ --bg:#fff; --surface:#f7f7f8; --raised:#fff; --border:#d1d1d6; --text:#1c1c1e; --muted:#58585f; --accent:#0b5fd4; --focus:#0b5fd4; --warn:#b7791f;
+    --ok:#2e7d32; --part:#1565c0; --none:#757575; --hi:#fbe3d6; --radius:8px;
+    --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif; }
+  @media (prefers-color-scheme: dark){ :root{ --bg:#1b1b1d; --surface:#242427; --raised:#2b2b2f; --border:#46464c; --text:#f2f2f4; --muted:#b4b4bb; --accent:#6aa9ff; --focus:#8bbcff; --warn:#e0b45a; --ok:#81c784; --part:#6aa9ff; --none:#a0a0a8; --hi:#4a2f26; } }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 var(--font)}
+  a{color:var(--accent)} :focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:4px}
+  .skip{position:absolute;left:12px;top:-60px;background:var(--accent);color:#fff;padding:8px 14px;border-radius:var(--radius);z-index:10}.skip:focus{top:12px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+  header.site{border-bottom:1px solid var(--border);background:var(--surface)} header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .brand{font-weight:700;color:var(--text);text-decoration:none} nav ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;flex-wrap:wrap} nav a{display:inline-block;padding:6px 12px;border-radius:var(--radius);text-decoration:none}
+  h1{font-size:clamp(22px,3.4vw,30px);margin:24px 0 6px;line-height:1.3} h2{font-size:20px;margin:28px 0 6px}
+  .sub{color:var(--muted);margin:0 0 12px;max-width:62em}
+  .callout{border:1px solid var(--border);border-left:4px solid var(--warn);background:var(--surface);border-radius:var(--radius);padding:10px 14px;font-size:14.5px}
+  .tw{overflow-x:auto} table{border-collapse:collapse;font-size:14.5px;width:100%;margin:6px 0} th,td{border-bottom:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;background:var(--surface)} td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.mod{font-weight:700;white-space:nowrap} tr.hi td{background:var(--hi);font-weight:600} tr.tot td{font-weight:700;background:var(--surface)}
+  .st{display:inline-block;font-size:13px;font-weight:700;padding:1px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+  .st.part{background:var(--part)} .st.none{background:var(--none)}
+  .new{display:inline-block;font-size:12px;font-weight:700;color:var(--ok);border:1px solid var(--ok);border-radius:4px;padding:0 5px;margin-left:4px}
+  .pos{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin:12px 0}
+  .muted{color:var(--muted)} .small{font-size:13.5px}
+  @media (max-width:700px){ td.mod{white-space:normal} }
+  footer{border-top:1px solid var(--border);background:var(--surface);padding:18px 0;color:var(--muted);font-size:14px;margin-top:28px}
+  .dl a{display:inline-block;margin-right:8px;white-space:nowrap}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+  .steps div{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:14.5px}
+  .steps b{display:block}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到主要內容</a>
+<header class="site"><div class="wrap">
+  <a class="brand" href="/">坡地韌性哨兵 · 新生崩塌報告</a>
+  <nav aria-label="主要導覽"><ul><li><a href="/">首頁</a></li><li><a href="/su">坡面證據鏈</a></li><li><a href="/poc">五個 POC 區域</a></li><li><a href="/roadmap">系統藍圖對照</a></li></ul></nav>
+  <div id="site-badge"></div>
+</div></header>
+<main id="main"><div class="wrap">
+  <h1>新生崩塌報告：自動產製 PDF 與 CSV</h1>
+  <p class="sub">水保署 BigGIS「崩塌報告專區」的每份新生崩塌判釋報告，由程式重新產出：統計表、高雄 POC 地圖、坡面清單（候選層級、紅邊、道路建物、土石流潛勢溪流），以及機器可讀的點位檔。<b>不是官方報告</b>，官方報告以水保署發布為準。</p>
+  <div class="callout"><b>自動化的分工：</b>圈繪新生崩塌由人做——用 2025–2026 官方點位檢驗，坡面尺度的 Sentinel-2 紅邊指標在崩塌占坡面 ≥20% 時約抓到 35%，全部只有約 3%（官方崩塌中位數 0.3 ha）。圈繪完成後，報告、點位檔與坡面履歷由程式在幾分鐘內產出（每份約 4 秒）。</div>
+  <div class="steps">
+    <div><b>① 事件後</b>依警戒範圍列出候選坡面與各鄉鎮雲覆蓋，幫判釋人員排順序</div>
+    <div><b>② 人工圈繪</b>判釋人員以衛星影像圈繪 ≥0.1 ha 新生崩塌（水保署現行作業）</div>
+    <div><b>③ 自動產出</b>報告 PDF、CSV／GeoJSON 點位檔、坡面證據鏈頁同步更新</div>
+  </div>
+  <h2>各事件報告</h2>
+  <p class="small muted" id="meta">載入中…</p>
+  <div class="tw"><table id="rep"><thead><tr><th>官方發布</th><th>事件</th><th class="n">全區處數</th><th class="n">面積 ha</th><th class="n">高雄 POC 處數</th><th class="n">POC 坡面</th><th>影像日期</th><th>下載</th></tr></thead><tbody></tbody></table></div>
+  <h2>資料治理：為什麼要附點位檔</h2>
+  <p class="small">官方報告目前只有 PDF。從 13 份報告解析出 1,567 處新生崩塌時，要接回 75 列被分頁切開的表格列、修正 10 筆錯字（如「PlametScope」、日期漏一碼），還發現 1 處統計表與列表不一致（0728 豪雨的花蓮秀林鄉與卓溪鄉）。用解析結果重算鄉鎮面積，129 列有 127 列與官方統計表一致。若報告同時附 CSV 或 GeoJSON 點位檔，任何系統都能直接接，不會有這些錯。這裡的 CSV 欄位可作為參考格式。</p>
+  <p class="small muted">CSV 欄位：report_id, event, no, county, town, village, area_ha, x_twd97, y_twd97, lon, lat, debris_stream, sensor, image_date；高雄 POC 加上 su_id, su_tier, su_eff_ha, ndre_drop_date, road_100m_m, buildings_100m, debris_watershed, su_page。UTF-8（含 BOM，Excel 可直接開）。</p>
+</div></main>
+<footer><div class="wrap">資料：農業部農村發展及水土保持署 BigGIS 崩塌報告專區（新生崩塌判釋報告）、土石流潛勢溪流；內政部 20 m DTM；© OpenStreetMap contributors（ODbL）；Copernicus Sentinel-2。產製腳本：scripts/biggis_reports.py、scripts/landslide_report.py。</div></footer>
+<script src="/static/site_badge.js"></script>
+<script>
+const esc = s => String(s==null?"—":s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num = (v,d=0) => Number(v).toLocaleString("zh-Hant",{minimumFractionDigits:d,maximumFractionDigits:d});
+fetch("/static/reports/index.json").then(r=>r.json()).then(j=>{
+  document.getElementById("meta").textContent=`${j.reports.length} 份報告，產製日期 ${j.generated}。`;
+  document.querySelector("#rep tbody").innerHTML=j.reports.map(e=>`<tr><td>${esc(e.date)}</td><td>${e.url?`<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.event)}</a>`:esc(e.event)}</td>
+    <td class="n">${num(e.n)}</td><td class="n">${num(e.ha,1)}</td><td class="n">${num(e.n_poc)}</td><td class="n">${num(e.n_su)}</td><td>${esc(e.img_from)}～${esc(e.img_to)}</td>
+    <td class="dl"><a href="/static/${esc(e.files.pdf)}" target="_blank" rel="noopener">PDF</a><a href="/static/${esc(e.files.csv)}" download>CSV</a><a href="/static/${esc(e.files.geojson)}" download>GeoJSON</a></td></tr>`).join("");
+}).catch(()=>{document.getElementById("meta").textContent="資料載入失敗。"});
+</script>
+</body>
+</html>
